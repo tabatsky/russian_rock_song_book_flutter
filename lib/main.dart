@@ -5,6 +5,7 @@ import 'package:russian_rock_song_book/asset_manager.dart';
 import 'dart:developer';
 
 import 'package:russian_rock_song_book/song.dart';
+import 'package:russian_rock_song_book/song_repository.dart';
 
 void main() {
   runApp(const MyApp());
@@ -66,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    loadAsset();
+    _initDB();
   }
 
   void _incrementCounter() {
@@ -135,10 +136,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<void> loadAsset() async {
-    final songList1 = await AssetManager().loadAsset('agata');
-    log(songList1.toString());
-    final songList2 = await AssetManager().loadAsset('alisa');
-    log(songList2.toString());
+  Future<void> _initDB() async {
+    await SongRepository().initDB();
+    final artists = await SongRepository().getArtists();
+    log(artists.toString());
   }
 }
