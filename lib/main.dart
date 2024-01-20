@@ -5,7 +5,9 @@ import 'package:russian_rock_song_book/asset_manager.dart';
 import 'dart:developer';
 
 import 'package:russian_rock_song_book/song.dart';
+import 'package:russian_rock_song_book/song_list_page.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
+import 'package:russian_rock_song_book/song_text_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,13 +40,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MainPage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -58,13 +60,14 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MainPageState extends State<MainPage> {
+  PageVariant currentPageVariant = PageVariant.songList;
   String currentArtist = 'Кино';
   List<Song> currentSongs = <Song>[];
+  Song? currentSong = null;
 
   @override
   void initState() {
@@ -72,98 +75,49 @@ class _MyHomePageState extends State<MyHomePage> {
     _initSongs();
   }
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Flexible(child: _makeTitleListView()),
-          ],
-        ),
-      ),
-    );
+    if (currentPageVariant == PageVariant.songList) {
+      return SongListPage(currentArtist, currentSongs, (s) {
+        _selectSong(s);
+      });
+    } else if (currentPageVariant == PageVariant.songText) {
+      return SongTextPage(currentSong, () {
+        _back();
+      });
+    } else {
+      throw UnimplementedError();
+    }
   }
-
-  ListView _makeTitleListView() => ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: currentSongs.length,
-      itemBuilder: (BuildContext context, int index) {
-        var title = currentSongs[index].title;
-        return Row(
-          children: [
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: GestureDetector(
-                  onTap: () {
-                    log(title);
-                  },
-                  child: Container(
-                      height: 50,
-                      color: Colors.yellow,
-                      child: Center(
-                        child: Text(title),
-                      )
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      }
-  );
 
   Future<void> _initSongs() async {
     await SongRepository().initDB();
-    final artists = await SongRepository().getArtists();
-    log(artists.toString());
-    final songs = await SongRepository().getSongsByArtist(currentArtist);
-    log(songs.toString());
+    await _selectArtist('Кино');
+  }
+
+  Future<void> _selectArtist(String artist) async {
+    final songs = await SongRepository().getSongsByArtist(artist);
     setState(() {
+      currentArtist = artist;
       currentSongs = songs;
     });
   }
+
+  void _selectSong(Song song) {
+    setState(() {
+      currentSong = song;
+      currentPageVariant = PageVariant.songText;
+    });
+  }
+
+  void _back() {
+    if (currentPageVariant == PageVariant.songText) {
+      setState(() {
+        currentPageVariant = PageVariant.songList;
+        currentSong = null;
+      });
+    }
+  }
 }
+
+enum PageVariant { songList, songText }
