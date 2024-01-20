@@ -23,8 +23,16 @@ class SongRepository {
 
   Future<void> initDB() async {
     _db = await openDatabase('russian_rock_song_book.db');
+    //await _createTableAndIndex();
+    //await _fillTable();
+  }
 
-    const query = """
+  Future<void> closeDB() async {
+    await _db?.close();
+  }
+  
+  Future<void> _createTableAndIndex() async {
+    const tableQuery = """
     CREATE TABLE IF NOT EXISTS songEntity
     (id INTEGER PRIMARY KEY AUTOINCREMENT,
     artist TEXT NOT NULL,
@@ -33,14 +41,18 @@ class SongRepository {
     favorite INTEGER NOT NULL DEFAULT 0,
     deleted INTEGER NOT NULL DEFAULT 0 ,
     outOfTheBox INTEGER NOT NULL DEFAULT 1,
-    origTextMD5 TEXT NOT NULL);
-    CREATE UNIQUE INDEX IF NOT EXISTS the_index ON songEntity (artist, title);
+    origTextMD5 TEXT NOT NULL)
     """;
 
-    await _db?.execute(query);
-
+    await _db?.execute(tableQuery);
     log('table create if not exists done');
 
+    const indexQuery = 'CREATE UNIQUE INDEX IF NOT EXISTS the_index ON songEntity (artist, title)';
+    await _db?.execute(indexQuery);
+    log('index create if not exists done');
+  }
+  
+  Future<void> _fillTable() async {
     for (var entry in artistMap.entries) {
       final artistName = entry.key;
       final artistId = entry.value;
@@ -48,10 +60,6 @@ class SongRepository {
       await insertIgnoreSongs(songs);
       log("artist '$artistName' added to db: ${songs.length} songs");
     }
-  }
-
-  Future<void> closeDB() async {
-    await _db?.close();
   }
 
   Future<void> insertIgnoreSongs(List<Song> songs) async {
@@ -84,6 +92,32 @@ class SongRepository {
     for (var map in list) {
       String artist = map["artist"] as String;
       result.add(artist);
+    }
+
+    return result;
+  }
+
+  Future<List<Song>> getSongsByArtist(String artist) async {
+    List<Song> result = <Song>[];
+
+    const query = 'SELECT * FROM songEntity WHERE artist=? AND deleted=0 ORDER BY title';
+
+    List<Map> list = await _db?.rawQuery(query, [artist]) ?? [];
+
+    for (var map in list) {
+      int id = map['id'] as int;
+      String title = map['title'] as String;
+      String text = map['text'] as String;
+      int favorite = map['favorite'] as int;
+      int deleted = map['deleted'] as int;
+      int outOfTheBox = map['outOfTheBox'] as int;
+      String origTextMD5 = map['origTextMD5'] as String;
+      final song = Song.withId(id, artist, title, text)
+                      ..favorite = favorite > 0
+                      ..deleted = deleted > 0
+                      ..outOfTheBox = outOfTheBox > 0
+                      ..origTextMD5 = origTextMD5;
+      result.add(song);
     }
 
     return result;

@@ -10,6 +10,8 @@ class Song {
 
   Song(this.artist, this.title, this.text);
 
+  Song.withId(this.id, this.artist, this.title, this.text);
+
   @override
   String toString() {
     return "$artist - $title";

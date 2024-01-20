@@ -63,11 +63,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String currentArtist = 'Кино';
+  List<Song> currentSongs = <Song>[];
 
   @override
   void initState() {
     super.initState();
-    _initDB();
+    _initSongs();
   }
 
   void _incrementCounter() {
@@ -118,27 +120,50 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Flexible(child: _makeTitleListView()),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
-  Future<void> _initDB() async {
+  ListView _makeTitleListView() => ListView.builder(
+      padding: const EdgeInsets.all(8),
+      itemCount: currentSongs.length,
+      itemBuilder: (BuildContext context, int index) {
+        var title = currentSongs[index].title;
+        return Row(
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: GestureDetector(
+                  onTap: () {
+                    log(title);
+                  },
+                  child: Container(
+                      height: 50,
+                      color: Colors.yellow,
+                      child: Center(
+                        child: Text(title),
+                      )
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      }
+  );
+
+  Future<void> _initSongs() async {
     await SongRepository().initDB();
     final artists = await SongRepository().getArtists();
     log(artists.toString());
+    final songs = await SongRepository().getSongsByArtist(currentArtist);
+    log(songs.toString());
+    setState(() {
+      currentSongs = songs;
+    });
   }
 }
