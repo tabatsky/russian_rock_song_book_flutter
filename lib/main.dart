@@ -67,7 +67,8 @@ class _MainPageState extends State<MainPage> {
   PageVariant currentPageVariant = PageVariant.songList;
   String currentArtist = 'Кино';
   List<Song> currentSongs = <Song>[];
-  Song? currentSong = null;
+  List<String> allArtists = [];
+  Song? currentSong;
 
   @override
   void initState() {
@@ -78,7 +79,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     if (currentPageVariant == PageVariant.songList) {
-      return SongListPage(theme, currentArtist, currentSongs, (s) {
+      return SongListPage(theme, allArtists, currentArtist, currentSongs, (s) {
         _selectSong(s);
       });
     } else if (currentPageVariant == PageVariant.songText) {
@@ -92,7 +93,16 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> _initSongs() async {
     await SongRepository().initDB();
+    await _initAllArtists();
     await _selectArtist('Кино');
+  }
+
+  Future<void> _initAllArtists() async {
+    final artists = await SongRepository().getArtists();
+    log(artists.toString());
+    setState(() {
+      allArtists = artists;
+    });
   }
 
   Future<void> _selectArtist(String artist) async {

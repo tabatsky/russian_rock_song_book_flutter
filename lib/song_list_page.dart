@@ -9,11 +9,12 @@ class SongListPage extends StatefulWidget{
 
   AppTheme theme;
 
+  List<String> allArtists = [];
   String currentArtist;
   List<Song> currentSongs;
   void Function(Song s) onSongClick;
 
-  SongListPage(this.theme, this.currentArtist, this.currentSongs, this.onSongClick, {super.key});
+  SongListPage(this.theme, this.allArtists, this.currentArtist, this.currentSongs, this.onSongClick, {super.key});
 
   @override
   State<SongListPage> createState() => SongListPageState();
@@ -21,12 +22,9 @@ class SongListPage extends StatefulWidget{
 
 class SongListPageState extends State<SongListPage> {
 
-  List<String> allArtists = [];
-
   @override
   void initState() {
     super.initState();
-    _initArtists();
   }
 
   @override
@@ -52,7 +50,7 @@ class SongListPageState extends State<SongListPage> {
 
   ListView _makeMenuListView() => ListView.builder(
       padding: EdgeInsets.zero,
-      itemCount: allArtists.length + 1,
+      itemCount: widget.allArtists.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
           return const SizedBox(
@@ -66,7 +64,7 @@ class SongListPageState extends State<SongListPage> {
             ),
           );
         } else {
-          final artist = allArtists[index - 1];
+          final artist = widget.allArtists[index - 1];
           return Column(
             children: [
               GestureDetector(
@@ -118,13 +116,4 @@ class SongListPageState extends State<SongListPage> {
         );
       }
   );
-
-  Future<void> _initArtists() async {
-    await SongRepository().initDB();
-    final artists = await SongRepository().getArtists();
-    log(artists.toString());
-    setState(() {
-      allArtists = artists;
-    });
-  }
 }
