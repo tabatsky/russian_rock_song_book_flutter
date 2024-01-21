@@ -1,13 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:russian_rock_song_book/asset_manager.dart';
 import 'dart:developer';
 
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/song_list_page.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/song_text_page.dart';
+import 'package:russian_rock_song_book/theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -64,6 +62,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  AppTheme theme = AppTheme.themeDark;
+
   PageVariant currentPageVariant = PageVariant.songList;
   String currentArtist = 'Кино';
   List<Song> currentSongs = <Song>[];
@@ -78,11 +78,11 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     if (currentPageVariant == PageVariant.songList) {
-      return SongListPage(currentArtist, currentSongs, (s) {
+      return SongListPage(theme, currentArtist, currentSongs, (s) {
         _selectSong(s);
       });
     } else if (currentPageVariant == PageVariant.songText) {
-      return SongTextPage(currentSong, () {
+      return SongTextPage(theme, currentSong, () {
         _back();
       });
     } else {
