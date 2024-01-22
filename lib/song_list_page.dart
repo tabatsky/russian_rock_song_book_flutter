@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/theme.dart';
@@ -11,7 +9,7 @@ class SongListPage extends StatefulWidget{
   final List<String> allArtists;
   final String currentArtist;
   final List<Song> currentSongs;
-  final void Function(Song s) onSongClick;
+  final void Function(int position) onSongClick;
   final void Function(String artist) onArtistClick;
 
   const SongListPage(this.theme, this.allArtists, this.currentArtist, this.currentSongs, this.onSongClick, this.onArtistClick, {super.key});
@@ -94,12 +92,12 @@ class SongListPageState extends State<SongListPage> {
       padding: EdgeInsets.zero,
       itemCount: widget.currentSongs.length,
       itemBuilder: (BuildContext context, int index) {
-        var song = widget.currentSongs[index];
+        final song = widget.currentSongs[index];
         return Column(
           children: [
             GestureDetector(
               onTap: () {
-                widget.onSongClick(song);
+                widget.onSongClick(index);
               },
               child: Container(
                   height: 50,

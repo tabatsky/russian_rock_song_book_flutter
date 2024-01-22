@@ -46,6 +46,7 @@ class _MainPageState extends State<MainPage> {
   List<Song> currentSongs = <Song>[];
   List<String> allArtists = [];
   Song? currentSong;
+  int currentSongPosition = -1;
 
   @override
   void initState() {
@@ -60,8 +61,8 @@ class _MainPageState extends State<MainPage> {
       });
     }
     if (currentPageVariant == PageVariant.songList) {
-      return SongListPage(theme, allArtists, currentArtist, currentSongs, (s) {
-        _selectSong(s);
+      return SongListPage(theme, allArtists, currentArtist, currentSongs, (position) {
+        _selectSong(position);
       }, (artist) {
         Navigator.pop(context);
         _selectArtist(artist);
@@ -69,6 +70,10 @@ class _MainPageState extends State<MainPage> {
     } else if (currentPageVariant == PageVariant.songText) {
       return SongTextPage(theme, currentSong, () {
         _back();
+      }, () {
+        _prevSong();
+      }, () {
+        _nextSong();
       });
     } else {
       throw UnimplementedError();
@@ -96,9 +101,10 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  void _selectSong(Song song) {
+  void _selectSong(int position) {
     setState(() {
-      currentSong = song;
+      currentSongPosition = position;
+      currentSong = currentSongs[position];
       currentPageVariant = PageVariant.songText;
     });
   }
@@ -115,6 +121,25 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         currentPageVariant = PageVariant.songList;
         currentSong = null;
+        currentSongPosition = -1;
+      });
+    }
+  }
+
+  void _prevSong() {
+    if (currentSongPosition > 0) {
+      setState(() {
+        currentSongPosition -= 1;
+        currentSong = currentSongs[currentSongPosition];
+      });
+    }
+  }
+
+  void _nextSong() {
+    if (currentSongPosition < currentSongs.length - 1) {
+      setState(() {
+        currentSongPosition += 1;
+        currentSong = currentSongs[currentSongPosition];
       });
     }
   }
