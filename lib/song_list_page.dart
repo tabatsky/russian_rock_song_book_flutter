@@ -29,6 +29,7 @@ class SongListPageState extends State<SongListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
         title: Text(widget.currentArtist),
@@ -107,9 +108,9 @@ class SongListPageState extends State<SongListPage> {
                   )
               ),
             ),
-            const Divider(
+            Divider(
               height: 3.0,
-              color: Colors.black,
+              color: widget.theme.colorMain,
             )
           ],
         );
