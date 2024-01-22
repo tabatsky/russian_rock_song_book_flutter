@@ -44,6 +44,7 @@ class _MainPageState extends State<MainPage> {
   PageVariant currentPageVariant = PageVariant.start;
   String currentArtist = 'Кино';
   List<Song> currentSongs = <Song>[];
+  int currentCount = 0;
   List<String> allArtists = [];
   Song? currentSong;
   int currentSongPosition = -1;
@@ -74,6 +75,8 @@ class _MainPageState extends State<MainPage> {
         _prevSong();
       }, () {
         _nextSong();
+      }, () {
+        _toggleFavorite();
       });
     } else {
       throw UnimplementedError();
@@ -98,6 +101,7 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       currentArtist = artist;
       currentSongs = songs;
+      currentCount = songs.length;
     });
   }
 
@@ -142,6 +146,52 @@ class _MainPageState extends State<MainPage> {
         currentSong = currentSongs[currentSongPosition];
       });
     }
+  }
+
+  Future<void> _toggleFavorite() async {
+    if (currentSong != null) {
+      final song = currentSong!;
+      final becomeFavorite = !song.favorite;
+      song.favorite = becomeFavorite;
+      await SongRepository().updateSong(song);
+      await _refreshCurrentSong();
+
+      if (!becomeFavorite && currentArtist == SongRepository.artistFavorite) {
+        final count = await SongRepository().getCountByArtist(SongRepository.artistFavorite);
+        if (count > 0) {
+          final int newSongPosition;
+          if (currentSongPosition >= count) {
+            newSongPosition = currentSongPosition - 1;
+          } else {
+            newSongPosition = currentSongPosition;
+          }
+          setState(() {
+            currentCount = count;
+            currentSongPosition = newSongPosition;
+            _refreshCurrentSong();
+          });
+        } else {
+          setState(() {
+            currentCount = count;
+            _back();
+          });
+        }
+      } else {
+        _refreshCurrentSong();
+      }
+      if (becomeFavorite) {
+        //showToast("Добавлено в избранное");
+      } else {
+        //showToast("Удалено из избранного");
+      }
+    }
+  }
+
+  Future<void> _refreshCurrentSong() async {
+    final song = await SongRepository().getSongByArtistAndPosition(currentArtist, currentSongPosition);
+    setState(() {
+      currentSong = song;
+    });
   }
 }
 

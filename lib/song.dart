@@ -14,7 +14,13 @@ class Song {
 
   @override
   String toString() {
-    return "$artist - $title";
+    return """
+    $id
+    $artist - $title
+    $favorite
+    $deleted
+    $outOfTheBox
+    """;
   }
 
   int favoriteInt() => favorite ? 1 : 0;

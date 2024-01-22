@@ -11,8 +11,16 @@ class SongTextPage extends StatefulWidget {
   final void Function() onBackPressed;
   final void Function() onPrevSong;
   final void Function() onNextSong;
+  final void Function() onToggleFavorite;
 
-  const SongTextPage(this.theme,this.currentSong, this.onBackPressed, this.onPrevSong, this.onNextSong, {super.key});
+  const SongTextPage(
+      this.theme,
+      this.currentSong,
+      this.onBackPressed,
+      this.onPrevSong,
+      this.onNextSong,
+      this.onToggleFavorite,
+      {super.key});
 
   @override
   State<StatefulWidget> createState() => SongTextPageState();
@@ -58,10 +66,10 @@ class SongTextPageState extends State<SongTextPage> {
             },
           ),
           IconButton(
-            icon: Image.asset(AppIcons.icStar),
+            icon: Image.asset(widget.currentSong?.favorite == true ? AppIcons.icDelete : AppIcons.icStar),
             iconSize: 50,
             onPressed: () {
-              //onBackPressed();
+              widget.onToggleFavorite();
             },
           ),
           IconButton(
