@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/song.dart';
+import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/theme.dart';
 
 class SongListPage extends StatefulWidget{
@@ -64,6 +65,10 @@ class SongListPageState extends State<SongListPage> {
           );
         } else {
           final artist = widget.allArtists[index - 1];
+          final fontWeight =
+            artist == SongRepository.artistFavorite
+                ? FontWeight.bold
+                : FontWeight.normal;
           return Column(
             children: [
               GestureDetector(
@@ -74,7 +79,13 @@ class SongListPageState extends State<SongListPage> {
                     height: 50,
                     color: widget.theme.colorMain,
                     child: Center(
-                      child: Text(artist, style: TextStyle(color: widget.theme.colorBg)),
+                      child: Text(
+                          artist,
+                          style: TextStyle(
+                              color: widget.theme.colorBg,
+                              fontWeight: fontWeight,
+                          )
+                      ),
                     )
                 ),
               ),

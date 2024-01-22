@@ -187,6 +187,8 @@ class SongRepository {
   Future<List<String>> getArtists() async {
     List<String> result = <String>[];
 
+    result.add(artistFavorite);
+
     List<Map> list = await _db?.rawQuery(
         'SELECT DISTINCT artist FROM songEntity WHERE deleted=0 ORDER BY artist'
     ) ?? [];
@@ -200,6 +202,14 @@ class SongRepository {
   }
 
   Future<List<Song>> getSongsByArtist(String artist) async {
+    if (artist == artistFavorite) {
+      return _getSongsFavorite();
+    } else {
+      return _getSongsByArtist(artist);
+    }
+  }
+
+  Future<List<Song>> _getSongsByArtist(String artist) async {
     List<Song> result = <Song>[];
 
     const query = 'SELECT * FROM songEntity WHERE artist=? AND deleted=0 ORDER BY title';
@@ -225,6 +235,34 @@ class SongRepository {
     return result;
   }
 
+  Future<List<Song>> _getSongsFavorite() async {
+    List<Song> result = <Song>[];
+
+    const query = 'SELECT * FROM songEntity WHERE favorite=1 AND deleted=0 ORDER BY artist||title';
+
+    List<Map> list = await _db?.rawQuery(query, []) ?? [];
+
+    for (var map in list) {
+      int id = map['id'] as int;
+      String artist = map['artist'] as String;
+      String title = map['title'] as String;
+      String text = map['text'] as String;
+      int favorite = map['favorite'] as int;
+      int deleted = map['deleted'] as int;
+      int outOfTheBox = map['outOfTheBox'] as int;
+      String origTextMD5 = map['origTextMD5'] as String;
+      final song = Song.withId(id, artist, title, text)
+        ..favorite = favorite > 0
+        ..deleted = deleted > 0
+        ..outOfTheBox = outOfTheBox > 0
+        ..origTextMD5 = origTextMD5;
+      result.add(song);
+    }
+
+    return result;
+  }
+
+
   Future<void> updateSong(Song song) async {
     const query = 'UPDATE songEntity SET text=?, favorite=?, deleted=? WHERE id=?';
 
@@ -234,6 +272,14 @@ class SongRepository {
   }
 
   Future<Song?> getSongByArtistAndPosition(String artist, int position) async {
+    if (artist == artistFavorite) {
+      return _getSongByPositionFavorite(position);
+    } else {
+      return _getSongByArtistAndPosition(artist, position);
+    }
+  }
+
+  Future<Song?> _getSongByArtistAndPosition(String artist, int position) async {
     const query = """
     SELECT * FROM songEntity WHERE artist=? AND deleted=0
     ORDER BY title LIMIT 1 OFFSET ?
@@ -262,12 +308,65 @@ class SongRepository {
     return result.elementAtOrNull(0);
   }
 
+  Future<Song?> _getSongByPositionFavorite(int position) async {
+    const query = """
+    SELECT * FROM songEntity WHERE favorite=1 AND deleted=0
+    ORDER BY artist||title LIMIT 1 OFFSET ?
+    """;
+
+    List<Song> result = <Song>[];
+
+    List<Map> list = await _db?.rawQuery(query, [position]) ?? [];
+
+    for (var map in list) {
+      int id = map['id'] as int;
+      String artist = map['artist'] as String;
+      String title = map['title'] as String;
+      String text = map['text'] as String;
+      int favorite = map['favorite'] as int;
+      int deleted = map['deleted'] as int;
+      int outOfTheBox = map['outOfTheBox'] as int;
+      String origTextMD5 = map['origTextMD5'] as String;
+      final song = Song.withId(id, artist, title, text)
+        ..favorite = favorite > 0
+        ..deleted = deleted > 0
+        ..outOfTheBox = outOfTheBox > 0
+        ..origTextMD5 = origTextMD5;
+      result.add(song);
+    }
+
+    return result.elementAtOrNull(0);
+  }
+
   Future<int> getCountByArtist(String artist) async {
+    if (artist == artistFavorite) {
+      return _getCountFavorite();
+    } else {
+      return _getCountByArtist(artist);
+    }
+  }
+
+  Future<int> _getCountByArtist(String artist) async {
     const query = 'SELECT COUNT(*) AS count FROM songEntity WHERE artist=? AND deleted=0';
 
     List<int> result = <int>[];
 
     List<Map> list = await _db?.rawQuery(query, [artist]) ?? [];
+
+    for (var map in list) {
+      int count = map['count'] as int;
+      result.add(count);
+    }
+
+    return result.elementAtOrNull(0) ?? 0;
+  }
+
+  Future<int> _getCountFavorite() async {
+    const query = 'SELECT COUNT(*) AS count FROM songEntity WHERE favorite=1 AND deleted=0';
+
+    List<int> result = <int>[];
+
+    List<Map> list = await _db?.rawQuery(query, []) ?? [];
 
     for (var map in list) {
       int count = map['count'] as int;

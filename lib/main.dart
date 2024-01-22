@@ -189,8 +189,10 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> _refreshCurrentSong() async {
     final song = await SongRepository().getSongByArtistAndPosition(currentArtist, currentSongPosition);
+    final songs = await SongRepository().getSongsByArtist(currentArtist);
     setState(() {
       currentSong = song;
+      currentSongs = songs;
     });
   }
 }
