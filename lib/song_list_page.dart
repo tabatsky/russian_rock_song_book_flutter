@@ -2,19 +2,18 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/song.dart';
-import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/theme.dart';
 
 class SongListPage extends StatefulWidget{
 
-  AppTheme theme;
+  final AppTheme theme;
 
-  List<String> allArtists = [];
-  String currentArtist;
-  List<Song> currentSongs;
-  void Function(Song s) onSongClick;
+  final List<String> allArtists;
+  final String currentArtist;
+  final List<Song> currentSongs;
+  final void Function(Song s) onSongClick;
 
-  SongListPage(this.theme, this.allArtists, this.currentArtist, this.currentSongs, this.onSongClick, {super.key});
+  const SongListPage(this.theme, this.allArtists, this.currentArtist, this.currentSongs, this.onSongClick, {super.key});
 
   @override
   State<SongListPage> createState() => SongListPageState();
