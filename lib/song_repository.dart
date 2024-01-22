@@ -114,8 +114,11 @@ class SongRepository {
 
   Future<void> initDB() async {
     _db = await openDatabase('russian_rock_song_book.db');
-    //await _createTableAndIndex();
-    //await _fillTable();
+  }
+
+  Future<void> fillDB(void Function(int done, int total) onProgressChanged) async {
+    await _createTableAndIndex();
+    await _fillTable(onProgressChanged);
   }
 
   Future<void> closeDB() async {
@@ -143,13 +146,19 @@ class SongRepository {
     log('index create if not exists done');
   }
   
-  Future<void> _fillTable() async {
+  Future<void> _fillTable(void Function(int done, int total) onProgressChanged) async {
+    final total = artistMap.length;
+    var done = 0;
+    onProgressChanged(done, total);
+
     for (var entry in artistMap.entries) {
       final artistName = entry.key;
       final artistId = entry.value;
       final songs = await AssetManager().loadAsset(artistId, artistName);
       await insertIgnoreSongs(songs);
       log("artist '$artistName' added to db: ${songs.length} songs");
+      done++;
+      onProgressChanged(done, total);
     }
   }
 

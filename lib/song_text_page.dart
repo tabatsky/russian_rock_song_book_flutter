@@ -6,11 +6,11 @@ import 'package:russian_rock_song_book/theme.dart';
 
 class SongTextPage extends StatelessWidget {
 
-  AppTheme theme;
-  Song? currentSong;
-  void Function() onBackPressed;
+  final AppTheme theme;
+  final Song? currentSong;
+  final void Function() onBackPressed;
 
-  SongTextPage(this.theme,this.currentSong, this.onBackPressed, {super.key});
+  const SongTextPage(this.theme,this.currentSong, this.onBackPressed, {super.key});
 
   @override
   Widget build(BuildContext context) {
