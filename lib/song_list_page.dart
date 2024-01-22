@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
@@ -11,10 +12,11 @@ class SongListPage extends StatefulWidget{
   final List<String> allArtists;
   final String currentArtist;
   final List<Song> currentSongs;
+  final int scrollPosition;
   final void Function(int position) onSongClick;
   final void Function(String artist) onArtistClick;
 
-  const SongListPage(this.theme, this.allArtists, this.currentArtist, this.currentSongs, this.onSongClick, this.onArtistClick, {super.key});
+  const SongListPage(this.theme, this.allArtists, this.currentArtist, this.currentSongs, this.scrollPosition, this.onSongClick, this.onArtistClick, {super.key});
 
   @override
   State<SongListPage> createState() => SongListPageState();
@@ -22,9 +24,30 @@ class SongListPage extends StatefulWidget{
 
 class SongListPageState extends State<SongListPage> {
 
+  static const _titleHeight = 50.0;
+  static const _dividerHeight = 3.0;
+  static const _itemHeight = _titleHeight + _dividerHeight;
+
+  ScrollController scrollController = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
+
   @override
   void initState() {
     super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToActual());
+  }
+
+  @override
+  void didUpdateWidget(SongListPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _scrollToActual();
+  }
+
+  void _scrollToActual() {
+    scrollController.animateTo(widget.scrollPosition * _itemHeight,
+        duration: const Duration(milliseconds: 1), curve: Curves.ease);
   }
 
   @override
@@ -77,7 +100,7 @@ class SongListPageState extends State<SongListPage> {
                   widget.onArtistClick(artist);
                 },
                 child: Container(
-                    height: 50,
+                    height: _titleHeight,
                     color: widget.theme.colorMain,
                     child: Center(
                       child: Text(
@@ -91,7 +114,7 @@ class SongListPageState extends State<SongListPage> {
                 ),
               ),
               Divider(
-                height: 3.0,
+                height: _dividerHeight,
                 color: widget.theme.colorBg,
               )
             ],
@@ -101,6 +124,7 @@ class SongListPageState extends State<SongListPage> {
   );
 
   ListView _makeTitleListView() => ListView.builder(
+      controller: scrollController,
       padding: EdgeInsets.zero,
       itemCount: widget.currentSongs.length,
       itemBuilder: (BuildContext context, int index) {

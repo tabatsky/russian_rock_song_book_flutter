@@ -50,6 +50,7 @@ class _MainPageState extends State<MainPage> {
   List<String> allArtists = [];
   Song? currentSong;
   int currentSongPosition = -1;
+  int scrollPosition = 0;
 
   @override
   void initState() {
@@ -64,7 +65,7 @@ class _MainPageState extends State<MainPage> {
       });
     }
     if (currentPageVariant == PageVariant.songList) {
-      return SongListPage(theme, allArtists, currentArtist, currentSongs, (position) {
+      return SongListPage(theme, allArtists, currentArtist, currentSongs, scrollPosition, (position) {
         _selectSong(position);
       }, (artist) {
         Navigator.pop(context);
@@ -104,12 +105,14 @@ class _MainPageState extends State<MainPage> {
       currentArtist = artist;
       currentSongs = songs;
       currentCount = songs.length;
+      scrollPosition = 0;
     });
   }
 
   void _selectSong(int position) {
     setState(() {
       currentSongPosition = position;
+      scrollPosition = position;
       currentSong = currentSongs[position];
       currentPageVariant = PageVariant.songText;
     });
@@ -137,6 +140,7 @@ class _MainPageState extends State<MainPage> {
     if (currentSongPosition > 0) {
       setState(() {
         currentSongPosition -= 1;
+        scrollPosition = currentSongPosition;
         currentSong = currentSongs[currentSongPosition];
       });
     }
@@ -146,6 +150,7 @@ class _MainPageState extends State<MainPage> {
     if (currentSongPosition < currentSongs.length - 1) {
       setState(() {
         currentSongPosition += 1;
+        scrollPosition = currentSongPosition;
         currentSong = currentSongs[currentSongPosition];
       });
     }
