@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:developer';
 
 import 'package:russian_rock_song_book/song.dart';
@@ -6,7 +7,8 @@ import 'package:russian_rock_song_book/song_list_page.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/song_text_page.dart';
 import 'package:russian_rock_song_book/start_page.dart';
-import 'package:russian_rock_song_book/theme.dart';
+import 'package:russian_rock_song_book/app_theme.dart';
+import 'package:russian_rock_song_book/app_strings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -121,6 +123,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _back() {
+    log('back');
     if (currentPageVariant == PageVariant.songText) {
       setState(() {
         currentPageVariant = PageVariant.songList;
@@ -180,9 +183,9 @@ class _MainPageState extends State<MainPage> {
         _refreshCurrentSong();
       }
       if (becomeFavorite) {
-        //showToast("Добавлено в избранное");
+        _showToast(AppStrings.strToastAddedToFavorite);
       } else {
-        //showToast("Удалено из избранного");
+        _showToast(AppStrings.strToastDeletedFromFavorite);
       }
     }
   }
@@ -194,6 +197,18 @@ class _MainPageState extends State<MainPage> {
       currentSong = song;
       currentSongs = songs;
     });
+  }
+
+  void _showToast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: theme.colorMain,
+        textColor: theme.colorBg,
+        fontSize: 16.0
+    );
   }
 }
 

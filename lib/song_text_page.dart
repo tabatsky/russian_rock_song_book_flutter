@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:russian_rock_song_book/icons.dart';
+import 'package:russian_rock_song_book/app_icons.dart';
 import 'package:russian_rock_song_book/song.dart';
-import 'package:russian_rock_song_book/theme.dart';
+import 'package:russian_rock_song_book/app_theme.dart';
 
 class SongTextPage extends StatefulWidget {
 

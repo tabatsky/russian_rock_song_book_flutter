@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
-import 'package:russian_rock_song_book/theme.dart';
+import 'package:russian_rock_song_book/app_theme.dart';
+import 'package:russian_rock_song_book/app_strings.dart';
 
 class SongListPage extends StatefulWidget{
 
@@ -60,7 +61,7 @@ class SongListPageState extends State<SongListPage> {
                 color: AppTheme.colorDarkYellow,
               ),
               margin: EdgeInsets.zero,
-              child: Text('Меню', style: TextStyle(color: AppTheme.colorBlack)),
+              child: Text(AppStrings.strMenu, style: TextStyle(color: AppTheme.colorBlack)),
             ),
           );
         } else {

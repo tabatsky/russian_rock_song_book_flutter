@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
-import 'package:russian_rock_song_book/theme.dart';
+import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/version.dart';
 
 class StartPage extends StatefulWidget {
