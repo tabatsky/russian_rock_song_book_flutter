@@ -12,8 +12,9 @@ class SongListPage extends StatefulWidget{
   final String currentArtist;
   final List<Song> currentSongs;
   final void Function(Song s) onSongClick;
+  final void Function(String artist) onArtistClick;
 
-  const SongListPage(this.theme, this.allArtists, this.currentArtist, this.currentSongs, this.onSongClick, {super.key});
+  const SongListPage(this.theme, this.allArtists, this.currentArtist, this.currentSongs, this.onSongClick, this.onArtistClick, {super.key});
 
   @override
   State<SongListPage> createState() => SongListPageState();
@@ -69,7 +70,7 @@ class SongListPageState extends State<SongListPage> {
             children: [
               GestureDetector(
                 onTap: () {
-                  log("$artist click");
+                  widget.onArtistClick(artist);
                 },
                 child: Container(
                     height: 50,

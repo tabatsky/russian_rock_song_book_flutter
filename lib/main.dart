@@ -62,6 +62,9 @@ class _MainPageState extends State<MainPage> {
     if (currentPageVariant == PageVariant.songList) {
       return SongListPage(theme, allArtists, currentArtist, currentSongs, (s) {
         _selectSong(s);
+      }, (artist) {
+        Navigator.pop(context);
+        _selectArtist(artist);
       });
     } else if (currentPageVariant == PageVariant.songText) {
       return SongTextPage(theme, currentSong, () {
