@@ -4,7 +4,7 @@ import 'package:russian_rock_song_book/icons.dart';
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/theme.dart';
 
-class SongTextPage extends StatelessWidget {
+class SongTextPage extends StatefulWidget {
 
   final AppTheme theme;
   final Song? currentSong;
@@ -15,6 +15,29 @@ class SongTextPage extends StatelessWidget {
   const SongTextPage(this.theme,this.currentSong, this.onBackPressed, this.onPrevSong, this.onNextSong, {super.key});
 
   @override
+  State<StatefulWidget> createState() => SongTextPageState();
+
+}
+
+class SongTextPageState extends State<SongTextPage> {
+
+  ScrollController scrollController = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
+
+  void _scrollToTop() {
+    scrollController.animateTo(0.0,
+        duration: const Duration(milliseconds: 1), curve: Curves.ease);
+  }
+
+  @override
+  void didUpdateWidget(SongTextPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _scrollToTop();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -23,7 +46,7 @@ class SongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icBack),
           iconSize: 50,
           onPressed: () {
-            onBackPressed();
+            widget.onBackPressed();
           },
         ),
         actions: [
@@ -31,7 +54,7 @@ class SongTextPage extends StatelessWidget {
             icon: Image.asset(AppIcons.icLeft),
             iconSize: 50,
             onPressed: () {
-              onPrevSong();
+              widget.onPrevSong();
             },
           ),
           IconButton(
@@ -45,7 +68,7 @@ class SongTextPage extends StatelessWidget {
             icon: Image.asset(AppIcons.icRight),
             iconSize: 50,
             onPressed: () {
-              onNextSong();
+              widget.onNextSong();
             },
           ),
         ],
@@ -66,17 +89,18 @@ class SongTextPage extends StatelessWidget {
           double width = constraints.maxHeight;
           double height = constraints.maxHeight;
           return SingleChildScrollView(
+            controller: scrollController,
             child: Container(
               constraints: BoxConstraints(minHeight: height, minWidth: width),
-              color: theme.colorBg,
+              color: widget.theme.colorBg,
               padding: const EdgeInsets.all(8),
               child: Wrap(
                 children: [
-                  Text(currentSong?.title ?? 'null', style: TextStyle(color: theme.colorMain, fontSize: 24)),
+                  Text(widget.currentSong?.title ?? 'null', style: TextStyle(color: widget.theme.colorMain, fontSize: 24)),
                   Container(
                     height: 20,
                   ),
-                  Text(currentSong?.text ?? 'null', style: TextStyle(color: theme.colorMain)),
+                  Text(widget.currentSong?.text ?? 'null', style: TextStyle(color: widget.theme.colorMain)),
                   Container(
                     height: 80,
                   ),
@@ -88,5 +112,4 @@ class SongTextPage extends StatelessWidget {
       ),
     );
   }
-
 }
