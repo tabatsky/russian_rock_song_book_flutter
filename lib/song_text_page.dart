@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+
+import 'package:russian_rock_song_book/icons.dart';
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/theme.dart';
 
@@ -18,8 +20,9 @@ class SongTextPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
         title: Text(currentSong?.title ?? 'null'),
-        leading: BackButton(
-          color: AppTheme.colorBlack,
+        leading: IconButton(
+          icon: Image.asset(AppIcons.icBack),
+          iconSize: 50,
           onPressed: () {
             onBackPressed();
           },
