@@ -34,6 +34,8 @@ class SongTextPageState extends State<SongTextPage> {
     keepScrollOffset: true,
   );
 
+  bool isEditorMode = false;
+
   void _scrollToTop() {
     scrollController.animateTo(0.0,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
@@ -48,6 +50,7 @@ class SongTextPageState extends State<SongTextPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
         leading: IconButton(
@@ -94,27 +97,129 @@ class SongTextPageState extends State<SongTextPage> {
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          double width = constraints.maxHeight;
+          double width = constraints.maxWidth;
           double height = constraints.maxHeight;
-          return SingleChildScrollView(
-            controller: scrollController,
-            child: Container(
-              constraints: BoxConstraints(minHeight: height, minWidth: width),
-              color: widget.theme.colorBg,
-              padding: const EdgeInsets.all(8),
-              child: Wrap(
-                children: [
-                  Text(widget.currentSong?.title ?? 'null', style: TextStyle(color: widget.theme.colorMain, fontSize: 24)),
-                  Container(
-                    height: 20,
+          double buttonSize = width / 7.0;
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Container(
+                    constraints: BoxConstraints(minHeight: height, minWidth: width),
+                    color: widget.theme.colorBg,
+                    padding: const EdgeInsets.all(8),
+                    child: Wrap(
+                      children: [
+                        Text(widget.currentSong?.title ?? 'null', style: TextStyle(color: widget.theme.colorMain, fontSize: 24)),
+                        Container(
+                          height: 20,
+                        ),
+                        Text(widget.currentSong?.text ?? 'null', style: TextStyle(color: widget.theme.colorMain)),
+                        Container(
+                          height: 80,
+                        ),
+                      ],
+                    ),
                   ),
-                  Text(widget.currentSong?.text ?? 'null', style: TextStyle(color: widget.theme.colorMain)),
-                  Container(
-                    height: 80,
-                  ),
-                ],
+                ),
               ),
-            ),
+              Container(
+                width: width,
+                height: buttonSize,
+                color: widget.theme.colorBg,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: buttonSize,
+                      height: buttonSize,
+                      color: AppTheme.colorDarkYellow,
+                      child:
+                      IconButton(
+                        icon: Image.asset(AppIcons.icVk),
+                        padding: const EdgeInsets.all(8),
+                        onPressed: () {
+
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: buttonSize,
+                      height: buttonSize,
+                      color: AppTheme.colorDarkYellow,
+                      child:
+                      IconButton(
+                        icon: Image.asset(AppIcons.icYoutube),
+                        padding: const EdgeInsets.all(8),
+                        onPressed: () {
+
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: buttonSize,
+                      height: buttonSize,
+                      color: AppTheme.colorDarkYellow,
+                      child:
+                      IconButton(
+                        icon: Image.asset(AppIcons.icUpload),
+                        padding: const EdgeInsets.all(8),
+                        onPressed: () {
+
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: buttonSize,
+                      height: buttonSize,
+                      color: AppTheme.colorDarkYellow,
+                      child:
+                      IconButton(
+                        icon: Image.asset(AppIcons.icWarning),
+                        padding: const EdgeInsets.all(8),
+                        onPressed: () {
+
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: buttonSize,
+                      height: buttonSize,
+                      color: AppTheme.colorDarkYellow,
+                      child:
+                      IconButton(
+                        icon: Image.asset(AppIcons.icTrash),
+                        padding: const EdgeInsets.all(8),
+                        onPressed: () {
+
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: buttonSize,
+                      height: buttonSize,
+                      color: AppTheme.colorDarkYellow,
+                      child:
+                      IconButton(
+                        icon: Image.asset(isEditorMode ? AppIcons.icSave : AppIcons.icEdit),
+                        padding: const EdgeInsets.all(8),
+                        onPressed: () {
+                          setState(() {
+                            isEditorMode = !isEditorMode;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: width,
+                height: buttonSize / 2,
+                color: widget.theme.colorBg,
+              ),
+            ],
           );
         },
       ),
