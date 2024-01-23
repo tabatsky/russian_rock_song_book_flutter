@@ -162,7 +162,6 @@ class _MainPageState extends State<MainPage> {
       final becomeFavorite = !song.favorite;
       song.favorite = becomeFavorite;
       await SongRepository().updateSong(song);
-      await _refreshCurrentSong();
 
       if (!becomeFavorite && currentArtist == SongRepository.artistFavorite) {
         final count = await SongRepository().getCountByArtist(SongRepository.artistFavorite);
@@ -176,17 +175,19 @@ class _MainPageState extends State<MainPage> {
           setState(() {
             currentCount = count;
             currentSongPosition = newSongPosition;
-            _refreshCurrentSong();
+            log('set state 1 done');
           });
         } else {
           setState(() {
             currentCount = count;
-            _back();
+            log('set state 2 done');
           });
+          _back();
         }
-      } else {
-        _refreshCurrentSong();
       }
+
+      await _refreshCurrentSong();
+
       if (becomeFavorite) {
         _showToast(AppStrings.strToastAddedToFavorite);
       } else {
@@ -196,10 +197,11 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _refreshCurrentSong() async {
-    final song = await SongRepository().getSongByArtistAndPosition(currentArtist, currentSongPosition);
+    log('refresh current song');
     final songs = await SongRepository().getSongsByArtist(currentArtist);
     setState(() {
-      currentSong = song;
+      currentSong = currentSongPosition >= 0 ? songs.elementAtOrNull(currentSongPosition) : null;
+      log(currentSong.toString());
       currentSongs = songs;
     });
   }
