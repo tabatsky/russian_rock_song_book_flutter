@@ -80,6 +80,8 @@ class _MainPageState extends State<MainPage> {
         _nextSong();
       }, () {
         _toggleFavorite();
+      }, (updatedText) {
+        _saveSongText(updatedText);
       });
     } else {
       throw UnimplementedError();
@@ -193,6 +195,15 @@ class _MainPageState extends State<MainPage> {
       } else {
         _showToast(AppStrings.strToastDeletedFromFavorite);
       }
+    }
+  }
+
+  Future<void> _saveSongText(String updatedText) async {
+    if (currentSong != null) {
+      final song = currentSong!;
+      song.text = updatedText;
+      await SongRepository().updateSong(song);
+      await _refreshCurrentSong();
     }
   }
 

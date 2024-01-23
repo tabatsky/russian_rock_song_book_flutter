@@ -12,6 +12,7 @@ class SongTextPage extends StatefulWidget {
   final void Function() onPrevSong;
   final void Function() onNextSong;
   final void Function() onToggleFavorite;
+  final void Function(String updatedText) onSaveSongText;
 
   const SongTextPage(
       this.theme,
@@ -20,6 +21,7 @@ class SongTextPage extends StatefulWidget {
       this.onPrevSong,
       this.onNextSong,
       this.onToggleFavorite,
+      this.onSaveSongText,
       {super.key});
 
   @override
@@ -35,6 +37,7 @@ class SongTextPageState extends State<SongTextPage> {
   );
 
   bool isEditorMode = false;
+  final textEditorController = TextEditingController();
 
   void _scrollToTop() {
     scrollController.animateTo(0.0,
@@ -100,11 +103,21 @@ class SongTextPageState extends State<SongTextPage> {
           double width = constraints.maxWidth;
           double height = constraints.maxHeight;
           double buttonSize = width / 7.0;
+          final textStyle = TextStyle(
+              color: widget.theme.colorMain,
+              fontFamily: 'monospace',
+              fontFamilyFallback: const <String>["Courier"],
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              height: 1.5,
+          );
+
           return Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
+                  padding: EdgeInsets.zero,
                   child: Container(
                     constraints: BoxConstraints(minHeight: height, minWidth: width),
                     color: widget.theme.colorBg,
@@ -115,7 +128,21 @@ class SongTextPageState extends State<SongTextPage> {
                         Container(
                           height: 20,
                         ),
-                        Text(widget.currentSong?.text ?? 'null', style: TextStyle(color: widget.theme.colorMain)),
+                        isEditorMode
+                        ? TextField(
+                          controller: textEditorController,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          style: textStyle,
+                        )
+                        : Text(
+                            widget.currentSong?.text ?? 'null',
+                            style: textStyle,
+                        ),
                         Container(
                           height: 80,
                         ),
@@ -128,91 +155,7 @@ class SongTextPageState extends State<SongTextPage> {
                 width: width,
                 height: buttonSize,
                 color: widget.theme.colorBg,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: buttonSize,
-                      height: buttonSize,
-                      color: AppTheme.colorDarkYellow,
-                      child:
-                      IconButton(
-                        icon: Image.asset(AppIcons.icVk),
-                        padding: const EdgeInsets.all(8),
-                        onPressed: () {
-
-                        },
-                      ),
-                    ),
-                    Container(
-                      width: buttonSize,
-                      height: buttonSize,
-                      color: AppTheme.colorDarkYellow,
-                      child:
-                      IconButton(
-                        icon: Image.asset(AppIcons.icYoutube),
-                        padding: const EdgeInsets.all(8),
-                        onPressed: () {
-
-                        },
-                      ),
-                    ),
-                    Container(
-                      width: buttonSize,
-                      height: buttonSize,
-                      color: AppTheme.colorDarkYellow,
-                      child:
-                      IconButton(
-                        icon: Image.asset(AppIcons.icUpload),
-                        padding: const EdgeInsets.all(8),
-                        onPressed: () {
-
-                        },
-                      ),
-                    ),
-                    Container(
-                      width: buttonSize,
-                      height: buttonSize,
-                      color: AppTheme.colorDarkYellow,
-                      child:
-                      IconButton(
-                        icon: Image.asset(AppIcons.icWarning),
-                        padding: const EdgeInsets.all(8),
-                        onPressed: () {
-
-                        },
-                      ),
-                    ),
-                    Container(
-                      width: buttonSize,
-                      height: buttonSize,
-                      color: AppTheme.colorDarkYellow,
-                      child:
-                      IconButton(
-                        icon: Image.asset(AppIcons.icTrash),
-                        padding: const EdgeInsets.all(8),
-                        onPressed: () {
-
-                        },
-                      ),
-                    ),
-                    Container(
-                      width: buttonSize,
-                      height: buttonSize,
-                      color: AppTheme.colorDarkYellow,
-                      child:
-                      IconButton(
-                        icon: Image.asset(isEditorMode ? AppIcons.icSave : AppIcons.icEdit),
-                        padding: const EdgeInsets.all(8),
-                        onPressed: () {
-                          setState(() {
-                            isEditorMode = !isEditorMode;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                child: _bottomButtonRow(buttonSize),
               ),
               Container(
                 width: width,
@@ -224,5 +167,108 @@ class SongTextPageState extends State<SongTextPage> {
         },
       ),
     );
+  }
+
+  Widget _bottomButtonRow(double buttonSize) => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Container(
+        width: buttonSize,
+        height: buttonSize,
+        color: AppTheme.colorDarkYellow,
+        child:
+        IconButton(
+          icon: Image.asset(AppIcons.icVk),
+          padding: const EdgeInsets.all(8),
+          onPressed: () {
+
+          },
+        ),
+      ),
+      Container(
+        width: buttonSize,
+        height: buttonSize,
+        color: AppTheme.colorDarkYellow,
+        child:
+        IconButton(
+          icon: Image.asset(AppIcons.icYoutube),
+          padding: const EdgeInsets.all(8),
+          onPressed: () {
+
+          },
+        ),
+      ),
+      Container(
+        width: buttonSize,
+        height: buttonSize,
+        color: AppTheme.colorDarkYellow,
+        child:
+        IconButton(
+          icon: Image.asset(AppIcons.icUpload),
+          padding: const EdgeInsets.all(8),
+          onPressed: () {
+
+          },
+        ),
+      ),
+      Container(
+        width: buttonSize,
+        height: buttonSize,
+        color: AppTheme.colorDarkYellow,
+        child:
+        IconButton(
+          icon: Image.asset(AppIcons.icWarning),
+          padding: const EdgeInsets.all(8),
+          onPressed: () {
+
+          },
+        ),
+      ),
+      Container(
+        width: buttonSize,
+        height: buttonSize,
+        color: AppTheme.colorDarkYellow,
+        child:
+        IconButton(
+          icon: Image.asset(AppIcons.icTrash),
+          padding: const EdgeInsets.all(8),
+          onPressed: () {
+
+          },
+        ),
+      ),
+      Container(
+        width: buttonSize,
+        height: buttonSize,
+        color: AppTheme.colorDarkYellow,
+        child:
+        IconButton(
+          icon: Image.asset(isEditorMode ? AppIcons.icSave : AppIcons.icEdit),
+          padding: const EdgeInsets.all(8),
+          onPressed: () {
+            if (isEditorMode) {
+              _saveText();
+            } else {
+              _editText();
+            }
+          },
+        ),
+      ),
+    ],
+  );
+
+  Future<void> _editText() async {
+    textEditorController.text = widget.currentSong?.text ?? 'null';
+    setState(() {
+      isEditorMode = true;
+    });
+  }
+
+  Future<void> _saveText() async {
+    final updatedText = textEditorController.text;
+    widget.onSaveSongText(updatedText);
+    setState(() {
+      isEditorMode = false;
+    });
   }
 }
