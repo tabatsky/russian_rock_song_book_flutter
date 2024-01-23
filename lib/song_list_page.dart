@@ -28,10 +28,16 @@ class SongListPageState extends State<SongListPage> {
   static const _dividerHeight = 3.0;
   static const _itemHeight = _titleHeight + _dividerHeight;
 
-  ScrollController scrollController = ScrollController(
+  final _titleScrollController = ScrollController(
     initialScrollOffset: 0.0,
     keepScrollOffset: true,
   );
+
+  final _menuScrollController = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
+  double _menuScrollOffset = 0.0;
 
   @override
   void initState() {
@@ -46,7 +52,7 @@ class SongListPageState extends State<SongListPage> {
   }
 
   void _scrollToActual() {
-    scrollController.animateTo(widget.scrollPosition * _itemHeight,
+    _titleScrollController.animateTo(widget.scrollPosition * _itemHeight,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
   }
 
@@ -61,6 +67,16 @@ class SongListPageState extends State<SongListPage> {
       drawer: Drawer(
         child: _makeMenuListView(),
       ),
+      onDrawerChanged: (isOpened) {
+        if (isOpened) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            _menuScrollController.animateTo(_menuScrollOffset,
+                duration: const Duration(milliseconds: 1), curve: Curves.ease);
+          });
+        } else {
+          _menuScrollOffset = _menuScrollController.position.pixels;
+        }
+      },
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -73,6 +89,7 @@ class SongListPageState extends State<SongListPage> {
   }
 
   ListView _makeMenuListView() => ListView.builder(
+      controller: _menuScrollController,
       padding: EdgeInsets.zero,
       itemCount: widget.allArtists.length + 1,
       itemBuilder: (BuildContext context, int index) {
@@ -124,7 +141,7 @@ class SongListPageState extends State<SongListPage> {
   );
 
   ListView _makeTitleListView() => ListView.builder(
-      controller: scrollController,
+      controller: _titleScrollController,
       padding: EdgeInsets.zero,
       itemCount: widget.currentSongs.length,
       itemBuilder: (BuildContext context, int index) {
