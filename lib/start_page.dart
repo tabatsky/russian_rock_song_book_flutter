@@ -5,6 +5,8 @@ import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/version.dart';
 
+import 'app_strings.dart';
+
 class StartPage extends StatefulWidget {
 
 
@@ -20,7 +22,7 @@ class StartPage extends StatefulWidget {
 class StartPageState extends State<StartPage> {
 
   double indicatorValue = 0.0;
-  String indicatorText = "0 of 0";
+  String indicatorText = AppStrings.strFrom(0, SongRepository.artistMap.length);
 
   @override
   void initState() {
@@ -59,7 +61,7 @@ class StartPageState extends State<StartPage> {
         log("done: $done of $total");
         setState(() {
           indicatorValue = 1.0 * done / total;
-          indicatorText = "$done of $total";
+          indicatorText = AppStrings.strFrom(done, total);
         });
       });
       await Version.confirmAppUpdate();
