@@ -38,11 +38,14 @@ class StartPageState extends State<StartPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          LinearProgressIndicator(
-            value: indicatorValue,
-            minHeight: 30,
-            backgroundColor: AppTheme.colorDarkYellow,
-            color: AppTheme.colorLightYellow,
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: LinearProgressIndicator(
+              value: indicatorValue,
+              minHeight: 30,
+              backgroundColor: AppTheme.colorDarkYellow,
+              color: AppTheme.colorLightYellow,
+            ),
           ),
           Container(
             height: 30,
