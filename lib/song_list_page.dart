@@ -107,7 +107,7 @@ class SongListPageState extends State<SongListPage> {
         } else {
           final artist = widget.allArtists[index - 1];
           final fontWeight =
-            artist == SongRepository.artistFavorite
+            SongRepository.predefinedArtists.contains(artist)
                 ? FontWeight.bold
                 : FontWeight.normal;
           return Column(

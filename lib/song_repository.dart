@@ -8,6 +8,8 @@ class SongRepository {
   static final SongRepository _instance = SongRepository._privateConstructor();
 
   static const artistFavorite = 'Избранное';
+  static const artistCloudSearch = 'Аккорды онлайн';
+  static const predefinedArtists = [artistFavorite, artistCloudSearch];
 
   static final artistMap = {
   '7Б' :  'b7',
@@ -188,6 +190,7 @@ class SongRepository {
     List<String> result = <String>[];
 
     result.add(artistFavorite);
+    result.add(artistCloudSearch);
 
     List<Map> list = await _db?.rawQuery(
         'SELECT DISTINCT artist FROM songEntity WHERE deleted=0 ORDER BY artist'

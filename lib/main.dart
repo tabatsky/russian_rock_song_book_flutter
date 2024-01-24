@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:russian_rock_song_book/cloud_search_page.dart';
 import 'dart:developer';
 
 import 'package:russian_rock_song_book/song.dart';
@@ -59,32 +60,36 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (currentPageVariant == PageVariant.start) {
-      return StartPage(() {
-        _showSongList();
-      });
-    }
-    if (currentPageVariant == PageVariant.songList) {
-      return SongListPage(theme, allArtists, currentArtist, currentSongs, scrollPosition, (position) {
-        _selectSong(position);
-      }, (artist) {
-        Navigator.pop(context);
-        _selectArtist(artist);
-      });
-    } else if (currentPageVariant == PageVariant.songText) {
-      return SongTextPage(theme, currentSong, () {
-        _back();
-      }, () {
-        _prevSong();
-      }, () {
-        _nextSong();
-      }, () {
-        _toggleFavorite();
-      }, (updatedText) {
-        _saveSongText(updatedText);
-      });
-    } else {
-      throw UnimplementedError();
+    switch (currentPageVariant) {
+      case PageVariant.start:
+        return StartPage(() {
+          _showSongList();
+        });
+      case PageVariant.songList:
+        return SongListPage(theme, allArtists, currentArtist, currentSongs, scrollPosition, (position) {
+          _selectSong(position);
+        }, (artist) {
+          Navigator.pop(context);
+          _selectArtist(artist);
+        });
+      case PageVariant.songText:
+        return SongTextPage(
+            theme,
+            currentSong, () {
+          _back();
+        }, () {
+          _prevSong();
+        }, () {
+          _nextSong();
+        }, () {
+          _toggleFavorite();
+        }, (updatedText) {
+          _saveSongText(updatedText);
+        });
+      case PageVariant.cloudSearch:
+        return CloudSearchPage(theme, () {
+          _back();
+        });
     }
   }
 
@@ -102,13 +107,19 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _selectArtist(String artist) async {
-    final songs = await SongRepository().getSongsByArtist(artist);
-    setState(() {
-      currentArtist = artist;
-      currentSongs = songs;
-      currentCount = songs.length;
-      scrollPosition = 0;
-    });
+    if (artist == SongRepository.artistCloudSearch) {
+      setState(() {
+        currentPageVariant = PageVariant.cloudSearch;
+      });
+    } else {
+      final songs = await SongRepository().getSongsByArtist(artist);
+      setState(() {
+        currentArtist = artist;
+        currentSongs = songs;
+        currentCount = songs.length;
+        scrollPosition = 0;
+      });
+    }
   }
 
   void _selectSong(int position) {
@@ -134,6 +145,10 @@ class _MainPageState extends State<MainPage> {
         currentPageVariant = PageVariant.songList;
         currentSong = null;
         currentSongPosition = -1;
+      });
+    } else if (currentPageVariant == PageVariant.cloudSearch) {
+      setState(() {
+        currentPageVariant = PageVariant.songList;
       });
     }
   }
@@ -230,4 +245,4 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-enum PageVariant { start, songList, songText }
+enum PageVariant { start, songList, songText, cloudSearch }
