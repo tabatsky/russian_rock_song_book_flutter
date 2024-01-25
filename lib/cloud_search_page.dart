@@ -1,8 +1,12 @@
+import 'dart:developer';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 
 import 'app_icons.dart';
 import 'app_theme.dart';
+import 'cloud_repository.dart';
 
 class CloudSearchPage extends StatefulWidget {
 
@@ -16,6 +20,13 @@ class CloudSearchPage extends StatefulWidget {
 }
 
 class CloudSearchPageState extends State<CloudSearchPage> {
+
+  @override
+  @override
+  void initState() {
+    super.initState();
+    _cloudSearch();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,5 +58,17 @@ class CloudSearchPageState extends State<CloudSearchPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _cloudSearch() async {
+    final dio = Dio(); // Provide a dio instance
+    //dio.options.headers['Demo-Header'] = 'demo header'; // config your dio headers globally
+    final client = RestClient(dio);
+    final result = await client.searchSongs('empty_search_query', 'byIdDesc');
+    log(result.status);
+    log(result.data?.length.toString() ?? 'error');
+    log(result.data?.elementAtOrNull(0)?.description() ?? 'error');
+    log(result.data?.elementAtOrNull(33)?.description() ?? 'error');
+    log(result.data?.elementAtOrNull(17)?.description() ?? 'error');
   }
 }
