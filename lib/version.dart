@@ -11,8 +11,7 @@ class Version {
   static Future<bool> appWasUpdated() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final savedVersion = prefs.getInt(versionKey) ?? 0;
-    log(savedVersion.toString());
-    log(actualVersion.toString());
+    log("versions: $savedVersion / $actualVersion");
     return actualVersion > savedVersion;
   }
 

@@ -1,12 +1,12 @@
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 
 import 'app_icons.dart';
 import 'app_theme.dart';
 import 'cloud_repository.dart';
+import 'cloud_song.dart';
 
 class CloudSearchPage extends StatefulWidget {
 
@@ -20,6 +20,9 @@ class CloudSearchPage extends StatefulWidget {
 }
 
 class CloudSearchPageState extends State<CloudSearchPage> {
+
+  SearchState currentSearchState = SearchState.loading;
+  List<CloudSong> currentCloudSongs = [];
 
   @override
   @override
@@ -47,28 +50,76 @@ class CloudSearchPageState extends State<CloudSearchPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
-              width: 100,
-              height: 100,
-              child: CircularProgressIndicator(
-                color: widget.theme.colorMain,
-              ),
-            ),
+            _content(),
           ],
         ),
       ),
     );
   }
 
+  Widget _content() {
+    if (currentSearchState == SearchState.loading) {
+      return _makeProgressIndicator();
+    } else if (currentSearchState == SearchState.loaded) {
+      return Flexible(child: _makeCloudTitleListView());
+    } else {
+      throw UnimplementedError('not implemented yet');
+    }
+  }
+
+  Widget _makeProgressIndicator() => SizedBox(
+    width: 100,
+    height: 100,
+    child: CircularProgressIndicator(
+      color: widget.theme.colorMain,
+    ),
+  );
+
+  ListView _makeCloudTitleListView() => ListView.builder(
+      //controller: _titleScrollController,
+      padding: EdgeInsets.zero,
+      itemCount: currentCloudSongs.length,
+      itemBuilder: (BuildContext context, int index) {
+        final cloudSong = currentCloudSongs[index];
+        return GestureDetector(
+          onTap: () {
+            log(cloudSong.description());
+          },
+          child: Container(
+              height: 75,
+              color: widget.theme.colorBg,
+              child: Column(
+                children: [
+                  const Spacer(),
+                  Text(cloudSong.artist, style: TextStyle(color: widget.theme.colorMain)),
+                  const Spacer(),
+                  Text(cloudSong.title, style: TextStyle(color: widget.theme.colorMain)),
+                  const Spacer(),
+                  Divider(
+                    height: 3.0,
+                    color: widget.theme.colorMain,
+                  )
+                ]
+              )
+          ),
+        );
+      }
+  );
+
   Future<void> _cloudSearch() async {
-    final dio = Dio(); // Provide a dio instance
-    //dio.options.headers['Demo-Header'] = 'demo header'; // config your dio headers globally
-    final client = RestClient(dio);
-    final result = await client.searchSongs('empty_search_query', 'byIdDesc');
-    log(result.status);
-    log(result.data?.length.toString() ?? 'error');
-    log(result.data?.elementAtOrNull(0)?.description() ?? 'error');
-    log(result.data?.elementAtOrNull(33)?.description() ?? 'error');
-    log(result.data?.elementAtOrNull(17)?.description() ?? 'error');
+    try {
+      final cloudSongs = await CloudRepository().cloudSearch('', 'byIdDesc');
+      setState(() {
+        currentSearchState = SearchState.loaded;
+        currentCloudSongs = cloudSongs;
+      });
+    } catch (e) {
+      log("Exception: $e");
+      setState(() {
+        currentSearchState = SearchState.error;
+      });
+    }
   }
 }
+
+enum SearchState { empty, error, loading, loaded }
