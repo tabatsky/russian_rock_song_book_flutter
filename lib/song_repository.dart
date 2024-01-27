@@ -167,6 +167,11 @@ class SongRepository {
   }
 
   Future<void> insertIgnoreSongs(List<Song> songs) async {
+    final songEntities = songs.map((e) => SongEntity.fromSong(e)).toList();
+    _insertIgnoreSongs(songEntities);
+  }
+
+  Future<void> _insertIgnoreSongs(List<SongEntity> songEntities) async {
     const query = """
     INSERT OR IGNORE INTO songEntity
     (artist, title, text, favorite, deleted, outOfTheBox, origTextMD5)
@@ -174,8 +179,7 @@ class SongRepository {
     (?, ?, ?, ?, ?, ?, ?);
     """;
     await _db?.transaction((txn) async {
-      for (final song in songs) {
-        final songEntity = SongEntity.fromSong(song);
+      for (final songEntity in songEntities) {
         await txn.rawInsert(
             query,
             [
@@ -206,15 +210,20 @@ class SongRepository {
   }
 
   Future<List<Song>> getSongsByArtist(String artist) async {
+    final result = await _getSongsByArtist(artist);
+    return result.map((e) => e.toSong()).toList();
+  }
+
+  Future<List<SongEntity>> _getSongsByArtist(String artist) async {
     if (artist == artistFavorite) {
       return _getSongsFavorite();
     } else {
-      return _getSongsByArtist(artist);
+      return _getSongsByArtistNotFavorite(artist);
     }
   }
 
-  Future<List<Song>> _getSongsByArtist(String artist) async {
-    List<Song> result = <Song>[];
+  Future<List<SongEntity>> _getSongsByArtistNotFavorite(String artist) async {
+    List<SongEntity> result = <SongEntity>[];
 
     const query = 'SELECT * FROM songEntity WHERE artist=? AND deleted=0 ORDER BY title';
 
@@ -233,14 +242,14 @@ class SongRepository {
                       ..deleted = deleted
                       ..outOfTheBox = outOfTheBox
                       ..origTextMD5 = origTextMD5;
-      result.add(songEntity.toSong());
+      result.add(songEntity);
     }
 
     return result;
   }
 
-  Future<List<Song>> _getSongsFavorite() async {
-    List<Song> result = <Song>[];
+  Future<List<SongEntity>> _getSongsFavorite() async {
+    List<SongEntity> result = <SongEntity>[];
 
     const query = 'SELECT * FROM songEntity WHERE favorite=1 AND deleted=0 ORDER BY artist||title';
 
@@ -260,16 +269,16 @@ class SongRepository {
         ..deleted = deleted
         ..outOfTheBox = outOfTheBox
         ..origTextMD5 = origTextMD5;
-      result.add(songEntity.toSong());
+      result.add(songEntity);
     }
 
     return result;
   }
 
+  Future<void> updateSong(Song song) async => _updateSong(SongEntity.fromSong(song));
 
-  Future<void> updateSong(Song song) async {
+  Future<void> _updateSong(SongEntity songEntity) async {
     const query = 'UPDATE songEntity SET text=?, favorite=?, deleted=? WHERE id=?';
-    final songEntity = SongEntity.fromSong(song);
 
     await _db?.rawUpdate(query, [
       songEntity.text, songEntity.favorite, songEntity.deleted, songEntity.id
@@ -277,20 +286,25 @@ class SongRepository {
   }
 
   Future<Song?> getSongByArtistAndPosition(String artist, int position) async {
+    final songEntity = await _getSongByArtistAndPosition(artist, position);
+    return songEntity?.toSong();
+  }
+
+  Future<SongEntity?> _getSongByArtistAndPosition(String artist, int position) async {
     if (artist == artistFavorite) {
       return _getSongByPositionFavorite(position);
     } else {
-      return _getSongByArtistAndPosition(artist, position);
+      return _getSongByArtistAndPositionNotFavorite(artist, position);
     }
   }
 
-  Future<Song?> _getSongByArtistAndPosition(String artist, int position) async {
+  Future<SongEntity?> _getSongByArtistAndPositionNotFavorite(String artist, int position) async {
     const query = """
     SELECT * FROM songEntity WHERE artist=? AND deleted=0
     ORDER BY title LIMIT 1 OFFSET ?
     """;
 
-    List<Song> result = <Song>[];
+    List<SongEntity> result = <SongEntity>[];
 
     List<Map> list = await _db?.rawQuery(query, [artist, position]) ?? [];
 
@@ -307,19 +321,19 @@ class SongRepository {
         ..deleted = deleted
         ..outOfTheBox = outOfTheBox
         ..origTextMD5 = origTextMD5;
-      result.add(songEntity.toSong());
+      result.add(songEntity);
     }
 
     return result.elementAtOrNull(0);
   }
 
-  Future<Song?> _getSongByPositionFavorite(int position) async {
+  Future<SongEntity?> _getSongByPositionFavorite(int position) async {
     const query = """
     SELECT * FROM songEntity WHERE favorite=1 AND deleted=0
     ORDER BY artist||title LIMIT 1 OFFSET ?
     """;
 
-    List<Song> result = <Song>[];
+    List<SongEntity> result = <SongEntity>[];
 
     List<Map> list = await _db?.rawQuery(query, [position]) ?? [];
 
@@ -337,7 +351,7 @@ class SongRepository {
         ..deleted = deleted
         ..outOfTheBox = outOfTheBox
         ..origTextMD5 = origTextMD5;
-      result.add(songEntity.toSong());
+      result.add(songEntity);
     }
 
     return result.elementAtOrNull(0);
