@@ -10,7 +10,16 @@ class Song {
 
   Song(this.artist, this.title, this.text);
 
-  Song.withId(this.id, this.artist, this.title, this.text);
+  Song.fromAll(
+      this.id,
+      this.artist,
+      this.title,
+      this.text,
+      this.favorite,
+      this.deleted,
+      this.outOfTheBox,
+      this.origTextMD5
+      );
 
   @override
   String toString() {
@@ -22,8 +31,4 @@ class Song {
     $outOfTheBox
     """;
   }
-
-  int favoriteInt() => favorite ? 1 : 0;
-  int deletedInt() => deleted ? 1 : 0;
-  int outOfTheBoxInt() => outOfTheBox ? 1 : 0;
 }

@@ -175,12 +175,13 @@ class SongRepository {
     """;
     await _db?.transaction((txn) async {
       for (final song in songs) {
+        final songEntity = SongEntity.fromSong(song);
         await txn.rawInsert(
             query,
             [
-              song.artist, song.title, song.text,
-              song.favoriteInt(), song.deletedInt(), song.outOfTheBoxInt(),
-              song.origTextMD5
+              songEntity.artist, songEntity.title, songEntity.text,
+              songEntity.favorite, songEntity.deleted, songEntity.outOfTheBox,
+              songEntity.origTextMD5
             ]);
       }
     });
@@ -227,12 +228,12 @@ class SongRepository {
       int deleted = map['deleted'] as int;
       int outOfTheBox = map['outOfTheBox'] as int;
       String origTextMD5 = map['origTextMD5'] as String;
-      final song = Song.withId(id, artist, title, text)
-                      ..favorite = favorite > 0
-                      ..deleted = deleted > 0
-                      ..outOfTheBox = outOfTheBox > 0
+      final songEntity = SongEntity.withId(id, artist, title, text)
+                      ..favorite = favorite
+                      ..deleted = deleted
+                      ..outOfTheBox = outOfTheBox
                       ..origTextMD5 = origTextMD5;
-      result.add(song);
+      result.add(songEntity.toSong());
     }
 
     return result;
@@ -254,12 +255,12 @@ class SongRepository {
       int deleted = map['deleted'] as int;
       int outOfTheBox = map['outOfTheBox'] as int;
       String origTextMD5 = map['origTextMD5'] as String;
-      final song = Song.withId(id, artist, title, text)
-        ..favorite = favorite > 0
-        ..deleted = deleted > 0
-        ..outOfTheBox = outOfTheBox > 0
+      final songEntity = SongEntity.withId(id, artist, title, text)
+        ..favorite = favorite
+        ..deleted = deleted
+        ..outOfTheBox = outOfTheBox
         ..origTextMD5 = origTextMD5;
-      result.add(song);
+      result.add(songEntity.toSong());
     }
 
     return result;
@@ -268,9 +269,10 @@ class SongRepository {
 
   Future<void> updateSong(Song song) async {
     const query = 'UPDATE songEntity SET text=?, favorite=?, deleted=? WHERE id=?';
+    final songEntity = SongEntity.fromSong(song);
 
     await _db?.rawUpdate(query, [
-      song.text, song.favoriteInt(), song.deletedInt(), song.id
+      songEntity.text, songEntity.favorite, songEntity.deleted, songEntity.id
     ]);
   }
 
@@ -300,12 +302,12 @@ class SongRepository {
       int deleted = map['deleted'] as int;
       int outOfTheBox = map['outOfTheBox'] as int;
       String origTextMD5 = map['origTextMD5'] as String;
-      final song = Song.withId(id, artist, title, text)
-        ..favorite = favorite > 0
-        ..deleted = deleted > 0
-        ..outOfTheBox = outOfTheBox > 0
+      final songEntity = SongEntity.withId(id, artist, title, text)
+        ..favorite = favorite
+        ..deleted = deleted
+        ..outOfTheBox = outOfTheBox
         ..origTextMD5 = origTextMD5;
-      result.add(song);
+      result.add(songEntity.toSong());
     }
 
     return result.elementAtOrNull(0);
@@ -330,12 +332,12 @@ class SongRepository {
       int deleted = map['deleted'] as int;
       int outOfTheBox = map['outOfTheBox'] as int;
       String origTextMD5 = map['origTextMD5'] as String;
-      final song = Song.withId(id, artist, title, text)
-        ..favorite = favorite > 0
-        ..deleted = deleted > 0
-        ..outOfTheBox = outOfTheBox > 0
+      final songEntity = SongEntity.withId(id, artist, title, text)
+        ..favorite = favorite
+        ..deleted = deleted
+        ..outOfTheBox = outOfTheBox
         ..origTextMD5 = origTextMD5;
-      result.add(song);
+      result.add(songEntity.toSong());
     }
 
     return result.elementAtOrNull(0);
@@ -378,4 +380,49 @@ class SongRepository {
 
     return result.elementAtOrNull(0) ?? 0;
   }
+}
+
+class SongEntity {
+  int id = 0;
+  String artist;
+  String title;
+  String text;
+  int favorite = 0;
+  int deleted = 0;
+  int outOfTheBox = 1;
+  String origTextMD5 = "";
+
+  SongEntity.withId(this.id, this.artist, this.title, this.text);
+
+  SongEntity.fromAll(
+      this.id,
+      this.artist,
+      this.title,
+      this.text,
+      this.favorite,
+      this.deleted,
+      this.outOfTheBox,
+      this.origTextMD5
+      );
+
+  factory SongEntity.fromSong(Song song) => SongEntity.fromAll(
+      song.id,
+      song.artist,
+      song.title,
+      song.text,
+      song.favorite ? 1 : 0,
+      song.deleted ? 1 : 0,
+      song.outOfTheBox ? 1: 0,
+      song.origTextMD5
+  );
+
+  Song toSong() => Song.fromAll(
+      id,
+      artist,
+      title,
+      text,
+      favorite > 0,
+      deleted > 0,
+      outOfTheBox > 0,
+      origTextMD5);
 }
