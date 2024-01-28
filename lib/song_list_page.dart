@@ -16,7 +16,15 @@ class SongListPage extends StatefulWidget{
   final void Function(int position) onSongClick;
   final void Function(String artist) onArtistClick;
 
-  const SongListPage(this.theme, this.allArtists, this.currentArtist, this.currentSongs, this.scrollPosition, this.onSongClick, this.onArtistClick, {super.key});
+  const SongListPage(
+      this.theme,
+      this.allArtists,
+      this.currentArtist,
+      this.currentSongs,
+      this.scrollPosition,
+      this.onSongClick,
+      this.onArtistClick,
+      {super.key});
 
   @override
   State<SongListPage> createState() => SongListPageState();
@@ -39,18 +47,6 @@ class SongListPageState extends State<SongListPage> {
   );
   double _menuScrollOffset = 0.0;
 
-  @override
-  void initState() {
-    super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToActual());
-  }
-
-  @override
-  void didUpdateWidget(SongListPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _scrollToActual();
-  }
-
   void _scrollToActual() {
     _titleScrollController.animateTo(widget.scrollPosition * _itemHeight,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
@@ -58,6 +54,7 @@ class SongListPageState extends State<SongListPage> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
     return Scaffold(
       backgroundColor: widget.theme.colorBg,
       appBar: AppBar(

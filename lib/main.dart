@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:russian_rock_song_book/cloud_search_page.dart';
+import 'package:russian_rock_song_book/cloud_song_text_page.dart';
 import 'dart:developer';
 
 import 'package:russian_rock_song_book/song.dart';
@@ -10,6 +11,9 @@ import 'package:russian_rock_song_book/song_text_page.dart';
 import 'package:russian_rock_song_book/start_page.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
+
+import 'cloud_repository.dart';
+import 'cloud_song.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,6 +57,13 @@ class _MainPageState extends State<MainPage> {
   int currentSongPosition = -1;
   int scrollPosition = 0;
 
+  List<CloudSong> currentCloudSongs = [];
+  SearchState currentSearchState = SearchState.loading;
+  int currentCloudSongCount = 0;
+  CloudSong? currentCloudSong;
+  int currentCloudSongPosition = -1;
+  int cloudScrollPosition = 0;
+
   @override
   void initState() {
     super.initState();
@@ -87,8 +98,20 @@ class _MainPageState extends State<MainPage> {
           _saveSongText(updatedText);
         });
       case PageVariant.cloudSearch:
-        return CloudSearchPage(theme, () {
+        return CloudSearchPage(theme, currentCloudSongs, currentSearchState, cloudScrollPosition, () {
+          _cloudSearch();
+        }, (position) {
+          _selectCloudSong(position);
+        }, () {
           _back();
+        });
+      case PageVariant.cloudSongText:
+        return CloudSongTextPage(theme, currentCloudSong, currentCloudSongPosition, currentCloudSongCount, () {
+          _back();
+        }, () {
+          _prevCloudSong();
+        }, () {
+          _nextCloudSong();
         });
     }
   }
@@ -110,6 +133,10 @@ class _MainPageState extends State<MainPage> {
     if (artist == SongRepository.artistCloudSearch) {
       setState(() {
         currentPageVariant = PageVariant.cloudSearch;
+        currentSearchState = SearchState.loading;
+        currentCloudSongs = [];
+        currentCloudSongCount = 0;
+        cloudScrollPosition = 0;
       });
     } else {
       final songs = await SongRepository().getSongsByArtist(artist);
@@ -149,6 +176,12 @@ class _MainPageState extends State<MainPage> {
     } else if (currentPageVariant == PageVariant.cloudSearch) {
       setState(() {
         currentPageVariant = PageVariant.songList;
+      });
+    } else if (currentPageVariant == PageVariant.cloudSongText) {
+      setState(() {
+        currentPageVariant = PageVariant.cloudSearch;
+        currentCloudSong = null;
+        currentCloudSongPosition = -1;
       });
     }
   }
@@ -243,6 +276,53 @@ class _MainPageState extends State<MainPage> {
         fontSize: 16.0
     );
   }
+
+  Future<void> _cloudSearch() async {
+    try {
+      final cloudSongs = await CloudRepository().cloudSearch('a', 'byIdDesc');
+      setState(() {
+        currentSearchState = SearchState.loaded;
+        currentCloudSongs = cloudSongs;
+        currentCloudSongCount = cloudSongs.length;
+      });
+    } catch (e) {
+      log("Exception: $e");
+      setState(() {
+        currentSearchState = SearchState.error;
+      });
+    }
+  }
+
+  void _selectCloudSong(int position) {
+    setState(() {
+      currentCloudSongPosition = position;
+      cloudScrollPosition = position;
+      currentCloudSong = currentCloudSongs[position];
+      currentPageVariant = PageVariant.cloudSongText;
+    });
+  }
+
+  void _prevCloudSong() {
+    if (currentCloudSongPosition > 0) {
+      setState(() {
+        currentCloudSongPosition -= 1;
+        cloudScrollPosition = currentCloudSongPosition;
+        currentCloudSong = currentCloudSongs[currentCloudSongPosition];
+      });
+    }
+  }
+
+  void _nextCloudSong() {
+    if (currentCloudSongPosition < currentCloudSongs.length - 1) {
+      setState(() {
+        currentCloudSongPosition += 1;
+        cloudScrollPosition = currentCloudSongPosition;
+        currentCloudSong = currentCloudSongs[currentCloudSongPosition];
+      });
+    }
+  }
 }
 
-enum PageVariant { start, songList, songText, cloudSearch }
+enum PageVariant { start, songList, songText, cloudSearch, cloudSongText }
+
+enum SearchState { empty, error, loading, loaded }

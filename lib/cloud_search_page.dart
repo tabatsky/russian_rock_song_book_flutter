@@ -1,19 +1,32 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/main.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 
 import 'app_icons.dart';
 import 'app_theme.dart';
-import 'cloud_repository.dart';
 import 'cloud_song.dart';
 
 class CloudSearchPage extends StatefulWidget {
 
   final AppTheme theme;
+  final List<CloudSong> currentCloudSongs;
+  final SearchState currentSearchState;
+  final int cloudScrollPosition;
+  final void Function() onPerformCloudSearch;
+  final void Function(int position) onCloudSongClick;
   final void Function() onBackPressed;
 
-  const CloudSearchPage(this.theme, this.onBackPressed, {super.key});
+  const CloudSearchPage(
+      this.theme,
+      this.currentCloudSongs,
+      this.currentSearchState,
+      this.cloudScrollPosition,
+      this.onPerformCloudSearch,
+      this.onCloudSongClick,
+      this.onBackPressed,
+      {super.key});
 
   @override
   State<StatefulWidget> createState() => CloudSearchPageState();
@@ -21,18 +34,31 @@ class CloudSearchPage extends StatefulWidget {
 
 class CloudSearchPageState extends State<CloudSearchPage> {
 
-  SearchState currentSearchState = SearchState.loading;
-  List<CloudSong> currentCloudSongs = [];
+  static const _titleHeight = 75.0;
+  static const _itemHeight = _titleHeight;
+
+  final _cloudTitleScrollController = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
 
   @override
   @override
   void initState() {
     super.initState();
-    _cloudSearch();
+    widget.onPerformCloudSearch();
+  }
+
+  void _scrollToActual() {
+    _cloudTitleScrollController.animateTo(widget.cloudScrollPosition * _itemHeight,
+        duration: const Duration(milliseconds: 1), curve: Curves.ease);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.currentSearchState == SearchState.loaded) {
+      WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
+    }
     return Scaffold(
       backgroundColor: widget.theme.colorBg,
       appBar: AppBar(
@@ -58,9 +84,9 @@ class CloudSearchPageState extends State<CloudSearchPage> {
   }
 
   Widget _content() {
-    if (currentSearchState == SearchState.loading) {
+    if (widget.currentSearchState == SearchState.loading) {
       return _makeProgressIndicator();
-    } else if (currentSearchState == SearchState.loaded) {
+    } else if (widget.currentSearchState == SearchState.loaded) {
       return Flexible(child: _makeCloudTitleListView());
     } else {
       throw UnimplementedError('not implemented yet');
@@ -76,14 +102,14 @@ class CloudSearchPageState extends State<CloudSearchPage> {
   );
 
   ListView _makeCloudTitleListView() => ListView.builder(
-      //controller: _titleScrollController,
+      controller: _cloudTitleScrollController,
       padding: EdgeInsets.zero,
-      itemCount: currentCloudSongs.length,
+      itemCount: widget.currentCloudSongs.length,
       itemBuilder: (BuildContext context, int index) {
-        final cloudSong = currentCloudSongs[index];
+        final cloudSong = widget.currentCloudSongs[index];
         return GestureDetector(
           onTap: () {
-            log(cloudSong.description());
+            widget.onCloudSongClick(index);
           },
           child: Container(
               height: 75,
@@ -105,21 +131,4 @@ class CloudSearchPageState extends State<CloudSearchPage> {
         );
       }
   );
-
-  Future<void> _cloudSearch() async {
-    try {
-      final cloudSongs = await CloudRepository().cloudSearch('', 'byIdDesc');
-      setState(() {
-        currentSearchState = SearchState.loaded;
-        currentCloudSongs = cloudSongs;
-      });
-    } catch (e) {
-      log("Exception: $e");
-      setState(() {
-        currentSearchState = SearchState.error;
-      });
-    }
-  }
 }
-
-enum SearchState { empty, error, loading, loaded }
