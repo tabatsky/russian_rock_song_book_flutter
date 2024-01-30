@@ -13,6 +13,10 @@ class SongTextPage extends StatefulWidget {
   final void Function() onNextSong;
   final void Function() onToggleFavorite;
   final void Function(String updatedText) onSaveSongText;
+  final void Function() onUploadCurrentToCloud;
+  final void Function() onOpenVkMusic;
+  final void Function() onOpenYandexMusic;
+  final void Function() onOpenYoutubeMusic;
 
   const SongTextPage(
       this.theme,
@@ -22,6 +26,10 @@ class SongTextPage extends StatefulWidget {
       this.onNextSong,
       this.onToggleFavorite,
       this.onSaveSongText,
+      this.onUploadCurrentToCloud,
+      this.onOpenVkMusic,
+      this.onOpenYandexMusic,
+      this.onOpenYoutubeMusic,
       {super.key});
 
   @override
@@ -181,7 +189,7 @@ class SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icVk),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            widget.onOpenVkMusic();
           },
         ),
       ),
@@ -194,7 +202,7 @@ class SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icYoutube),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            widget.onOpenYoutubeMusic();
           },
         ),
       ),
@@ -207,7 +215,7 @@ class SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icUpload),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            widget.onUploadCurrentToCloud();
           },
         ),
       ),

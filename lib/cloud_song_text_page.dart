@@ -14,6 +14,12 @@ class CloudSongTextPage extends StatelessWidget {
   final void Function() onBackPressed;
   final void Function() onPrevCloudSong;
   final void Function() onNextCloudSong;
+  final void Function() onDownloadCurrent;
+  final void Function() onOpenVkMusic;
+  final void Function() onOpenYandexMusic;
+  final void Function() onOpenYoutubeMusic;
+  final void Function() onLikeCurrent;
+  final void Function() onDislikeCurrent;
 
   final ScrollController scrollController = ScrollController(
     initialScrollOffset: 0.0,
@@ -28,6 +34,12 @@ class CloudSongTextPage extends StatelessWidget {
       this.onBackPressed,
       this.onPrevCloudSong,
       this.onNextCloudSong,
+      this.onDownloadCurrent,
+      this.onOpenVkMusic,
+      this.onOpenYandexMusic,
+      this.onOpenYoutubeMusic,
+      this.onLikeCurrent,
+      this.onDislikeCurrent,
       {super.key});
 
   @override
@@ -144,7 +156,7 @@ class CloudSongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icVk),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            onOpenVkMusic();
           },
         ),
       ),
@@ -157,7 +169,7 @@ class CloudSongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icYoutube),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            onOpenYoutubeMusic();
           },
         ),
       ),
@@ -167,10 +179,10 @@ class CloudSongTextPage extends StatelessWidget {
         color: AppTheme.colorDarkYellow,
         child:
         IconButton(
-          icon: Image.asset(AppIcons.icUpload),
+          icon: Image.asset(AppIcons.icDownload),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            onDownloadCurrent();
           },
         ),
       ),
@@ -193,10 +205,10 @@ class CloudSongTextPage extends StatelessWidget {
         color: AppTheme.colorDarkYellow,
         child:
         IconButton(
-          icon: Image.asset(AppIcons.icTrash),
+          icon: Image.asset(AppIcons.icLike),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            onLikeCurrent();
           },
         ),
       ),
@@ -206,10 +218,10 @@ class CloudSongTextPage extends StatelessWidget {
         color: AppTheme.colorDarkYellow,
         child:
         IconButton(
-          icon: Image.asset(AppIcons.icEdit),
+          icon: Image.asset(AppIcons.icDislike),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            onDislikeCurrent();
           },
         ),
       ),

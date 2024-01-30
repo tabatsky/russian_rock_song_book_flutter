@@ -96,6 +96,14 @@ class _MainPageState extends State<MainPage> {
           _toggleFavorite();
         }, (updatedText) {
           _saveSongText(updatedText);
+        }, () {
+          // upload to cloud
+        }, () {
+          // open vk music
+        }, () {
+          // open yandex music
+        }, () {
+          // open youtube music
         });
       case PageVariant.cloudSearch:
         return CloudSearchPage(theme, currentCloudSongs, currentSearchState, cloudScrollPosition, () {
@@ -112,6 +120,18 @@ class _MainPageState extends State<MainPage> {
           _prevCloudSong();
         }, () {
           _nextCloudSong();
+        }, () {
+          // download
+        }, () {
+          // open vk music
+        }, () {
+          // open yandex music
+        }, () {
+          // open youtube music
+        }, () {
+          // like
+        }, () {
+          // dislike
         });
     }
   }

@@ -13,4 +13,7 @@ class AppIcons {
   static const icTrash = 'assets/icons/ic_trash.png';
   static const icEdit = 'assets/icons/ic_edit.png';
   static const icSave = 'assets/icons/ic_save.png';
+  static const icDownload = 'assets/icons/ic_download.png';
+  static const icLike = 'assets/icons/ic_like.png';
+  static const icDislike = 'assets/icons/ic_dislike.png';
 }
