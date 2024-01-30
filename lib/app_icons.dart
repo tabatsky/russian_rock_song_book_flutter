@@ -16,4 +16,5 @@ class AppIcons {
   static const icDownload = 'assets/icons/ic_download.png';
   static const icLike = 'assets/icons/ic_like.png';
   static const icDislike = 'assets/icons/ic_dislike.png';
+  static const icCloudSearch = 'assets/icons/ic_cloud_search.png';
 }

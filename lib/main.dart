@@ -63,6 +63,7 @@ class _MainPageState extends State<MainPage> {
   CloudSong? currentCloudSong;
   int currentCloudSongPosition = -1;
   int cloudScrollPosition = 0;
+  String searchForBackup = '';
 
   @override
   void initState() {
@@ -106,8 +107,10 @@ class _MainPageState extends State<MainPage> {
           // open youtube music
         });
       case PageVariant.cloudSearch:
-        return CloudSearchPage(theme, currentCloudSongs, currentSearchState, cloudScrollPosition, () {
-          _cloudSearch();
+        return CloudSearchPage(theme, currentCloudSongs, currentSearchState, cloudScrollPosition, searchForBackup, (searchFor) {
+          _performCloudSearch(searchFor);
+        }, (searchFor) {
+          _backupSearchFor(searchFor);
         }, (position) {
           _selectCloudSong(position);
         }, () {
@@ -151,13 +154,11 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> _selectArtist(String artist) async {
     if (artist == SongRepository.artistCloudSearch) {
+      _backupSearchFor('');
       setState(() {
         currentPageVariant = PageVariant.cloudSearch;
-        currentSearchState = SearchState.loading;
-        currentCloudSongs = [];
-        currentCloudSongCount = 0;
-        cloudScrollPosition = 0;
       });
+      _performCloudSearch('');
     } else {
       final songs = await SongRepository().getSongsByArtist(artist);
       setState(() {
@@ -297,11 +298,25 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Future<void> _cloudSearch() async {
+  void _resetCloudSearch() {
+    setState(() {
+      currentSearchState = SearchState.loading;
+      currentCloudSongs = [];
+      currentCloudSongCount = 0;
+      cloudScrollPosition = 0;
+    });
+  }
+
+  Future<void> _performCloudSearch(String searchFor) async {
+    _resetCloudSearch();
     try {
-      final cloudSongs = await CloudRepository().cloudSearch('a', 'byIdDesc');
+      final cloudSongs = await CloudRepository().cloudSearch(searchFor, 'byIdDesc');
       setState(() {
-        currentSearchState = SearchState.loaded;
+        if (cloudSongs.isNotEmpty) {
+          currentSearchState = SearchState.loaded;
+        } else {
+          currentSearchState = SearchState.empty;
+        }
         currentCloudSongs = cloudSongs;
         currentCloudSongCount = cloudSongs.length;
       });
@@ -311,6 +326,12 @@ class _MainPageState extends State<MainPage> {
         currentSearchState = SearchState.error;
       });
     }
+  }
+
+  void _backupSearchFor(String searchFor) {
+    setState(() {
+      searchForBackup = searchFor;
+    });
   }
 
   void _selectCloudSong(int position) {

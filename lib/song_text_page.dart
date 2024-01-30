@@ -44,8 +44,8 @@ class SongTextPageState extends State<SongTextPage> {
     keepScrollOffset: true,
   );
 
-  bool isEditorMode = false;
-  final textEditorController = TextEditingController();
+  bool _isEditorMode = false;
+  final _textEditorController = TextEditingController();
 
   void _scrollToTop() {
     scrollController.animateTo(0.0,
@@ -136,9 +136,9 @@ class SongTextPageState extends State<SongTextPage> {
                         Container(
                           height: 20,
                         ),
-                        isEditorMode
+                        _isEditorMode
                         ? TextField(
-                          controller: textEditorController,
+                          controller: _textEditorController,
                           keyboardType: TextInputType.multiline,
                           maxLines: null,
                           decoration: const InputDecoration(
@@ -251,10 +251,10 @@ class SongTextPageState extends State<SongTextPage> {
         color: AppTheme.colorDarkYellow,
         child:
         IconButton(
-          icon: Image.asset(isEditorMode ? AppIcons.icSave : AppIcons.icEdit),
+          icon: Image.asset(_isEditorMode ? AppIcons.icSave : AppIcons.icEdit),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            if (isEditorMode) {
+            if (_isEditorMode) {
               _saveText();
             } else {
               _editText();
@@ -266,17 +266,17 @@ class SongTextPageState extends State<SongTextPage> {
   );
 
   Future<void> _editText() async {
-    textEditorController.text = widget.currentSong?.text ?? 'null';
+    _textEditorController.text = widget.currentSong?.text ?? 'null';
     setState(() {
-      isEditorMode = true;
+      _isEditorMode = true;
     });
   }
 
   Future<void> _saveText() async {
-    final updatedText = textEditorController.text;
+    final updatedText = _textEditorController.text;
     widget.onSaveSongText(updatedText);
     setState(() {
-      isEditorMode = false;
+      _isEditorMode = false;
     });
   }
 }
