@@ -54,7 +54,6 @@ class SongListPageState extends State<SongListPage> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
     return Scaffold(
       backgroundColor: widget.theme.colorBg,
       appBar: AppBar(
@@ -78,7 +77,7 @@ class SongListPageState extends State<SongListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Flexible(child: _makeTitleListView()),
+            _makeContent(),
           ],
         ),
       ),
@@ -135,6 +134,27 @@ class SongListPageState extends State<SongListPage> {
           );
         }
       }
+  );
+
+  Widget _makeContent() {
+    if (widget.currentSongs.isEmpty) {
+      return _makeEmptyListIndicator();
+    } else {
+      WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
+      return Flexible(child: _makeTitleListView());
+    }
+  }
+
+  Widget _makeEmptyListIndicator() => Expanded(
+      child: Center(
+          child: Text(
+            AppStrings.strListIsEmpty,
+            style: TextStyle(
+              color: widget.theme.colorMain,
+              fontSize: 24,
+            ),
+          )
+      )
   );
 
   ListView _makeTitleListView() => ListView.builder(
