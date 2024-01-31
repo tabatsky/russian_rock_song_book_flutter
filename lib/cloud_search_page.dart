@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
 import 'package:russian_rock_song_book/main.dart';
+import 'package:russian_rock_song_book/order_by.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 
 import 'app_icons.dart';
@@ -16,8 +17,9 @@ class CloudSearchPage extends StatefulWidget {
   final SearchState currentSearchState;
   final int cloudScrollPosition;
   final String searchForBackup;
-  final void Function(String searchFor) onPerformCloudSearch;
-  final void Function(String searchFor) onBackupSearchFor;
+  final OrderBy orderByBackup;
+  final void Function(String searchFor, OrderBy orderBy) onPerformCloudSearch;
+  final void Function(String searchFor, OrderBy orderBy) onBackupSearchState;
   final void Function(int position) onCloudSongClick;
   final void Function() onBackPressed;
 
@@ -27,8 +29,9 @@ class CloudSearchPage extends StatefulWidget {
       this.currentSearchState,
       this.cloudScrollPosition,
       this.searchForBackup,
+      this.orderByBackup,
       this.onPerformCloudSearch,
-      this.onBackupSearchFor,
+      this.onBackupSearchState,
       this.onCloudSongClick,
       this.onBackPressed,
       {super.key});
@@ -48,6 +51,8 @@ class CloudSearchPageState extends State<CloudSearchPage> {
     initialScrollOffset: 0.0,
     keepScrollOffset: true,
   );
+
+  OrderBy orderBy = OrderBy.byIdDesc;
 
   @override
   @override
@@ -80,13 +85,16 @@ class CloudSearchPageState extends State<CloudSearchPage> {
         ),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _makeCloudSearchPanel(),
-            _content(),
-          ],
-        ),
+        child:  LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+          double maxWidth = constraints.maxWidth;
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _makeCloudSearchPanel(maxWidth),
+              _content(),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -127,46 +135,77 @@ class CloudSearchPageState extends State<CloudSearchPage> {
       )
   );
 
-  Widget _makeCloudSearchPanel() {
+  Widget _makeCloudSearchPanel(double maxWidth) {
     return Container(
-      height: 80,
+      height: 96,
       padding: const EdgeInsets.all(4),
       child: Row(
-        children: [
-          Expanded(
-              child: TextField(
-                controller: _cloudSearchTextFieldController,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 24),
-                  fillColor: widget.theme.colorMain,
-                  filled: true,
-                ),
-                style: TextStyle(
-                  color: widget.theme.colorBg,
-                  fontSize: 16,
-                ),
+          children: [
+            Expanded(
+              child: Column(
+                  children: [
+                    TextField(
+                      controller: _cloudSearchTextFieldController,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12),
+                        fillColor: widget.theme.colorMain,
+                        filled: true,
+                      ),
+                      style: TextStyle(
+                        color: widget.theme.colorBg,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(
+                      width: maxWidth - 100,
+                      height: 40,
+                      child: DropdownButton(
+                        value: orderBy.orderByStr,
+                        items: orderByDropdownItems,
+                        isExpanded: true,
+                        onChanged: (String? value) {
+                          final orderByStr = value ??
+                              OrderBy.byIdDesc.orderByStr;
+                          setState(() {
+                            orderBy =
+                                OrderByStrings.parseFromString(orderByStr);
+                          });
+                        },
+                        dropdownColor: widget.theme.colorBg,
+                      ),
+                    ),
+                  ]
               ),
-          ),
-          const SizedBox(
-            width: 4,
-          ),
-          Container(
-            width: 72,
-            height: 72,
-            color: AppTheme.colorDarkYellow,
-            child:
-            IconButton(
-              icon: Image.asset(AppIcons.icCloudSearch),
-              padding: const EdgeInsets.all(8),
-              onPressed: () {
-                _performCloudSearch();
-              },
             ),
-          ),
-        ],
+            const SizedBox(
+              width: 4,
+            ),
+            Container(
+              width: 88,
+              height: 88,
+              color: AppTheme.colorDarkYellow,
+              child:
+              IconButton(
+                icon: Image.asset(AppIcons.icCloudSearch),
+                padding: const EdgeInsets.all(8),
+                onPressed: () {
+                  _performCloudSearch();
+                },
+              ),
+            ),
+          ],
       ),
     );
+  }
+
+  List<DropdownMenuItem<String>> get orderByDropdownItems{
+    List<DropdownMenuItem<String>> menuItems = OrderBy.values.map((orderBy) =>
+        DropdownMenuItem(value: orderBy.orderByStr, child: Text(orderBy.orderByRus, style: TextStyle(color: widget.theme.colorMain)))
+    ).toList();
+
+    return menuItems;
   }
 
   ListView _makeCloudTitleListView() => ListView.builder(
@@ -177,7 +216,7 @@ class CloudSearchPageState extends State<CloudSearchPage> {
         final cloudSong = widget.currentCloudSongs[index];
         return GestureDetector(
           onTap: () {
-            _backupSearchFor();
+            _backupSearchState();
             widget.onCloudSongClick(index);
           },
           child: Container(
@@ -203,14 +242,17 @@ class CloudSearchPageState extends State<CloudSearchPage> {
 
   void _performCloudSearch() {
     final searchFor = _cloudSearchTextFieldController.text;
-    widget.onPerformCloudSearch(searchFor);
+    widget.onPerformCloudSearch(searchFor, orderBy);
   }
 
-  void _backupSearchFor() {
-    widget.onBackupSearchFor(_cloudSearchTextFieldController.text);
+  void _backupSearchState() {
+    widget.onBackupSearchState(_cloudSearchTextFieldController.text, orderBy);
   }
 
   void _restoreSearchFor() {
     _cloudSearchTextFieldController.text = widget.searchForBackup;
+    setState(() {
+      orderBy = widget.orderByBackup;
+    });
   }
 }

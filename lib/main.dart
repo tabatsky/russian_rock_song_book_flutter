@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:russian_rock_song_book/cloud_search_page.dart';
 import 'package:russian_rock_song_book/cloud_song_text_page.dart';
+import 'package:russian_rock_song_book/order_by.dart';
 import 'dart:developer';
 
 import 'package:russian_rock_song_book/song.dart';
@@ -64,6 +65,7 @@ class _MainPageState extends State<MainPage> {
   int currentCloudSongPosition = -1;
   int cloudScrollPosition = 0;
   String searchForBackup = '';
+  OrderBy orderByBackup = OrderBy.byIdDesc;
 
   @override
   void initState() {
@@ -107,10 +109,11 @@ class _MainPageState extends State<MainPage> {
           // open youtube music
         });
       case PageVariant.cloudSearch:
-        return CloudSearchPage(theme, currentCloudSongs, currentSearchState, cloudScrollPosition, searchForBackup, (searchFor) {
-          _performCloudSearch(searchFor);
-        }, (searchFor) {
-          _backupSearchFor(searchFor);
+        return CloudSearchPage(theme, currentCloudSongs, currentSearchState, cloudScrollPosition,
+            searchForBackup, orderByBackup, (searchFor, orderBy) {
+          _performCloudSearch(searchFor, orderBy);
+        }, (searchFor, orderBy) {
+          _backupSearchFor(searchFor, orderBy);
         }, (position) {
           _selectCloudSong(position);
         }, () {
@@ -154,11 +157,11 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> _selectArtist(String artist) async {
     if (artist == SongRepository.artistCloudSearch) {
-      _backupSearchFor('');
+      _backupSearchFor('', OrderBy.byIdDesc);
       setState(() {
         currentPageVariant = PageVariant.cloudSearch;
       });
-      _performCloudSearch('');
+      _performCloudSearch('', OrderBy.byIdDesc);
     } else {
       final songs = await SongRepository().getSongsByArtist(artist);
       setState(() {
@@ -307,10 +310,10 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  Future<void> _performCloudSearch(String searchFor) async {
+  Future<void> _performCloudSearch(String searchFor, OrderBy orderBy) async {
     _resetCloudSearch();
     try {
-      final cloudSongs = await CloudRepository().cloudSearch(searchFor, 'byIdDesc');
+      final cloudSongs = await CloudRepository().cloudSearch(searchFor, orderBy.orderByStr);
       setState(() {
         if (cloudSongs.isNotEmpty) {
           currentSearchState = SearchState.loaded;
@@ -328,9 +331,10 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  void _backupSearchFor(String searchFor) {
+  void _backupSearchFor(String searchFor, OrderBy orderBy) {
     setState(() {
       searchForBackup = searchFor;
+      orderByBackup = orderBy;
     });
   }
 
