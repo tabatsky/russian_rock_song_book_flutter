@@ -37,10 +37,10 @@ class CloudSearchPage extends StatefulWidget {
       {super.key});
 
   @override
-  State<StatefulWidget> createState() => CloudSearchPageState();
+  State<StatefulWidget> createState() => _CloudSearchPageState();
 }
 
-class CloudSearchPageState extends State<CloudSearchPage> {
+class _CloudSearchPageState extends State<CloudSearchPage> {
 
   static const _titleHeight = 75.0;
   static const _itemHeight = _titleHeight;

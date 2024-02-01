@@ -27,10 +27,10 @@ class SongListPage extends StatefulWidget{
       {super.key});
 
   @override
-  State<SongListPage> createState() => SongListPageState();
+  State<SongListPage> createState() => _SongListPageState();
 }
 
-class SongListPageState extends State<SongListPage> {
+class _SongListPageState extends State<SongListPage> {
 
   static const _titleHeight = 50.0;
   static const _dividerHeight = 3.0;

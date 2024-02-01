@@ -33,11 +33,11 @@ class SongTextPage extends StatefulWidget {
       {super.key});
 
   @override
-  State<StatefulWidget> createState() => SongTextPageState();
+  State<StatefulWidget> createState() => _SongTextPageState();
 
 }
 
-class SongTextPageState extends State<SongTextPage> {
+class _SongTextPageState extends State<SongTextPage> {
 
   ScrollController scrollController = ScrollController(
     initialScrollOffset: 0.0,
