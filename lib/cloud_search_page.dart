@@ -1,23 +1,16 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
-import 'package:russian_rock_song_book/main.dart';
 import 'package:russian_rock_song_book/order_by.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 
 import 'app_icons.dart';
+import 'app_state.dart';
 import 'app_theme.dart';
-import 'cloud_song.dart';
 
 class CloudSearchPage extends StatefulWidget {
 
   final AppTheme theme;
-  final List<CloudSong> currentCloudSongs;
-  final SearchState currentSearchState;
-  final int cloudScrollPosition;
-  final String searchForBackup;
-  final OrderBy orderByBackup;
+  final CloudState cloudState;
   final void Function(String searchFor, OrderBy orderBy) onPerformCloudSearch;
   final void Function(String searchFor, OrderBy orderBy) onBackupSearchState;
   final void Function(int position) onCloudSongClick;
@@ -25,11 +18,7 @@ class CloudSearchPage extends StatefulWidget {
 
   const CloudSearchPage(
       this.theme,
-      this.currentCloudSongs,
-      this.currentSearchState,
-      this.cloudScrollPosition,
-      this.searchForBackup,
-      this.orderByBackup,
+      this.cloudState,
       this.onPerformCloudSearch,
       this.onBackupSearchState,
       this.onCloudSongClick,
@@ -62,13 +51,13 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   }
 
   void _scrollToActual() {
-    _cloudTitleScrollController.animateTo(widget.cloudScrollPosition * _itemHeight,
+    _cloudTitleScrollController.animateTo(widget.cloudState.cloudScrollPosition * _itemHeight,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.currentSearchState == SearchState.loaded) {
+    if (widget.cloudState.currentSearchState == SearchState.loaded) {
       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
     }
     return Scaffold(
@@ -100,11 +89,11 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   }
 
   Widget _content() {
-    if (widget.currentSearchState == SearchState.loading) {
+    if (widget.cloudState.currentSearchState == SearchState.loading) {
       return _makeProgressIndicator();
-    } else if (widget.currentSearchState == SearchState.loaded) {
+    } else if (widget.cloudState.currentSearchState == SearchState.loaded) {
       return Flexible(child: _makeCloudTitleListView());
-    } else if (widget.currentSearchState == SearchState.empty) {
+    } else if (widget.cloudState.currentSearchState == SearchState.empty) {
       return _makeEmptyListIndicator();
     } else {
       throw UnimplementedError('not implemented yet');
@@ -211,9 +200,9 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   ListView _makeCloudTitleListView() => ListView.builder(
       controller: _cloudTitleScrollController,
       padding: EdgeInsets.zero,
-      itemCount: widget.currentCloudSongs.length,
+      itemCount: widget.cloudState.currentCloudSongs.length,
       itemBuilder: (BuildContext context, int index) {
-        final cloudSong = widget.currentCloudSongs[index];
+        final cloudSong = widget.cloudState.currentCloudSongs[index];
         return GestureDetector(
           onTap: () {
             _backupSearchState();
@@ -250,9 +239,9 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   }
 
   void _restoreSearchFor() {
-    _cloudSearchTextFieldController.text = widget.searchForBackup;
+    _cloudSearchTextFieldController.text = widget.cloudState.searchForBackup;
     setState(() {
-      orderBy = widget.orderByBackup;
+      orderBy = widget.cloudState.orderByBackup;
     });
   }
 }

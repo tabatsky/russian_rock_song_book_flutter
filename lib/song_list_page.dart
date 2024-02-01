@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
+
+import 'app_state.dart';
 
 class SongListPage extends StatefulWidget{
 
   final AppTheme theme;
 
-  final List<String> allArtists;
-  final String currentArtist;
-  final List<Song> currentSongs;
-  final int scrollPosition;
+  final LocalState localState;
   final void Function(int position) onSongClick;
   final void Function(String artist) onArtistClick;
 
   const SongListPage(
       this.theme,
-      this.allArtists,
-      this.currentArtist,
-      this.currentSongs,
-      this.scrollPosition,
+      this.localState,
       this.onSongClick,
       this.onArtistClick,
       {super.key});
@@ -48,7 +43,7 @@ class _SongListPageState extends State<SongListPage> {
   double _menuScrollOffset = 0.0;
 
   void _scrollToActual() {
-    _titleScrollController.animateTo(widget.scrollPosition * _itemHeight,
+    _titleScrollController.animateTo(widget.localState.scrollPosition * _itemHeight,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
   }
 
@@ -58,7 +53,7 @@ class _SongListPageState extends State<SongListPage> {
       backgroundColor: widget.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
-        title: Text(widget.currentArtist),
+        title: Text(widget.localState.currentArtist),
       ),
       drawer: Drawer(
         child: _makeMenuListView(),
@@ -87,7 +82,7 @@ class _SongListPageState extends State<SongListPage> {
   ListView _makeMenuListView() => ListView.builder(
       controller: _menuScrollController,
       padding: EdgeInsets.zero,
-      itemCount: widget.allArtists.length + 1,
+      itemCount: widget.localState.allArtists.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
           return const SizedBox(
@@ -101,7 +96,7 @@ class _SongListPageState extends State<SongListPage> {
             ),
           );
         } else {
-          final artist = widget.allArtists[index - 1];
+          final artist = widget.localState.allArtists[index - 1];
           final fontWeight =
             SongRepository.predefinedArtists.contains(artist)
                 ? FontWeight.bold
@@ -137,7 +132,7 @@ class _SongListPageState extends State<SongListPage> {
   );
 
   Widget _makeContent() {
-    if (widget.currentSongs.isEmpty) {
+    if (widget.localState.currentSongs.isEmpty) {
       return _makeEmptyListIndicator();
     } else {
       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
@@ -160,9 +155,9 @@ class _SongListPageState extends State<SongListPage> {
   ListView _makeTitleListView() => ListView.builder(
       controller: _titleScrollController,
       padding: EdgeInsets.zero,
-      itemCount: widget.currentSongs.length,
+      itemCount: widget.localState.currentSongs.length,
       itemBuilder: (BuildContext context, int index) {
-        final song = widget.currentSongs[index];
+        final song = widget.localState.currentSongs[index];
         return Column(
           children: [
             GestureDetector(

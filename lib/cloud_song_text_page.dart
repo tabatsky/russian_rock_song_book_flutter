@@ -1,16 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/app_state.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
-import 'package:russian_rock_song_book/cloud_song.dart';
 
 import 'app_icons.dart';
 
 class CloudSongTextPage extends StatelessWidget {
 
   final AppTheme theme;
-  final CloudSong? currentCloudSong;
-  final int currentCloudSongPosition;
-  final int currentCloudSongCount;
+  final CloudState cloudState;
   final void Function() onBackPressed;
   final void Function() onPrevCloudSong;
   final void Function() onNextCloudSong;
@@ -28,9 +25,7 @@ class CloudSongTextPage extends StatelessWidget {
 
   CloudSongTextPage(
       this.theme,
-      this.currentCloudSong,
-      this.currentCloudSongPosition,
-      this.currentCloudSongCount,
+      this.cloudState,
       this.onBackPressed,
       this.onPrevCloudSong,
       this.onNextCloudSong,
@@ -63,7 +58,7 @@ class CloudSongTextPage extends StatelessWidget {
               onPrevCloudSong();
             },
           ),
-          Text("${currentCloudSongPosition + 1} / $currentCloudSongCount"),
+          Text("${cloudState.currentCloudSongPosition + 1} / ${cloudState.currentCloudSongCount}"),
           IconButton(
             icon: Image.asset(AppIcons.icRight),
             iconSize: 50,
@@ -110,12 +105,12 @@ class CloudSongTextPage extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     child: Wrap(
                       children: [
-                        Text(currentCloudSong?.title ?? 'null', style: TextStyle(color: theme.colorMain, fontSize: 24)),
+                        Text(cloudState.currentCloudSong?.title ?? 'null', style: TextStyle(color: theme.colorMain, fontSize: 24)),
                         Container(
                           height: 20,
                         ),
                         Text(
-                          currentCloudSong?.text ?? 'null',
+                          cloudState.currentCloudSong?.text ?? 'null',
                           style: textStyle,
                         ),
                         Container(

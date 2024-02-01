@@ -5,16 +5,14 @@ import 'package:russian_rock_song_book/cloud_song_text_page.dart';
 import 'package:russian_rock_song_book/order_by.dart';
 import 'dart:developer';
 
-import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/song_list_page.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/song_text_page.dart';
 import 'package:russian_rock_song_book/start_page.dart';
-import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
 
+import 'app_state.dart';
 import 'cloud_repository.dart';
-import 'cloud_song.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,25 +45,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  AppTheme theme = AppTheme.themeDark;
-
-  PageVariant currentPageVariant = PageVariant.start;
-  String currentArtist = 'Кино';
-  List<Song> currentSongs = <Song>[];
-  int currentCount = 0;
-  List<String> allArtists = [];
-  Song? currentSong;
-  int currentSongPosition = -1;
-  int scrollPosition = 0;
-
-  List<CloudSong> currentCloudSongs = [];
-  SearchState currentSearchState = SearchState.loading;
-  int currentCloudSongCount = 0;
-  CloudSong? currentCloudSong;
-  int currentCloudSongPosition = -1;
-  int cloudScrollPosition = 0;
-  String searchForBackup = '';
-  OrderBy orderByBackup = OrderBy.byIdDesc;
+  AppState appState = AppState();
 
   @override
   void initState() {
@@ -74,13 +54,13 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    switch (currentPageVariant) {
+    switch (appState.currentPageVariant) {
       case PageVariant.start:
         return StartPage(() {
           _showSongList();
         });
       case PageVariant.songList:
-        return SongListPage(theme, allArtists, currentArtist, currentSongs, scrollPosition, (position) {
+        return SongListPage(appState.theme, appState.localState, (position) {
           _selectSong(position);
         }, (artist) {
           Navigator.pop(context);
@@ -88,8 +68,8 @@ class _MainPageState extends State<MainPage> {
         });
       case PageVariant.songText:
         return SongTextPage(
-            theme,
-            currentSong, () {
+            appState.theme,
+            appState.localState.currentSong, () {
           _back();
         }, () {
           _prevSong();
@@ -109,8 +89,7 @@ class _MainPageState extends State<MainPage> {
           // open youtube music
         });
       case PageVariant.cloudSearch:
-        return CloudSearchPage(theme, currentCloudSongs, currentSearchState, cloudScrollPosition,
-            searchForBackup, orderByBackup, (searchFor, orderBy) {
+        return CloudSearchPage(appState.theme, appState.cloudState, (searchFor, orderBy) {
           _performCloudSearch(searchFor, orderBy);
         }, (searchFor, orderBy) {
           _backupSearchFor(searchFor, orderBy);
@@ -120,7 +99,7 @@ class _MainPageState extends State<MainPage> {
           _back();
         });
       case PageVariant.cloudSongText:
-        return CloudSongTextPage(theme, currentCloudSong, currentCloudSongPosition, currentCloudSongCount, () {
+        return CloudSongTextPage(appState.theme, appState.cloudState, () {
           _back();
         }, () {
           _prevCloudSong();
@@ -150,111 +129,150 @@ class _MainPageState extends State<MainPage> {
   Future<void> _initAllArtists() async {
     final artists = await SongRepository().getArtists();
     log(artists.toString());
+    final newAppState = appState;
+    final newLocalState = appState.localState;
+    newLocalState.allArtists = artists;
+    newAppState.localState = newLocalState;
     setState(() {
-      allArtists = artists;
+      appState = newAppState;
     });
   }
 
   Future<void> _selectArtist(String artist) async {
     if (artist == SongRepository.artistCloudSearch) {
       _backupSearchFor('', OrderBy.byIdDesc);
+      final newAppState = appState;
+      newAppState.currentPageVariant = PageVariant.cloudSearch;
       setState(() {
-        currentPageVariant = PageVariant.cloudSearch;
+        appState = newAppState;
       });
       _performCloudSearch('', OrderBy.byIdDesc);
     } else {
       final songs = await SongRepository().getSongsByArtist(artist);
+      final newAppState = appState;
+      final newLocalState = appState.localState;
+      newLocalState.currentArtist = artist;
+      newLocalState.currentSongs = songs;
+      newLocalState.currentCount = songs.length;
+      newLocalState.scrollPosition = 0;
+      newAppState.localState = newLocalState;
       setState(() {
-        currentArtist = artist;
-        currentSongs = songs;
-        currentCount = songs.length;
-        scrollPosition = 0;
+        appState = newAppState;
       });
     }
   }
 
   void _selectSong(int position) {
+    final newAppState = appState;
+    final newLocalState = appState.localState;
+    newLocalState.currentSongPosition = position;
+    newLocalState.scrollPosition = position;
+    newLocalState.currentSong = newLocalState.currentSongs[position];
+    newAppState.localState = newLocalState;
+    newAppState.currentPageVariant = PageVariant.songText;
     setState(() {
-      currentSongPosition = position;
-      scrollPosition = position;
-      currentSong = currentSongs[position];
-      currentPageVariant = PageVariant.songText;
+      appState = newAppState;
     });
   }
 
   void _showSongList() {
     _initSongs();
+    final newAppState = appState;
+    newAppState.currentPageVariant = PageVariant.songList;
     setState(() {
-      currentPageVariant = PageVariant.songList;
+      appState = newAppState;
     });
   }
 
   void _back() {
     log('back');
-    if (currentPageVariant == PageVariant.songText) {
+    if (appState.currentPageVariant == PageVariant.songText) {
+      final newAppState = appState;
+      final newLocalState = appState.localState;
+      newLocalState.currentSong = null;
+      newLocalState.currentSongPosition = -1;
+      newAppState.localState = newLocalState;
+      newAppState.currentPageVariant = PageVariant.songList;
       setState(() {
-        currentPageVariant = PageVariant.songList;
-        currentSong = null;
-        currentSongPosition = -1;
+        appState = newAppState;
       });
-    } else if (currentPageVariant == PageVariant.cloudSearch) {
+    } else if (appState.currentPageVariant == PageVariant.cloudSearch) {
+      final newAppState = appState;
+      newAppState.currentPageVariant = PageVariant.songList;
       setState(() {
-        currentPageVariant = PageVariant.songList;
+        appState = newAppState;
       });
-    } else if (currentPageVariant == PageVariant.cloudSongText) {
+    } else if (appState.currentPageVariant == PageVariant.cloudSongText) {
+      final newAppState = appState;
+      final newCloudState = appState.cloudState;
+      newCloudState.currentCloudSong = null;
+      newCloudState.currentCloudSongPosition = -1;
+      newAppState.cloudState = newCloudState;
+      newAppState.currentPageVariant = PageVariant.cloudSearch;
       setState(() {
-        currentPageVariant = PageVariant.cloudSearch;
-        currentCloudSong = null;
-        currentCloudSongPosition = -1;
+        appState = newAppState;
       });
     }
   }
 
   void _prevSong() {
-    if (currentSongPosition > 0) {
+    if (appState.localState.currentSongPosition > 0) {
+      final newAppState = appState;
+      final newLocalState = appState.localState;
+      newLocalState.currentSongPosition -= 1;
+      newLocalState.scrollPosition = newLocalState.currentSongPosition;
+      newLocalState.currentSong = newLocalState.currentSongs[newLocalState.currentSongPosition];
+      newAppState.localState = newLocalState;
       setState(() {
-        currentSongPosition -= 1;
-        scrollPosition = currentSongPosition;
-        currentSong = currentSongs[currentSongPosition];
+        appState = newAppState;
       });
     }
   }
 
   void _nextSong() {
-    if (currentSongPosition < currentSongs.length - 1) {
+    if (appState.localState.currentSongPosition < appState.localState.currentSongs.length - 1) {
+      final newAppState = appState;
+      final newLocalState = appState.localState;
+      newLocalState.currentSongPosition += 1;
+      newLocalState.scrollPosition = newLocalState.currentSongPosition;
+      newLocalState.currentSong = newLocalState.currentSongs[newLocalState.currentSongPosition];
+      newAppState.localState = newLocalState;
       setState(() {
-        currentSongPosition += 1;
-        scrollPosition = currentSongPosition;
-        currentSong = currentSongs[currentSongPosition];
+        appState = newAppState;
       });
     }
   }
 
   Future<void> _toggleFavorite() async {
-    if (currentSong != null) {
-      final song = currentSong!;
+    final newAppState = appState;
+    final newLocalState = appState.localState;
+
+    if (newLocalState.currentSong != null) {
+      final song = newLocalState.currentSong!;
       final becomeFavorite = !song.favorite;
       song.favorite = becomeFavorite;
       await SongRepository().updateSong(song);
 
-      if (!becomeFavorite && currentArtist == SongRepository.artistFavorite) {
+      if (!becomeFavorite && newLocalState.currentArtist == SongRepository.artistFavorite) {
         final count = await SongRepository().getCountByArtist(SongRepository.artistFavorite);
         if (count > 0) {
           final int newSongPosition;
-          if (currentSongPosition >= count) {
-            newSongPosition = currentSongPosition - 1;
+          if (newLocalState.currentSongPosition >= count) {
+            newSongPosition = newLocalState.currentSongPosition - 1;
           } else {
-            newSongPosition = currentSongPosition;
+            newSongPosition = newLocalState.currentSongPosition;
           }
+          newLocalState.currentCount = count;
+          newLocalState.currentSongPosition = newSongPosition;
+          newAppState.localState = newLocalState;
           setState(() {
-            currentCount = count;
-            currentSongPosition = newSongPosition;
-            log('set state 1 done');
+            appState = newAppState;
           });
         } else {
+          newLocalState.currentCount = count;
+          newAppState.localState = newLocalState;
           setState(() {
-            currentCount = count;
-            log('set state 2 done');
+            appState = newAppState;
           });
           _back();
         }
@@ -271,8 +289,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _saveSongText(String updatedText) async {
-    if (currentSong != null) {
-      final song = currentSong!;
+    if (appState.localState.currentSong != null) {
+      final song = appState.localState.currentSong!;
       song.text = updatedText;
       await SongRepository().updateSong(song);
       await _refreshCurrentSong();
@@ -281,11 +299,17 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> _refreshCurrentSong() async {
     log('refresh current song');
-    final songs = await SongRepository().getSongsByArtist(currentArtist);
+    final songs = await SongRepository().getSongsByArtist(appState.localState.currentArtist);
+    final newAppState = appState;
+    final newLocalState = appState.localState;
+    newLocalState.currentSong = newLocalState.currentSongPosition >= 0
+        ? songs.elementAtOrNull(newLocalState.currentSongPosition)
+        : null;
+    log(newLocalState.currentSong.toString());
+    newLocalState.currentSongs = songs;
+    newAppState.localState = newLocalState;
     setState(() {
-      currentSong = currentSongPosition >= 0 ? songs.elementAtOrNull(currentSongPosition) : null;
-      log(currentSong.toString());
-      currentSongs = songs;
+      appState = newAppState;
     });
   }
 
@@ -295,18 +319,22 @@ class _MainPageState extends State<MainPage> {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: theme.colorMain,
-        textColor: theme.colorBg,
+        backgroundColor: appState.theme.colorMain,
+        textColor: appState.theme.colorBg,
         fontSize: 16.0
     );
   }
 
   void _resetCloudSearch() {
+    final newAppState = appState;
+    final newCloudState = appState.cloudState;
+    newCloudState.currentSearchState = SearchState.loading;
+    newCloudState.currentCloudSongs = [];
+    newCloudState.currentCloudSongCount = 0;
+    newCloudState.cloudScrollPosition = 0;
+    newAppState.cloudState = newCloudState;
     setState(() {
-      currentSearchState = SearchState.loading;
-      currentCloudSongs = [];
-      currentCloudSongCount = 0;
-      cloudScrollPosition = 0;
+      appState = newAppState;
     });
   }
 
@@ -314,60 +342,80 @@ class _MainPageState extends State<MainPage> {
     _resetCloudSearch();
     try {
       final cloudSongs = await CloudRepository().cloudSearch(searchFor, orderBy.orderByStr);
+      final newAppState = appState;
+      final newCloudState = appState.cloudState;
+      if (cloudSongs.isNotEmpty) {
+        newCloudState.currentSearchState = SearchState.loaded;
+      } else {
+        newCloudState.currentSearchState = SearchState.empty;
+      }
+      newCloudState.currentCloudSongs = cloudSongs;
+      newCloudState.currentCloudSongCount = cloudSongs.length;
+      newAppState.cloudState = newCloudState;
       setState(() {
-        if (cloudSongs.isNotEmpty) {
-          currentSearchState = SearchState.loaded;
-        } else {
-          currentSearchState = SearchState.empty;
-        }
-        currentCloudSongs = cloudSongs;
-        currentCloudSongCount = cloudSongs.length;
+        appState = newAppState;
       });
     } catch (e) {
       log("Exception: $e");
+      final newAppState = appState;
+      final newCloudState = appState.cloudState;
+      newCloudState.currentSearchState = SearchState.error;
+      newAppState.cloudState = newCloudState;
       setState(() {
-        currentSearchState = SearchState.error;
+        appState = newAppState;
       });
     }
   }
 
   void _backupSearchFor(String searchFor, OrderBy orderBy) {
+    final newAppState = appState;
+    final newCloudState = appState.cloudState;
+    newCloudState.searchForBackup = searchFor;
+    newCloudState.orderByBackup = orderBy;
+    newAppState.cloudState = newCloudState;
     setState(() {
-      searchForBackup = searchFor;
-      orderByBackup = orderBy;
+      appState = newAppState;
     });
   }
 
   void _selectCloudSong(int position) {
+    final newAppState = appState;
+    final newCloudState = appState.cloudState;
+    newCloudState.currentCloudSongPosition = position;
+    newCloudState.cloudScrollPosition = position;
+    newCloudState.currentCloudSong = newCloudState.currentCloudSongs[position];
+    newAppState.currentPageVariant = PageVariant.cloudSongText;
     setState(() {
-      currentCloudSongPosition = position;
-      cloudScrollPosition = position;
-      currentCloudSong = currentCloudSongs[position];
-      currentPageVariant = PageVariant.cloudSongText;
+      appState = newAppState;
     });
   }
 
   void _prevCloudSong() {
-    if (currentCloudSongPosition > 0) {
+    if (appState.cloudState.currentCloudSongPosition > 0) {
+      final newAppState = appState;
+      final newCloudState = appState.cloudState;
+      newCloudState.currentCloudSongPosition -= 1;
+      newCloudState.cloudScrollPosition = newCloudState.currentCloudSongPosition;
+      newCloudState.currentCloudSong = newCloudState
+          .currentCloudSongs[newCloudState.currentCloudSongPosition];
       setState(() {
-        currentCloudSongPosition -= 1;
-        cloudScrollPosition = currentCloudSongPosition;
-        currentCloudSong = currentCloudSongs[currentCloudSongPosition];
+        appState = newAppState;
       });
     }
   }
 
   void _nextCloudSong() {
-    if (currentCloudSongPosition < currentCloudSongs.length - 1) {
+    if (appState.cloudState.currentCloudSongPosition < appState.cloudState.currentCloudSongs.length - 1) {
+      final newAppState = appState;
+      final newCloudState = appState.cloudState;
+      newCloudState.currentCloudSongPosition += 1;
+      newCloudState.cloudScrollPosition = newCloudState.currentCloudSongPosition;
+      newCloudState.currentCloudSong = newCloudState
+          .currentCloudSongs[newCloudState.currentCloudSongPosition];
       setState(() {
-        currentCloudSongPosition += 1;
-        cloudScrollPosition = currentCloudSongPosition;
-        currentCloudSong = currentCloudSongs[currentCloudSongPosition];
+        appState = newAppState;
       });
     }
   }
 }
 
-enum PageVariant { start, songList, songText, cloudSearch, cloudSongText }
-
-enum SearchState { empty, error, loading, loaded }
