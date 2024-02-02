@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:russian_rock_song_book/app_callbacks.dart';
 import 'package:russian_rock_song_book/cloud_search_page.dart';
 import 'package:russian_rock_song_book/cloud_song_text_page.dart';
 import 'package:russian_rock_song_book/order_by.dart';
@@ -47,9 +48,36 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   AppState appState = AppState();
 
+  LocalCallbacks? localCallbacks;
+
   @override
   void initState() {
     super.initState();
+    setState(() {
+      localCallbacks = LocalCallbacks((position) {
+        _selectSong(position);
+      }, (artist) {
+        _selectArtist(artist);
+      }, () {
+        _back();
+      }, () {
+        _prevSong();
+      }, () {
+        _nextSong();
+      }, () {
+        _toggleFavorite();
+      }, (updatedText) {
+        _saveSongText(updatedText);
+      }, () {
+        log('upload to cloud will be here');
+      }, () {
+        log('open vk music will be here');
+      }, () {
+        log('open yandex music will be here');
+      }, () {
+        log('open youtube music will be here');
+      });
+    });
   }
 
   @override
@@ -60,34 +88,12 @@ class _MainPageState extends State<MainPage> {
           _showSongList();
         });
       case PageVariant.songList:
-        return SongListPage(appState.theme, appState.localState, (position) {
-          _selectSong(position);
-        }, (artist) {
-          Navigator.pop(context);
-          _selectArtist(artist);
-        });
+        return SongListPage(appState.theme, appState.localState, localCallbacks);
       case PageVariant.songText:
         return SongTextPage(
             appState.theme,
-            appState.localState.currentSong, () {
-          _back();
-        }, () {
-          _prevSong();
-        }, () {
-          _nextSong();
-        }, () {
-          _toggleFavorite();
-        }, (updatedText) {
-          _saveSongText(updatedText);
-        }, () {
-          // upload to cloud
-        }, () {
-          // open vk music
-        }, () {
-          // open yandex music
-        }, () {
-          // open youtube music
-        });
+            appState.localState.currentSong,
+            localCallbacks);
       case PageVariant.cloudSearch:
         return CloudSearchPage(appState.theme, appState.cloudState, (searchFor, orderBy) {
           _performCloudSearch(searchFor, orderBy);
@@ -139,6 +145,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _selectArtist(String artist) async {
+    log("select artist: $artist");
     if (artist == SongRepository.artistCloudSearch) {
       _backupSearchFor('', OrderBy.byIdDesc);
       final newAppState = appState;

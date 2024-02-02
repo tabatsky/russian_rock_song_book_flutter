@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/app_callbacks.dart';
 
 import 'package:russian_rock_song_book/app_icons.dart';
 import 'package:russian_rock_song_book/song.dart';
@@ -8,28 +9,12 @@ class SongTextPage extends StatefulWidget {
 
   final AppTheme theme;
   final Song? currentSong;
-  final void Function() onBackPressed;
-  final void Function() onPrevSong;
-  final void Function() onNextSong;
-  final void Function() onToggleFavorite;
-  final void Function(String updatedText) onSaveSongText;
-  final void Function() onUploadCurrentToCloud;
-  final void Function() onOpenVkMusic;
-  final void Function() onOpenYandexMusic;
-  final void Function() onOpenYoutubeMusic;
+  final LocalCallbacks? localCallbacks;
 
   const SongTextPage(
       this.theme,
       this.currentSong,
-      this.onBackPressed,
-      this.onPrevSong,
-      this.onNextSong,
-      this.onToggleFavorite,
-      this.onSaveSongText,
-      this.onUploadCurrentToCloud,
-      this.onOpenVkMusic,
-      this.onOpenYandexMusic,
-      this.onOpenYoutubeMusic,
+      this.localCallbacks,
       {super.key});
 
   @override
@@ -68,7 +53,7 @@ class _SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icBack),
           iconSize: 50,
           onPressed: () {
-            widget.onBackPressed();
+            widget.localCallbacks?.onBackPressed();
           },
         ),
         actions: [
@@ -76,21 +61,21 @@ class _SongTextPageState extends State<SongTextPage> {
             icon: Image.asset(AppIcons.icLeft),
             iconSize: 50,
             onPressed: () {
-              widget.onPrevSong();
+              widget.localCallbacks?.onPrevSong();
             },
           ),
           IconButton(
             icon: Image.asset(widget.currentSong?.favorite == true ? AppIcons.icDelete : AppIcons.icStar),
             iconSize: 50,
             onPressed: () {
-              widget.onToggleFavorite();
+              widget.localCallbacks?.onToggleFavorite();
             },
           ),
           IconButton(
             icon: Image.asset(AppIcons.icRight),
             iconSize: 50,
             onPressed: () {
-              widget.onNextSong();
+              widget.localCallbacks?.onNextSong();
             },
           ),
         ],
@@ -189,7 +174,7 @@ class _SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icVk),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            widget.onOpenVkMusic();
+            widget.localCallbacks?.onOpenVkMusic();
           },
         ),
       ),
@@ -202,7 +187,7 @@ class _SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icYoutube),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            widget.onOpenYoutubeMusic();
+            widget.localCallbacks?.onOpenYoutubeMusic();
           },
         ),
       ),
@@ -215,7 +200,7 @@ class _SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icUpload),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            widget.onUploadCurrentToCloud();
+            widget.localCallbacks?.onUploadCurrentToCloud();
           },
         ),
       ),
@@ -274,7 +259,7 @@ class _SongTextPageState extends State<SongTextPage> {
 
   Future<void> _saveText() async {
     final updatedText = _textEditorController.text;
-    widget.onSaveSongText(updatedText);
+    widget.localCallbacks?.onSaveSongText(updatedText);
     setState(() {
       _isEditorMode = false;
     });

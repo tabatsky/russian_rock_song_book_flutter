@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:russian_rock_song_book/app_callbacks.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
@@ -11,14 +12,12 @@ class SongListPage extends StatefulWidget{
   final AppTheme theme;
 
   final LocalState localState;
-  final void Function(int position) onSongClick;
-  final void Function(String artist) onArtistClick;
+  final LocalCallbacks? localCallbacks;
 
   const SongListPage(
       this.theme,
       this.localState,
-      this.onSongClick,
-      this.onArtistClick,
+      this.localCallbacks,
       {super.key});
 
   @override
@@ -105,7 +104,7 @@ class _SongListPageState extends State<SongListPage> {
             children: [
               GestureDetector(
                 onTap: () {
-                  widget.onArtistClick(artist);
+                  widget.localCallbacks?.onArtistClick(artist);
                 },
                 child: Container(
                     height: _titleHeight,
@@ -162,7 +161,7 @@ class _SongListPageState extends State<SongListPage> {
           children: [
             GestureDetector(
               onTap: () {
-                widget.onSongClick(index);
+                widget.localCallbacks?.onSongClick(index);
               },
               child: Container(
                   height: 50,
