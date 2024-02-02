@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/app_callbacks.dart';
 import 'package:russian_rock_song_book/app_state.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
 
@@ -8,15 +9,7 @@ class CloudSongTextPage extends StatelessWidget {
 
   final AppTheme theme;
   final CloudState cloudState;
-  final void Function() onBackPressed;
-  final void Function() onPrevCloudSong;
-  final void Function() onNextCloudSong;
-  final void Function() onDownloadCurrent;
-  final void Function() onOpenVkMusic;
-  final void Function() onOpenYandexMusic;
-  final void Function() onOpenYoutubeMusic;
-  final void Function() onLikeCurrent;
-  final void Function() onDislikeCurrent;
+  final CloudCallbacks? cloudCallbacks;
 
   final ScrollController scrollController = ScrollController(
     initialScrollOffset: 0.0,
@@ -26,15 +19,7 @@ class CloudSongTextPage extends StatelessWidget {
   CloudSongTextPage(
       this.theme,
       this.cloudState,
-      this.onBackPressed,
-      this.onPrevCloudSong,
-      this.onNextCloudSong,
-      this.onDownloadCurrent,
-      this.onOpenVkMusic,
-      this.onOpenYandexMusic,
-      this.onOpenYoutubeMusic,
-      this.onLikeCurrent,
-      this.onDislikeCurrent,
+      this.cloudCallbacks,
       {super.key});
 
   @override
@@ -47,7 +32,7 @@ class CloudSongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icBack),
           iconSize: 50,
           onPressed: () {
-            onBackPressed();
+            cloudCallbacks?.onBackPressed();
           },
         ),
         actions: [
@@ -55,7 +40,7 @@ class CloudSongTextPage extends StatelessWidget {
             icon: Image.asset(AppIcons.icLeft),
             iconSize: 50,
             onPressed: () {
-              onPrevCloudSong();
+              cloudCallbacks?.onPrevCloudSong();
             },
           ),
           Text("${cloudState.currentCloudSongPosition + 1} / ${cloudState.currentCloudSongCount}"),
@@ -63,7 +48,7 @@ class CloudSongTextPage extends StatelessWidget {
             icon: Image.asset(AppIcons.icRight),
             iconSize: 50,
             onPressed: () {
-              onNextCloudSong();
+              cloudCallbacks?.onNextCloudSong();
             },
           ),
         ],
@@ -151,7 +136,7 @@ class CloudSongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icVk),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            onOpenVkMusic();
+            cloudCallbacks?.onOpenVkMusic();
           },
         ),
       ),
@@ -164,7 +149,7 @@ class CloudSongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icYoutube),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            onOpenYoutubeMusic();
+            cloudCallbacks?.onOpenYoutubeMusic();
           },
         ),
       ),
@@ -177,7 +162,7 @@ class CloudSongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icDownload),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            onDownloadCurrent();
+            cloudCallbacks?.onDownloadCurrent();
           },
         ),
       ),
@@ -203,7 +188,7 @@ class CloudSongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icLike),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            onLikeCurrent();
+            cloudCallbacks?.onLikeCurrent();
           },
         ),
       ),
@@ -216,7 +201,7 @@ class CloudSongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icDislike),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            onDislikeCurrent();
+            cloudCallbacks?.onDislikeCurrent();
           },
         ),
       ),

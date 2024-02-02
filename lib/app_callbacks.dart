@@ -1,3 +1,5 @@
+import 'order_by.dart';
+
 class LocalCallbacks {
   final void Function(int position) onSongClick;
   final void Function(String artist) onArtistClick;
@@ -23,5 +25,35 @@ class LocalCallbacks {
       this.onOpenVkMusic,
       this.onOpenYandexMusic,
       this.onOpenYoutubeMusic
+      );
+}
+
+class CloudCallbacks {
+  final void Function(String searchFor, OrderBy orderBy) onPerformCloudSearch;
+  final void Function(String searchFor, OrderBy orderBy) onBackupSearchState;
+  final void Function(int position) onCloudSongClick;
+  final void Function() onBackPressed;
+  final void Function() onPrevCloudSong;
+  final void Function() onNextCloudSong;
+  final void Function() onDownloadCurrent;
+  final void Function() onOpenVkMusic;
+  final void Function() onOpenYandexMusic;
+  final void Function() onOpenYoutubeMusic;
+  final void Function() onLikeCurrent;
+  final void Function() onDislikeCurrent;
+
+  CloudCallbacks(
+      this.onPerformCloudSearch,
+      this.onBackupSearchState,
+      this.onCloudSongClick,
+      this.onBackPressed,
+      this.onPrevCloudSong,
+      this.onNextCloudSong,
+      this.onDownloadCurrent,
+      this.onOpenVkMusic,
+      this.onOpenYandexMusic,
+      this.onOpenYoutubeMusic,
+      this.onLikeCurrent,
+      this.onDislikeCurrent
       );
 }

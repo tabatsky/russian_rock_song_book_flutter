@@ -49,6 +49,7 @@ class _MainPageState extends State<MainPage> {
   AppState appState = AppState();
 
   LocalCallbacks? localCallbacks;
+  CloudCallbacks? cloudCallbacks;
 
   @override
   void initState() {
@@ -77,6 +78,32 @@ class _MainPageState extends State<MainPage> {
       }, () {
         log('open youtube music will be here');
       });
+
+      cloudCallbacks = CloudCallbacks((searchFor, orderBy) {
+        _performCloudSearch(searchFor, orderBy);
+      }, (searchFor, orderBy) {
+        _backupSearchFor(searchFor, orderBy);
+      }, (position) {
+        _selectCloudSong(position);
+      }, () {
+        _back();
+      }, () {
+        _prevCloudSong();
+      }, () {
+        _nextCloudSong();
+      }, () {
+        log('download from cloud will be here');
+      }, () {
+        log('open vk music will be here');
+      }, () {
+        log('open yandex music will be here');
+      }, () {
+        log('open youtube music will be here');
+      }, () {
+        log('like will be here');
+      }, () {
+        log('dislike will be here');
+      });
     });
   }
 
@@ -95,35 +122,9 @@ class _MainPageState extends State<MainPage> {
             appState.localState.currentSong,
             localCallbacks);
       case PageVariant.cloudSearch:
-        return CloudSearchPage(appState.theme, appState.cloudState, (searchFor, orderBy) {
-          _performCloudSearch(searchFor, orderBy);
-        }, (searchFor, orderBy) {
-          _backupSearchFor(searchFor, orderBy);
-        }, (position) {
-          _selectCloudSong(position);
-        }, () {
-          _back();
-        });
+        return CloudSearchPage(appState.theme, appState.cloudState, cloudCallbacks);
       case PageVariant.cloudSongText:
-        return CloudSongTextPage(appState.theme, appState.cloudState, () {
-          _back();
-        }, () {
-          _prevCloudSong();
-        }, () {
-          _nextCloudSong();
-        }, () {
-          // download
-        }, () {
-          // open vk music
-        }, () {
-          // open yandex music
-        }, () {
-          // open youtube music
-        }, () {
-          // like
-        }, () {
-          // dislike
-        });
+        return CloudSongTextPage(appState.theme, appState.cloudState, cloudCallbacks);
     }
   }
 

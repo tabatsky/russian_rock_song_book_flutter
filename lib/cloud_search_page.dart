@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/app_callbacks.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
 import 'package:russian_rock_song_book/order_by.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
@@ -11,18 +12,12 @@ class CloudSearchPage extends StatefulWidget {
 
   final AppTheme theme;
   final CloudState cloudState;
-  final void Function(String searchFor, OrderBy orderBy) onPerformCloudSearch;
-  final void Function(String searchFor, OrderBy orderBy) onBackupSearchState;
-  final void Function(int position) onCloudSongClick;
-  final void Function() onBackPressed;
+  final CloudCallbacks? cloudCallbacks;
 
   const CloudSearchPage(
       this.theme,
       this.cloudState,
-      this.onPerformCloudSearch,
-      this.onBackupSearchState,
-      this.onCloudSongClick,
-      this.onBackPressed,
+      this.cloudCallbacks,
       {super.key});
 
   @override
@@ -69,7 +64,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
           icon: Image.asset(AppIcons.icBack),
           iconSize: 50,
           onPressed: () {
-            widget.onBackPressed();
+            widget.cloudCallbacks?.onBackPressed();
           },
         ),
       ),
@@ -206,7 +201,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
         return GestureDetector(
           onTap: () {
             _backupSearchState();
-            widget.onCloudSongClick(index);
+            widget.cloudCallbacks?.onCloudSongClick(index);
           },
           child: Container(
               height: 75,
@@ -231,11 +226,11 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
 
   void _performCloudSearch() {
     final searchFor = _cloudSearchTextFieldController.text;
-    widget.onPerformCloudSearch(searchFor, orderBy);
+    widget.cloudCallbacks?.onPerformCloudSearch(searchFor, orderBy);
   }
 
   void _backupSearchState() {
-    widget.onBackupSearchState(_cloudSearchTextFieldController.text, orderBy);
+    widget.cloudCallbacks?.onBackupSearchState(_cloudSearchTextFieldController.text, orderBy);
   }
 
   void _restoreSearchFor() {
