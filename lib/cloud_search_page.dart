@@ -211,7 +211,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                   const Spacer(),
                   Text(cloudSong.artist, style: TextStyle(color: widget.theme.colorMain)),
                   const Spacer(),
-                  Text(cloudSong.title, style: TextStyle(color: widget.theme.colorMain)),
+                  Text(cloudSong.visibleTitleWithRating, style: TextStyle(color: widget.theme.colorMain)),
                   const Spacer(),
                   Divider(
                     height: 3.0,

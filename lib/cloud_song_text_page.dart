@@ -90,7 +90,11 @@ class CloudSongTextPage extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     child: Wrap(
                       children: [
-                        Text(cloudState.currentCloudSong?.title ?? 'null', style: TextStyle(color: theme.colorMain, fontSize: 24)),
+                        Text(cloudState.currentCloudSong
+                            ?.visibleTitleWithArtistAndRating ?? 'null',
+                            style: TextStyle(
+                                color: theme.colorMain,
+                                fontSize: 24)),
                         Container(
                           height: 20,
                         ),

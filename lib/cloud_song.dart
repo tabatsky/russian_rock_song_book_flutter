@@ -1,4 +1,7 @@
 class CloudSong {
+  static const thumbUp = '\u{1F44D}';
+  static const thumbDown = '\u{1F44E}';
+
   final int songId;
   final String googleAccount;
   final String deviceIdHash;
@@ -22,4 +25,11 @@ class CloudSong {
 
   @override
   String toString() => description();
+
+  String get formattedRating => "$thumbUp$likeCount $thumbDown$dislikeCount";
+  String get visibleVariant => variant==0 ? '' : " ($variant)";
+  String get visibleTitle => "$title$visibleVariant";
+  String get visibleTitleWithRating => "$visibleTitle | $formattedRating";
+  String get visibleTitleWithArtistAndRating =>
+      "$visibleTitle | $artist | $formattedRating";
 }
