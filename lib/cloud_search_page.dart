@@ -209,9 +209,25 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
               child: Column(
                 children: [
                   const Spacer(),
-                  Text(cloudSong.artist, style: TextStyle(color: widget.theme.colorMain)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                          cloudSong.artist,
+                          style: TextStyle(color: widget.theme.colorMain)),
+                    ),
+                  ),
                   const Spacer(),
-                  Text(cloudSong.visibleTitleWithRating, style: TextStyle(color: widget.theme.colorMain)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                          cloudSong.visibleTitleWithRating,
+                          style: TextStyle(color: widget.theme.colorMain)),
+                    ),
+                  ),
                   const Spacer(),
                   Divider(
                     height: 3.0,
