@@ -104,6 +104,7 @@ class _SongListPageState extends State<SongListPage> {
             children: [
               GestureDetector(
                 onTap: () {
+                  Navigator.pop(context);
                   widget.localCallbacks?.onArtistClick(artist);
                 },
                 child: Container(
