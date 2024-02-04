@@ -11,6 +11,7 @@ import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/song_text_page.dart';
 import 'package:russian_rock_song_book/start_page.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'app_state.dart';
 import 'cloud_repository.dart';
@@ -71,12 +72,12 @@ class _MainPageState extends State<MainPage> {
         _saveSongText(updatedText);
       }, () {
         log('upload to cloud will be here');
-      }, () {
-        log('open vk music will be here');
-      }, () {
-        log('open yandex music will be here');
-      }, () {
-        log('open youtube music will be here');
+      }, (searchFor) {
+        _openVkMusic(searchFor);
+      }, (searchFor) {
+        _openYandexMusic(searchFor);
+      }, (searchFor) {
+        _openYoutubeMusic(searchFor);
       });
 
       cloudCallbacks = CloudCallbacks((searchFor, orderBy) {
@@ -93,12 +94,12 @@ class _MainPageState extends State<MainPage> {
         _nextCloudSong();
       }, () {
         log('download from cloud will be here');
-      }, () {
-        log('open vk music will be here');
-      }, () {
-        log('open yandex music will be here');
-      }, () {
-        log('open youtube music will be here');
+      }, (searchFor) {
+        _openVkMusic(searchFor);
+      }, (searchFor) {
+        _openYandexMusic(searchFor);
+      }, (searchFor) {
+        _openYoutubeMusic(searchFor);
       }, () {
         log('like will be here');
       }, () {
@@ -423,6 +424,32 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         appState = newAppState;
       });
+    }
+  }
+
+  void _openVkMusic(String searchFor) {
+    final searchForEncoded = Uri.encodeComponent(searchFor);
+    final url = "https://m.vk.com/audio?q=$searchForEncoded";
+    _openMusicAtExternalBrowser(url);
+  }
+
+  void _openYandexMusic(String searchFor) {
+    final searchForEncoded = Uri.encodeComponent(searchFor);
+    final url = "https://music.yandex.ru/search?text=$searchForEncoded";
+    _openMusicAtExternalBrowser(url);
+  }
+
+  void _openYoutubeMusic(String searchFor) {
+    final searchForEncoded = Uri.encodeComponent(searchFor);
+    final url = "https://music.youtube.com/search?q=$searchForEncoded";
+    _openMusicAtExternalBrowser(url);
+  }
+
+  void _openMusicAtExternalBrowser(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
+      log('Cannot open url');
+      _showToast('Cannot open url');
     }
   }
 }

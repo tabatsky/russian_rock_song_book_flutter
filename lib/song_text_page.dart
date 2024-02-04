@@ -174,7 +174,9 @@ class _SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icVk),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            widget.localCallbacks?.onOpenVkMusic();
+            widget.localCallbacks?.onOpenVkMusic(
+                widget.currentSong?.searchFor ?? 'null'
+            );
           },
         ),
       ),
@@ -187,7 +189,9 @@ class _SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icYoutube),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            widget.localCallbacks?.onOpenYoutubeMusic();
+            widget.localCallbacks?.onOpenYoutubeMusic(
+                widget.currentSong?.searchFor ?? 'null'
+            );
           },
         ),
       ),

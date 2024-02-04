@@ -137,10 +137,12 @@ class CloudSongTextPage extends StatelessWidget {
         color: AppTheme.colorDarkYellow,
         child:
         IconButton(
-          icon: Image.asset(AppIcons.icVk),
+          icon: Image.asset(AppIcons.icYandex),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            cloudCallbacks?.onOpenVkMusic();
+            cloudCallbacks?.onOpenYandexMusic(
+                cloudState.currentCloudSong?.searchFor ?? 'null'
+            );
           },
         ),
       ),
@@ -153,7 +155,9 @@ class CloudSongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icYoutube),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-            cloudCallbacks?.onOpenYoutubeMusic();
+            cloudCallbacks?.onOpenYoutubeMusic(
+                cloudState.currentCloudSong?.searchFor ?? 'null'
+            );
           },
         ),
       ),

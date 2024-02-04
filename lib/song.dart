@@ -31,4 +31,6 @@ class Song {
     $outOfTheBox
     """;
   }
+
+  String get searchFor => "$artist $title";
 }

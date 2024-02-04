@@ -32,4 +32,6 @@ class CloudSong {
   String get visibleTitleWithRating => "$visibleTitle | $formattedRating";
   String get visibleTitleWithArtistAndRating =>
       "$visibleTitle | $artist | $formattedRating";
+
+  String get searchFor => "$artist $title";
 }
