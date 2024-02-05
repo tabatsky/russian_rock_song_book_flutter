@@ -449,7 +449,7 @@ class _MainPageState extends State<MainPage> {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri)) {
       log('Cannot open url');
-      _showToast('Cannot open url');
+      _showToast(AppStrings.strToastCannotOpenUrl);
     }
   }
 }
