@@ -71,7 +71,7 @@ class _MainPageState extends State<MainPage> {
       }, (updatedText) {
         _saveSongText(updatedText);
       }, () {
-        log('upload to cloud will be here');
+        _uploadCurrentToCloud();
       }, (searchFor) {
         _openVkMusic(searchFor);
       }, (searchFor) {
@@ -93,7 +93,7 @@ class _MainPageState extends State<MainPage> {
       }, () {
         _nextCloudSong();
       }, () {
-        log('download from cloud will be here');
+        _downloadCurrent();
       }, (searchFor) {
         _openVkMusic(searchFor);
       }, (searchFor) {
@@ -101,9 +101,9 @@ class _MainPageState extends State<MainPage> {
       }, (searchFor) {
         _openYoutubeMusic(searchFor);
       }, () {
-        log('like will be here');
+        _likeCurrent();
       }, () {
-        log('dislike will be here');
+        _dislikeCurrent();
       });
     });
   }
@@ -451,6 +451,22 @@ class _MainPageState extends State<MainPage> {
       log('Cannot open url');
       _showToast(AppStrings.strToastCannotOpenUrl);
     }
+  }
+
+  void _uploadCurrentToCloud() {
+    _showToast('upload will be here');
+  }
+
+  void _downloadCurrent() {
+    _showToast('download will be here');
+  }
+
+  void _likeCurrent() {
+    _showToast('like will be here');
+  }
+
+  void _dislikeCurrent() {
+    _showToast('dislike will be here');
   }
 }
 
