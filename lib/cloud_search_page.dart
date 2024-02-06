@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:russian_rock_song_book/app_callbacks.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
 import 'package:russian_rock_song_book/order_by.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 
+import 'app_actions.dart';
 import 'app_icons.dart';
 import 'app_state.dart';
 import 'app_theme.dart';
@@ -12,12 +12,12 @@ class CloudSearchPage extends StatefulWidget {
 
   final AppTheme theme;
   final CloudState cloudState;
-  final CloudCallbacks? cloudCallbacks;
+  final void Function(UIAction action) onPerformAction;
 
   const CloudSearchPage(
       this.theme,
       this.cloudState,
-      this.cloudCallbacks,
+      this.onPerformAction,
       {super.key});
 
   @override
@@ -64,7 +64,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
           icon: Image.asset(AppIcons.icBack),
           iconSize: 50,
           onPressed: () {
-            widget.cloudCallbacks?.onBackPressed();
+            widget.onPerformAction(Back());
           },
         ),
       ),
@@ -201,7 +201,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
         return GestureDetector(
           onTap: () {
             _backupSearchState();
-            widget.cloudCallbacks?.onCloudSongClick(index);
+            widget.onPerformAction(CloudSongClick(index));
           },
           child: Container(
               height: 75,
@@ -242,11 +242,12 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
 
   void _performCloudSearch() {
     final searchFor = _cloudSearchTextFieldController.text;
-    widget.cloudCallbacks?.onPerformCloudSearch(searchFor, orderBy);
+    widget.onPerformAction(CloudSearch(searchFor, orderBy));
   }
 
   void _backupSearchState() {
-    widget.cloudCallbacks?.onBackupSearchState(_cloudSearchTextFieldController.text, orderBy);
+    final searchFor = _cloudSearchTextFieldController.text;
+    widget.onPerformAction(BackupSearchState(searchFor, orderBy));
   }
 
   void _restoreSearchFor() {

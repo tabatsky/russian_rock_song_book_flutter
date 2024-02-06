@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:russian_rock_song_book/app_callbacks.dart';
 import 'package:russian_rock_song_book/cloud_search_page.dart';
 import 'package:russian_rock_song_book/cloud_song_text_page.dart';
 import 'package:russian_rock_song_book/order_by.dart';
@@ -13,6 +12,7 @@ import 'package:russian_rock_song_book/start_page.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'app_actions.dart';
 import 'app_state.dart';
 import 'cloud_repository.dart';
 
@@ -49,65 +49,6 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   AppState appState = AppState();
 
-  LocalCallbacks? localCallbacks;
-  CloudCallbacks? cloudCallbacks;
-
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      localCallbacks = LocalCallbacks((position) {
-        _selectSong(position);
-      }, (artist) {
-        _selectArtist(artist);
-      }, () {
-        _back();
-      }, () {
-        _prevSong();
-      }, () {
-        _nextSong();
-      }, () {
-        _toggleFavorite();
-      }, (updatedText) {
-        _saveSongText(updatedText);
-      }, () {
-        _uploadCurrentToCloud();
-      }, (searchFor) {
-        _openVkMusic(searchFor);
-      }, (searchFor) {
-        _openYandexMusic(searchFor);
-      }, (searchFor) {
-        _openYoutubeMusic(searchFor);
-      });
-
-      cloudCallbacks = CloudCallbacks((searchFor, orderBy) {
-        _performCloudSearch(searchFor, orderBy);
-      }, (searchFor, orderBy) {
-        _backupSearchFor(searchFor, orderBy);
-      }, (position) {
-        _selectCloudSong(position);
-      }, () {
-        _back();
-      }, () {
-        _prevCloudSong();
-      }, () {
-        _nextCloudSong();
-      }, () {
-        _downloadCurrent();
-      }, (searchFor) {
-        _openVkMusic(searchFor);
-      }, (searchFor) {
-        _openYandexMusic(searchFor);
-      }, (searchFor) {
-        _openYoutubeMusic(searchFor);
-      }, () {
-        _likeCurrent();
-      }, () {
-        _dislikeCurrent();
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     switch (appState.currentPageVariant) {
@@ -116,16 +57,71 @@ class _MainPageState extends State<MainPage> {
           _showSongList();
         });
       case PageVariant.songList:
-        return SongListPage(appState.theme, appState.localState, localCallbacks);
+        return SongListPage(
+            appState.theme,
+            appState.localState,
+                (action) { _performAction(action); }
+        );
       case PageVariant.songText:
         return SongTextPage(
             appState.theme,
             appState.localState.currentSong,
-            localCallbacks);
+                (action) { _performAction(action); }
+        );
       case PageVariant.cloudSearch:
-        return CloudSearchPage(appState.theme, appState.cloudState, cloudCallbacks);
+        return CloudSearchPage(
+            appState.theme,
+            appState.cloudState,
+                (action) { _performAction(action); }
+        );
       case PageVariant.cloudSongText:
-        return CloudSongTextPage(appState.theme, appState.cloudState, cloudCallbacks);
+        return CloudSongTextPage(
+            appState.theme,
+            appState.cloudState,
+                (action) { _performAction(action); }
+        );
+    }
+  }
+
+  void _performAction(UIAction action) {
+    if (action is SongClick) {
+      _selectSong(action.position);
+    } else if (action is ArtistClick) {
+      _selectArtist(action.artist);
+    } else if (action is Back) {
+      _back();
+    } else if (action is PrevSong) {
+      _prevSong();
+    } else if (action is NextSong) {
+      _nextSong();
+    } else if (action is ToggleFavorite) {
+      _toggleFavorite();
+    } else if (action is SaveSongText) {
+      _saveSongText(action.updatedText);
+    } else if (action is UploadCurrentToCloud) {
+      _uploadCurrentToCloud();
+    } else if (action is OpenVkMusic) {
+      _openVkMusic(action.searchFor);
+    } else if (action is OpenYandexMusic) {
+      _openYandexMusic(action.searchFor);
+    } else if (action is OpenYoutubeMusic) {
+      _openYoutubeMusic(action.searchFor);
+    } else if (action is CloudSearch) {
+      _performCloudSearch(action.searchFor, action.orderBy);
+    } else if (action is BackupSearchState) {
+      _backupSearchState(action.searchFor, action.orderBy);
+    } else if (action is CloudSongClick) {
+      _selectCloudSong(action.position);
+    } else if (action is PrevCloudSong) {
+      _prevCloudSong();
+    } else if (action is NextCLoudSong) {
+      _nextCloudSong();
+    } else if (action is DownloadCurrent) {
+      _downloadCurrent();
+    } else if (action is LikeCurrent) {
+      _likeCurrent();
+    } else if (action is DislikeCurrent) {
+      _dislikeCurrent();
     }
   }
 
@@ -149,7 +145,7 @@ class _MainPageState extends State<MainPage> {
   Future<void> _selectArtist(String artist) async {
     log("select artist: $artist");
     if (artist == SongRepository.artistCloudSearch) {
-      _backupSearchFor('', OrderBy.byIdDesc);
+      _backupSearchState('', OrderBy.byIdDesc);
       final newAppState = appState;
       newAppState.currentPageVariant = PageVariant.cloudSearch;
       setState(() {
@@ -376,7 +372,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  void _backupSearchFor(String searchFor, OrderBy orderBy) {
+  void _backupSearchState(String searchFor, OrderBy orderBy) {
     final newAppState = appState;
     final newCloudState = appState.cloudState;
     newCloudState.searchForBackup = searchFor;
