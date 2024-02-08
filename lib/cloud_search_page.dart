@@ -42,7 +42,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   @override
   void initState() {
     super.initState();
-    _restoreSearchFor();
+    _restoreSearchState();
   }
 
   void _scrollToActual() {
@@ -241,6 +241,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   );
 
   void _performCloudSearch() {
+    _backupSearchState();
     final searchFor = _cloudSearchTextFieldController.text;
     widget.onPerformAction(CloudSearch(searchFor, orderBy));
   }
@@ -250,7 +251,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
     widget.onPerformAction(BackupSearchState(searchFor, orderBy));
   }
 
-  void _restoreSearchFor() {
+  void _restoreSearchState() {
     _cloudSearchTextFieldController.text = widget.cloudState.searchForBackup;
     setState(() {
       orderBy = widget.cloudState.orderByBackup;

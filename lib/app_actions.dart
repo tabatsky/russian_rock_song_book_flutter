@@ -2,6 +2,8 @@ import 'package:russian_rock_song_book/order_by.dart';
 
 class UIAction {}
 
+class ShowSongList extends UIAction {}
+
 class SongClick extends UIAction {
   int position;
 
