@@ -69,12 +69,16 @@ class AppStateMachine {
       _saveSongText(changeState, appState, action.updatedText);
     } else if (action is UploadCurrentToCloud) {
       _uploadCurrentToCloud(appState);
+    } else if (action is DeleteCurrentToTrash) {
+      _deleteCurrentToTrash(changeState, appState);
     } else if (action is OpenVkMusic) {
       _openVkMusic(appState, action.searchFor);
     } else if (action is OpenYandexMusic) {
       _openYandexMusic(appState, action.searchFor);
     } else if (action is OpenYoutubeMusic) {
       _openYoutubeMusic(appState, action.searchFor);
+    } else if (action is SendWarning) {
+      _sendWarning(appState, action.comment);
     } else if (action is CloudSearch) {
       _performCloudSearch(changeState, appState, action.searchFor, action.orderBy);
     } else if (action is BackupSearchState) {
@@ -264,6 +268,14 @@ class AppStateMachine {
     changeState(newAppState);
   }
 
+  void _uploadCurrentToCloud(AppState appState) {
+    _showToast(appState, 'upload will be here');
+  }
+
+  Future<void> _deleteCurrentToTrash(AppStateChanger changeState, AppState appState) async {
+    _showToast(appState, 'delete to trash will be here');
+  }
+
   void _showToast(AppState appState, String msg) {
     Fluttertoast.showToast(
         msg: msg,
@@ -274,10 +286,6 @@ class AppStateMachine {
         textColor: appState.theme.colorBg,
         fontSize: 16.0
     );
-  }
-
-  void _uploadCurrentToCloud(AppState appState) {
-    _showToast(appState, 'upload will be here');
   }
 
   void _openVkMusic(AppState appState, String searchFor) {
@@ -304,6 +312,10 @@ class AppStateMachine {
       log('Cannot open url');
       _showToast(appState, AppStrings.strToastCannotOpenUrl);
     }
+  }
+
+  void _sendWarning(AppState appState, String comment) {
+    _showToast(appState, 'send warning will be here:\n$comment');
   }
 
   Future<void> _performCloudSearch(AppStateChanger changeState, AppState appState, String searchFor, OrderBy orderBy) async {

@@ -28,6 +28,7 @@ class SaveSongText extends UIAction {
 }
 
 class UploadCurrentToCloud extends UIAction {}
+class DeleteCurrentToTrash extends UIAction {}
 
 class OpenVkMusic extends UIAction {
   String searchFor;
@@ -45,6 +46,12 @@ class OpenYoutubeMusic extends UIAction {
   String searchFor;
 
   OpenYoutubeMusic(this.searchFor);
+}
+
+class SendWarning extends UIAction {
+  String comment;
+
+  SendWarning(this.comment);
 }
 
 class CloudSearch extends UIAction {

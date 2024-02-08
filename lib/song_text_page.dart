@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/app_icons.dart';
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
+import 'package:russian_rock_song_book/warning_dialog.dart';
 
 import 'app_actions.dart';
 
@@ -218,7 +219,9 @@ class _SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icWarning),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            WarningDialog.showWarningDialog(context, (comment) {
+              widget.onPerformAction(SendWarning(comment));
+            });
           },
         ),
       ),
@@ -231,7 +234,7 @@ class _SongTextPageState extends State<SongTextPage> {
           icon: Image.asset(AppIcons.icTrash),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            _showDeleteToTrashConfirmDialog(context);
           },
         ),
       ),
@@ -268,5 +271,40 @@ class _SongTextPageState extends State<SongTextPage> {
     setState(() {
       _isEditorMode = false;
     });
+  }
+
+  Future<void> _showDeleteToTrashConfirmDialog(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Are you sure?'),
+          content: const Text(
+            'Current song will be removed to trash'
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Yes'),
+              onPressed: () {
+                widget.onPerformAction(DeleteCurrentToTrash());
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
