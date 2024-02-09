@@ -273,7 +273,25 @@ class AppStateMachine {
   }
 
   Future<void> _deleteCurrentToTrash(AppStateChanger changeState, AppState appState) async {
-    _showToast(appState, 'delete to trash will be here');
+    final newState = appState;
+    final song = newState.localState.currentSong!;
+    song.deleted = true;
+    await SongRepository().updateSong(song);
+    final count = await SongRepository().getCountByArtist(newState.localState.currentArtist);
+    newState.localState.currentCount = count;
+    newState.localState.allArtists = await SongRepository().getArtists();
+    if (newState.localState.currentCount > 0) {
+      if (newState.localState.currentSongPosition >= newState.localState.currentCount) {
+        newState.localState.currentSongPosition -= 1;
+      }
+      _refreshCurrentSong(changeState, newState);
+    } else {
+      _back(changeState, newState);
+    }
+    newState.localState.currentSongs = await SongRepository()
+        .getSongsByArtist(appState.localState.currentArtist);
+    changeState(newState);
+    _showToast(newState, 'Удалено');
   }
 
   void _showToast(AppState appState, String msg) {
