@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/app_state.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
+import 'package:russian_rock_song_book/warning.dart';
+import 'package:russian_rock_song_book/warning_dialog.dart';
 
 import 'app_actions.dart';
 import 'app_icons.dart';
@@ -114,7 +116,7 @@ class CloudSongTextPage extends StatelessWidget {
                 width: width,
                 height: buttonSize,
                 color: theme.colorBg,
-                child: _bottomButtonRow(buttonSize),
+                child: _bottomButtonRow(context, buttonSize),
               ),
               Container(
                 width: width,
@@ -128,7 +130,7 @@ class CloudSongTextPage extends StatelessWidget {
     );
   }
 
-  Widget _bottomButtonRow(double buttonSize) => Row(
+  Widget _bottomButtonRow(BuildContext context, double buttonSize) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Container(
@@ -183,7 +185,10 @@ class CloudSongTextPage extends StatelessWidget {
           icon: Image.asset(AppIcons.icWarning),
           padding: const EdgeInsets.all(8),
           onPressed: () {
-
+            WarningDialog.showWarningDialog(context, (comment) {
+              final warning = Warning.fromCloudSongWithComment(cloudState.currentCloudSong!, comment);
+              onPerformAction(SendWarning(warning));
+            });
           },
         ),
       ),

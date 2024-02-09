@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/app_strings.dart';
 
 typedef WarningSender = void Function(String comment);
 
@@ -10,7 +11,7 @@ class WarningDialog {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Send warning'),
+          title: const Text(AppStrings.strWarningDialogTitle),
           content: Container(
             constraints: const BoxConstraints(
               minHeight: editorHeight,
@@ -35,7 +36,7 @@ class WarningDialog {
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
               ),
-              child: const Text('Send'),
+              child: const Text(AppStrings.strSend),
               onPressed: () {
                 final comment = commentEditorController.text;
                 _sendWarning(warningSender, comment);
@@ -46,7 +47,7 @@ class WarningDialog {
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
               ),
-              child: const Text('Cancel'),
+              child: const Text(AppStrings.strCancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },

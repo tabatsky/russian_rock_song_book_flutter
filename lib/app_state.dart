@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
+import 'package:russian_rock_song_book/warning.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'app_actions.dart';
@@ -78,7 +79,7 @@ class AppStateMachine {
     } else if (action is OpenYoutubeMusic) {
       _openYoutubeMusic(appState, action.searchFor);
     } else if (action is SendWarning) {
-      _sendWarning(appState, action.comment);
+      _sendWarning(appState, action.warning);
     } else if (action is CloudSearch) {
       _performCloudSearch(changeState, appState, action.searchFor, action.orderBy);
     } else if (action is BackupSearchState) {
@@ -291,7 +292,7 @@ class AppStateMachine {
     newState.localState.currentSongs = await SongRepository()
         .getSongsByArtist(appState.localState.currentArtist);
     changeState(newState);
-    _showToast(newState, 'Удалено');
+    _showToast(newState, AppStrings.strDeleted);
   }
 
   void _showToast(AppState appState, String msg) {
@@ -332,8 +333,14 @@ class AppStateMachine {
     }
   }
 
-  void _sendWarning(AppState appState, String comment) {
-    _showToast(appState, 'send warning will be here:\n$comment');
+  Future<void> _sendWarning(AppState appState, Warning warning) async {
+    try {
+      await CloudRepository().addWarning(warning);
+      _showToast(appState, AppStrings.strWarningSendSuccess);
+    } catch (e) {
+      log("Exception: $e");
+      _showToast(appState, AppStrings.strWarningSendError);
+    }
   }
 
   Future<void> _performCloudSearch(AppStateChanger changeState, AppState appState, String searchFor, OrderBy orderBy) async {

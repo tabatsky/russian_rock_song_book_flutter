@@ -1,4 +1,5 @@
 import 'package:russian_rock_song_book/order_by.dart';
+import 'package:russian_rock_song_book/warning.dart';
 
 class UIAction {}
 
@@ -49,9 +50,9 @@ class OpenYoutubeMusic extends UIAction {
 }
 
 class SendWarning extends UIAction {
-  String comment;
+  Warning warning;
 
-  SendWarning(this.comment);
+  SendWarning(this.warning);
 }
 
 class CloudSearch extends UIAction {

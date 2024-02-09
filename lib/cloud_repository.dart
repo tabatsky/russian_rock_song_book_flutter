@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
+import 'package:russian_rock_song_book/warning.dart';
 
 import 'cloud_song.dart';
 
@@ -27,12 +29,22 @@ class CloudRepository {
     final patchedSearchFor = searchFor.isEmpty ? 'empty_search_query' : searchFor;
     final searchResult = await client?.searchSongs(patchedSearchFor, orderBy);
     if (searchResult?.status != 'success') {
-      return throw "fetch data error: ${searchResult?.message}";
+      throw "fetch data error: ${searchResult?.message}";
     } else {
       return searchResult
           ?.data
           ?.map((e) => e.toCloudSong())
           .toList() ?? [];
+    }
+  }
+
+  Future<void> addWarning(Warning warning) async {
+    final warningApiModel = WarningApiModel.fromWarning(warning);
+    final warningJSON = jsonEncode(warningApiModel.toJson());
+    log(warningJSON);
+    final result = await client?.addWarning(warningJSON);
+    if (result?.status != 'success') {
+      throw "add warning error: ${result?.message}";
     }
   }
 }
@@ -45,6 +57,10 @@ abstract class RestClient {
   Future<ResultWithCloudSongApiModelListData> searchSongs(
       @Path('searchFor') String searchFor,
       @Path('orderBy') String orderBy);
+
+  @POST("warnings/add")
+  @FormUrlEncoded()
+  Future<ResultWithoutData> addWarning(@Field('warningJSON') String warningJSON);
 }
 
 @JsonSerializable()
@@ -58,6 +74,18 @@ class ResultWithCloudSongApiModelListData {
   factory ResultWithCloudSongApiModelListData.fromJson(Map<String, dynamic> json) => _$ResultWithCloudSongApiModelListDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$ResultWithCloudSongApiModelListDataToJson(this);
+}
+
+@JsonSerializable()
+class ResultWithoutData {
+  final String status;
+  final String? message;
+
+  const ResultWithoutData(this.status, this.message);
+
+  factory ResultWithoutData.fromJson(Map<String, dynamic> json) => _$ResultWithoutDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ResultWithoutDataToJson(this);
 }
 
 @JsonSerializable()
@@ -114,4 +142,26 @@ class CloudSongApiModel {
       likeCount,
       dislikeCount
   );
+}
+
+@JsonSerializable()
+class WarningApiModel {
+  String warningType;
+  String artist;
+  String title;
+  int variant;
+  String comment;
+
+  WarningApiModel(this.warningType, this.artist, this.title, this.variant,
+      this.comment);
+
+  static WarningApiModel fromWarning(Warning warning) =>
+      WarningApiModel(
+          warning.warningType,
+          warning.artist,
+          warning.title,
+          warning.variant,
+          warning.comment);
+
+  Map<String, dynamic> toJson() => _$WarningApiModelToJson(this);
 }

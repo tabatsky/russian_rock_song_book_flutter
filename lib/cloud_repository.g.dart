@@ -25,6 +25,18 @@ Map<String, dynamic> _$ResultWithCloudSongApiModelListDataToJson(
       'data': instance.data,
     };
 
+ResultWithoutData _$ResultWithoutDataFromJson(Map<String, dynamic> json) =>
+    ResultWithoutData(
+      json['status'] as String,
+      json['message'] as String?,
+    );
+
+Map<String, dynamic> _$ResultWithoutDataToJson(ResultWithoutData instance) =>
+    <String, dynamic>{
+      'status': instance.status,
+      'message': instance.message,
+    };
+
 CloudSongApiModel _$CloudSongApiModelFromJson(Map<String, dynamic> json) =>
     CloudSongApiModel(
       json['songId'] as int,
@@ -55,6 +67,24 @@ Map<String, dynamic> _$CloudSongApiModelToJson(CloudSongApiModel instance) =>
       'raiting': instance.raiting,
       'likeCount': instance.likeCount,
       'dislikeCount': instance.dislikeCount,
+    };
+
+WarningApiModel _$WarningApiModelFromJson(Map<String, dynamic> json) =>
+    WarningApiModel(
+      json['warningType'] as String,
+      json['artist'] as String,
+      json['title'] as String,
+      json['variant'] as int,
+      json['comment'] as String,
+    );
+
+Map<String, dynamic> _$WarningApiModelToJson(WarningApiModel instance) =>
+    <String, dynamic>{
+      'warningType': instance.warningType,
+      'artist': instance.artist,
+      'title': instance.title,
+      'variant': instance.variant,
+      'comment': instance.comment,
     };
 
 // **************************************************************************
@@ -102,6 +132,34 @@ class _RestClient implements RestClient {
               baseUrl,
             ))));
     final value = ResultWithCloudSongApiModelListData.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ResultWithoutData> addWarning(String warningJSON) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {'warningJSON': warningJSON};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ResultWithoutData>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              'warnings/add',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = ResultWithoutData.fromJson(_result.data!);
     return value;
   }
 

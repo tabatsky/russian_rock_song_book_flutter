@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:russian_rock_song_book/app_icons.dart';
+import 'package:russian_rock_song_book/app_strings.dart';
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
+import 'package:russian_rock_song_book/warning.dart';
 import 'package:russian_rock_song_book/warning_dialog.dart';
 
 import 'app_actions.dart';
@@ -220,7 +222,8 @@ class _SongTextPageState extends State<SongTextPage> {
           padding: const EdgeInsets.all(8),
           onPressed: () {
             WarningDialog.showWarningDialog(context, (comment) {
-              widget.onPerformAction(SendWarning(comment));
+              final warning = Warning.fromSongWithComment(widget.currentSong!, comment);
+              widget.onPerformAction(SendWarning(warning));
             });
           },
         ),
@@ -278,16 +281,14 @@ class _SongTextPageState extends State<SongTextPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Are you sure?'),
-          content: const Text(
-            'Current song will be removed to trash'
-          ),
+          title: const Text(AppStrings.strAreYouSure),
+          content: const Text(AppStrings.strWillBeRemoved),
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
               ),
-              child: const Text('Yes'),
+              child: const Text(AppStrings.strYes),
               onPressed: () {
                 widget.onPerformAction(DeleteCurrentToTrash());
                 Navigator.of(context).pop();
@@ -297,7 +298,7 @@ class _SongTextPageState extends State<SongTextPage> {
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
               ),
-              child: const Text('No'),
+              child: const Text(AppStrings.strNo),
               onPressed: () {
                 Navigator.of(context).pop();
               },
