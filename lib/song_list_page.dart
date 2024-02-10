@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:russian_rock_song_book/app_divider.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
@@ -27,7 +28,7 @@ class SongListPage extends StatefulWidget{
 class _SongListPageState extends State<SongListPage> {
 
   static const _titleHeight = 50.0;
-  static const _dividerHeight = 3.0;
+  static const _dividerHeight = 1.0;
   static const _itemHeight = _titleHeight + _dividerHeight;
 
   final _titleScrollController = ScrollController(
@@ -91,7 +92,7 @@ class _SongListPageState extends State<SongListPage> {
                 color: AppTheme.colorDarkYellow,
               ),
               margin: EdgeInsets.zero,
-              child: Text(AppStrings.strMenu, style: TextStyle(color: AppTheme.colorBlack)),
+              child: Text(AppStrings.strMenu, style: TextStyle(color: AppTheme.materialBlack)),
             ),
           );
         } else {
@@ -108,23 +109,27 @@ class _SongListPageState extends State<SongListPage> {
                   widget.onPerformAction(ArtistClick(artist));
                 },
                 child: Container(
-                    height: _titleHeight,
-                    color: widget.theme.colorMain,
-                    child: Center(
+                  height: _titleHeight,
+                  color: widget.theme.colorMain,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
                       child: Text(
                           artist,
                           style: TextStyle(
-                              color: widget.theme.colorBg,
-                              fontWeight: fontWeight,
+                            color: widget.theme.colorBg,
+                            fontWeight: fontWeight,
                           )
                       ),
-                    )
+                    ),
+                  ),
                 ),
               ),
-              Divider(
+              AppDivider(
                 height: _dividerHeight,
                 color: widget.theme.colorBg,
-              )
+              ),
             ],
           );
         }
@@ -176,8 +181,8 @@ class _SongListPageState extends State<SongListPage> {
                   )
               ),
             ),
-            Divider(
-              height: 3.0,
+            AppDivider(
+              height: _dividerHeight,
               color: widget.theme.colorMain,
             )
           ],

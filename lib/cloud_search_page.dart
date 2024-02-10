@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/app_divider.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
 import 'package:russian_rock_song_book/order_by.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
@@ -27,7 +28,8 @@ class CloudSearchPage extends StatefulWidget {
 class _CloudSearchPageState extends State<CloudSearchPage> {
 
   static const _titleHeight = 75.0;
-  static const _itemHeight = _titleHeight;
+  static const _dividerHeight = 1.0;
+  static const _itemHeight = _titleHeight + _dividerHeight;
 
   final _cloudSearchTextFieldController = TextEditingController();
 
@@ -204,7 +206,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
             widget.onPerformAction(CloudSongClick(index));
           },
           child: Container(
-              height: 75,
+              height: _itemHeight,
               color: widget.theme.colorBg,
               child: Column(
                 children: [
@@ -229,8 +231,8 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                     ),
                   ),
                   const Spacer(),
-                  Divider(
-                    height: 3.0,
+                  AppDivider(
+                    height: _dividerHeight,
                     color: widget.theme.colorMain,
                   )
                 ]

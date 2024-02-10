@@ -33,7 +33,7 @@ class StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppTheme.colorBlack,
+      color: AppTheme.materialBlack,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
