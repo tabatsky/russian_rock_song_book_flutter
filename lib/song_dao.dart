@@ -54,6 +54,23 @@ class SongDao {
       }
     });
   }
+  
+  Future<void> insertReplaceSong(SongEntity songEntity) async {
+    const query = """
+    INSERT OR REPLACE INTO songEntity
+    (artist, title, text, favorite, deleted, outOfTheBox, origTextMD5)
+    VALUES
+    (?, ?, ?, ?, ?, ?, ?);
+    """;
+
+    await _db?.rawInsert(
+        query,
+        [
+          songEntity.artist, songEntity.title, songEntity.text,
+          songEntity.favorite, songEntity.deleted, songEntity.outOfTheBox,
+          songEntity.origTextMD5
+        ]);
+  }
 
   Future<List<String>> getArtists() async {
     List<String> result = <String>[];
@@ -142,6 +159,14 @@ class SongDao {
     ]);
   }
 
+  Future<void> setFavorite(bool favorite, String artist, String title) async {
+    const query = 'UPDATE songEntity SET favorite=? WHERE artist=? AND title=?';
+
+    await _db?.rawUpdate(query, [
+      favorite ? 1 : 0, artist, title
+    ]);
+  }
+
   Future<SongEntity?> getSongByArtistAndPosition(String artist, int position) async {
     if (artist == SongRepository.artistFavorite) {
       return _getSongByPositionFavorite(position);
@@ -188,6 +213,35 @@ class SongDao {
     List<SongEntity> result = <SongEntity>[];
 
     List<Map> list = await _db?.rawQuery(query, [position]) ?? [];
+
+    for (var map in list) {
+      int id = map['id'] as int;
+      String artist = map['artist'] as String;
+      String title = map['title'] as String;
+      String text = map['text'] as String;
+      int favorite = map['favorite'] as int;
+      int deleted = map['deleted'] as int;
+      int outOfTheBox = map['outOfTheBox'] as int;
+      String origTextMD5 = map['origTextMD5'] as String;
+      final songEntity = SongEntity.withId(id, artist, title, text)
+        ..favorite = favorite
+        ..deleted = deleted
+        ..outOfTheBox = outOfTheBox
+        ..origTextMD5 = origTextMD5;
+      result.add(songEntity);
+    }
+
+    return result.elementAtOrNull(0);
+  }
+  
+  Future<SongEntity?> getSongByArtistAndTitle(String artist, String title) async {
+    const query = """
+      SELECT * FROM songEntity WHERE artist=? AND title=?
+    """;
+
+    List<SongEntity> result = <SongEntity>[];
+
+    List<Map> list = await _db?.rawQuery(query, [artist, title]) ?? [];
 
     for (var map in list) {
       int id = map['id'] as int;

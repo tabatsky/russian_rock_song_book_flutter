@@ -170,6 +170,20 @@ class SongRepository {
     final result = await _songDao?.getCountByArtist(artist);
     return result ?? 0;
   }
+
+  Future<void> addSongFromCloud(Song song) async {
+    final existingSong = await _songDao?.getSongByArtistAndTitle(song.artist, song.title);
+
+    if (existingSong == null) {
+      final songEntity = SongEntity.fromSong(song);
+      await _songDao?.insertReplaceSong(songEntity);
+    } else {
+      existingSong.text = song.text;
+      existingSong.deleted = 0;
+      existingSong.favorite = 1;
+      await _songDao?.updateSong(existingSong);
+    }
+  }
 }
 
 class SongEntity {

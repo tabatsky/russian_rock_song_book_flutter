@@ -1,3 +1,5 @@
+import 'package:russian_rock_song_book/song.dart';
+
 class CloudSong {
   static const thumbUp = '\u{1F44D}';
   static const thumbDown = '\u{1F44E}';
@@ -34,4 +36,7 @@ class CloudSong {
       "$visibleTitle | $artist | $formattedRating";
 
   String get searchFor => "$artist $title";
+
+  Song asSong() => Song(artist, visibleTitle, text)
+      ..favorite = true;
 }

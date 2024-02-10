@@ -292,7 +292,7 @@ class AppStateMachine {
     newState.localState.currentSongs = await SongRepository()
         .getSongsByArtist(appState.localState.currentArtist);
     changeState(newState);
-    _showToast(newState, AppStrings.strDeleted);
+    _showToast(newState, AppStrings.strToastDeleted);
   }
 
   void _showToast(AppState appState, String msg) {
@@ -336,10 +336,10 @@ class AppStateMachine {
   Future<void> _sendWarning(AppState appState, Warning warning) async {
     try {
       await CloudRepository().addWarning(warning);
-      _showToast(appState, AppStrings.strWarningSendSuccess);
+      _showToast(appState, AppStrings.strToastWarningSendSuccess);
     } catch (e) {
       log("Exception: $e");
-      _showToast(appState, AppStrings.strWarningSendError);
+      _showToast(appState, AppStrings.strToastWarningSendError);
     }
   }
 
@@ -422,8 +422,12 @@ class AppStateMachine {
     }
   }
 
-  void _downloadCurrent(AppStateChanger changeState, AppState appState) {
-    _showToast(appState, 'download will be here');
+  Future<void> _downloadCurrent(AppStateChanger changeState, AppState appState) async {
+    await SongRepository().addSongFromCloud(appState.cloudState.currentCloudSong!.asSong());
+    final newState = appState;
+    newState.localState.allArtists = await SongRepository().getArtists();
+    changeState(newState);
+    _showToast(newState, AppStrings.strToastDownloadSuccess);
   }
 
   void _likeCurrent(AppStateChanger changeState, AppState appState) {
