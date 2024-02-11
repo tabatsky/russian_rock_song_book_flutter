@@ -19,7 +19,8 @@ class AssetManager {
     final songList = songbook.map((jsonSong) {
       final title = jsonSong['title'];
       final text = jsonSong['text'];
-      final song = Song(artistName, title, text);
+      final song = Song(artistName, title, text)
+                      ..origTextMD5 = Song.songTextHash(text);
       return song;
     }).toList();
     return songList;

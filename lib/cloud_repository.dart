@@ -10,6 +10,9 @@ import 'cloud_song.dart';
 
 part 'cloud_repository.g.dart';
 
+typedef Success = void Function();
+typedef ServerError = void Function(String message);
+
 class CloudRepository {
   static final CloudRepository _instance = CloudRepository._privateConstructor();
 
@@ -38,13 +41,26 @@ class CloudRepository {
     }
   }
 
-  Future<void> addWarning(Warning warning) async {
+  Future<void> addWarning(Warning warning, Success success, ServerError serverError) async {
     final warningApiModel = WarningApiModel.fromWarning(warning);
     final warningJSON = jsonEncode(warningApiModel.toJson());
     log(warningJSON);
     final result = await client?.addWarning(warningJSON);
-    if (result?.status != 'success') {
-      throw "add warning error: ${result?.message}";
+    if (result?.status == 'success') {
+      success();
+    } else {
+      serverError(result?.message ?? 'null');
+    }
+  }
+
+  Future<void> addCloudSong(CloudSong cloudSong, Success success, ServerError serverError) async {
+    final cloudSongApiModel = CloudSongApiModel.fromCloudSong(cloudSong);
+    final cloudSongJSON = jsonEncode(cloudSongApiModel.toJson());
+    final result = await client?.addSong(cloudSongJSON);
+    if (result?.status == 'success') {
+      success();
+    } else {
+      serverError(result?.message ?? 'null');
     }
   }
 }
@@ -61,6 +77,10 @@ abstract class RestClient {
   @POST("warnings/add")
   @FormUrlEncoded()
   Future<ResultWithoutData> addWarning(@Field('warningJSON') String warningJSON);
+
+  @POST("songs/add")
+  @FormUrlEncoded()
+  Future<ResultWithoutData> addSong(@Field('cloudSongJSON') String cloudSongJSON);
 }
 
 @JsonSerializable()

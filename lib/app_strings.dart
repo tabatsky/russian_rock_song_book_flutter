@@ -15,6 +15,8 @@ class AppStrings {
   static const strNo = 'Нет';
   static const strToastDeleted = 'Удалено';
   static const strToastDownloadSuccess = 'Аккорды сохранены в локальной базе данных и добавлены в избранное';
+  static const strToastUploadDuplicate = 'Нельзя залить в облако: данный вариант аккордов поставляется вместе с приложением либо был сохранен из облака';
+  static const strToastUploadSuccess = 'Успешно добавлено в облако';
 
   static String strFrom(int done, int total) => "$done из $total";
 }

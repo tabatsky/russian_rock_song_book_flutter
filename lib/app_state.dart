@@ -270,7 +270,17 @@ class AppStateMachine {
   }
 
   void _uploadCurrentToCloud(AppState appState) {
-    _showToast(appState, 'upload will be here');
+    final textWasChanged = appState.localState.currentSong!.textWasChanged;
+    if (!textWasChanged) {
+      _showToast(appState, AppStrings.strToastUploadDuplicate);
+    } else {
+      final cloudSong = CloudSong.fromSong(appState.localState.currentSong!);
+      CloudRepository().addCloudSong(cloudSong, () {
+        _showToast(appState, AppStrings.strToastUploadSuccess);
+      }, (message) {
+        _showToast(appState, message);
+      });
+    }
   }
 
   Future<void> _deleteCurrentToTrash(AppStateChanger changeState, AppState appState) async {
@@ -334,13 +344,11 @@ class AppStateMachine {
   }
 
   Future<void> _sendWarning(AppState appState, Warning warning) async {
-    try {
-      await CloudRepository().addWarning(warning);
+    await CloudRepository().addWarning(warning, () {
       _showToast(appState, AppStrings.strToastWarningSendSuccess);
-    } catch (e) {
-      log("Exception: $e");
+    }, (message) {
       _showToast(appState, AppStrings.strToastWarningSendError);
-    }
+    });
   }
 
   Future<void> _performCloudSearch(AppStateChanger changeState, AppState appState, String searchFor, OrderBy orderBy) async {

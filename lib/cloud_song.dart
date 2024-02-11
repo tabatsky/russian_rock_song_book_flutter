@@ -39,4 +39,12 @@ class CloudSong {
 
   Song asSong() => Song(artist, visibleTitle, text)
       ..favorite = true;
+
+  static CloudSong fromSong(Song song) => CloudSong(
+      -1, 'Flutter_debug', 'Flutter_debug',
+      song.artist, song.title, song.text,
+      Song.songTextHash(song.text), song.origTextMD5 == Song.userSongMD5,
+      -1, 0.0, 0, 0
+  );
+
 }

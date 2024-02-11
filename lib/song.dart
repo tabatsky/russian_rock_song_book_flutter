@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
+
 class Song {
   int id = 0;
   String artist;
@@ -33,4 +37,14 @@ class Song {
   }
 
   String get searchFor => "$artist $title";
+
+  bool get textWasChanged => origTextMD5 != songTextHash(text);
+
+  static const userSongMD5 = "USER";
+
+  static String songTextHash(String text) {
+    final String preparedText = text.replaceAll(RegExp('\\s+'), ' ');
+    final hash = md5.convert(preparedText.codeUnits).bytes;
+    return base64Encode(hash);
+  }
 }
