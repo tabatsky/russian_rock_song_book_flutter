@@ -13,7 +13,7 @@ class SongTextPage extends StatefulWidget {
 
   final AppTheme theme;
   final Song? currentSong;
-  final void Function(UIAction action) onPerformAction;
+  final void Function(AppUIAction action) onPerformAction;
 
   const SongTextPage(
       this.theme,

@@ -51,7 +51,7 @@ typedef AppStateChanger = void Function(AppState newState);
 
 class AppStateMachine {
 
-  bool performAction(AppStateChanger changeState, AppState appState, UIAction action) {
+  bool performAction(AppStateChanger changeState, AppState appState, AppUIAction action) {
     if (action is ShowSongList) {
       _showSongList(changeState, appState);
     } else if (action is ArtistClick) {

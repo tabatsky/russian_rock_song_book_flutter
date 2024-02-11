@@ -13,7 +13,7 @@ class SongListPage extends StatefulWidget{
   final AppTheme theme;
 
   final LocalState localState;
-  final void Function(UIAction action) onPerformAction;
+  final void Function(AppUIAction action) onPerformAction;
 
   const SongListPage(
       this.theme,

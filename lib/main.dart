@@ -74,7 +74,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  void _performAction(UIAction action) {
+  void _performAction(AppUIAction action) {
     final machineAcceptedAction = appStateMachine.performAction((newState) {
       setState(() {
         appState = newState;

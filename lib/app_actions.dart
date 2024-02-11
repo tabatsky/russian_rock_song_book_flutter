@@ -1,82 +1,82 @@
 import 'package:russian_rock_song_book/order_by.dart';
 import 'package:russian_rock_song_book/warning.dart';
 
-class UIAction {}
+class AppUIAction {}
 
-class ShowSongList extends UIAction {}
+class ShowSongList extends AppUIAction {}
 
-class SongClick extends UIAction {
+class SongClick extends AppUIAction {
   int position;
 
   SongClick(this.position);
 }
 
-class ArtistClick extends UIAction {
+class ArtistClick extends AppUIAction {
   String artist;
 
   ArtistClick(this.artist);
 }
 
-class Back extends UIAction {}
-class PrevSong extends UIAction {}
-class NextSong extends UIAction {}
-class ToggleFavorite extends UIAction {}
+class Back extends AppUIAction {}
+class PrevSong extends AppUIAction {}
+class NextSong extends AppUIAction {}
+class ToggleFavorite extends AppUIAction {}
 
-class SaveSongText extends UIAction {
+class SaveSongText extends AppUIAction {
   String updatedText;
 
   SaveSongText(this.updatedText);
 }
 
-class UploadCurrentToCloud extends UIAction {}
-class DeleteCurrentToTrash extends UIAction {}
+class UploadCurrentToCloud extends AppUIAction {}
+class DeleteCurrentToTrash extends AppUIAction {}
 
-class OpenVkMusic extends UIAction {
+class OpenVkMusic extends AppUIAction {
   String searchFor;
 
   OpenVkMusic(this.searchFor);
 }
 
-class OpenYandexMusic extends UIAction {
+class OpenYandexMusic extends AppUIAction {
   String searchFor;
 
   OpenYandexMusic(this.searchFor);
 }
 
-class OpenYoutubeMusic extends UIAction {
+class OpenYoutubeMusic extends AppUIAction {
   String searchFor;
 
   OpenYoutubeMusic(this.searchFor);
 }
 
-class SendWarning extends UIAction {
+class SendWarning extends AppUIAction {
   Warning warning;
 
   SendWarning(this.warning);
 }
 
-class CloudSearch extends UIAction {
+class CloudSearch extends AppUIAction {
   String searchFor;
   OrderBy orderBy;
 
   CloudSearch(this.searchFor, this.orderBy);
 }
 
-class CloudSongClick extends UIAction {
+class CloudSongClick extends AppUIAction {
   int position;
 
   CloudSongClick(this.position);
 }
 
-class BackupSearchState extends UIAction {
+class BackupSearchState extends AppUIAction {
   String searchFor;
   OrderBy orderBy;
 
   BackupSearchState(this.searchFor, this.orderBy);
 }
 
-class PrevCloudSong extends UIAction {}
-class NextCLoudSong extends UIAction {}
-class DownloadCurrent extends UIAction {}
-class LikeCurrent extends UIAction {}
-class DislikeCurrent extends UIAction {}
+class PrevCloudSong extends AppUIAction {}
+class NextCLoudSong extends AppUIAction {}
+class DownloadCurrent extends AppUIAction {}
+class LikeCurrent extends AppUIAction {}
+class DislikeCurrent extends AppUIAction {}

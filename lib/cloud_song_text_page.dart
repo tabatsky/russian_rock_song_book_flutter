@@ -11,7 +11,7 @@ class CloudSongTextPage extends StatelessWidget {
 
   final AppTheme theme;
   final CloudState cloudState;
-  final void Function(UIAction action) onPerformAction;
+  final void Function(AppUIAction action) onPerformAction;
 
   final ScrollController scrollController = ScrollController(
     initialScrollOffset: 0.0,

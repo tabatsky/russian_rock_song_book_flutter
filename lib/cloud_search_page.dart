@@ -13,7 +13,7 @@ class CloudSearchPage extends StatefulWidget {
 
   final AppTheme theme;
   final CloudState cloudState;
-  final void Function(UIAction action) onPerformAction;
+  final void Function(AppUIAction action) onPerformAction;
 
   const CloudSearchPage(
       this.theme,
