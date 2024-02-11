@@ -434,6 +434,10 @@ class AppStateMachine {
     await SongRepository().addSongFromCloud(appState.cloudState.currentCloudSong!.asSong());
     final newState = appState;
     newState.localState.allArtists = await SongRepository().getArtists();
+    final count = await SongRepository().getCountByArtist(newState.localState.currentArtist);
+    newState.localState.currentCount = count;
+    newState.localState.currentSongs = await SongRepository()
+        .getSongsByArtist(appState.localState.currentArtist);
     changeState(newState);
     _showToast(newState, AppStrings.strToastDownloadSuccess);
   }
