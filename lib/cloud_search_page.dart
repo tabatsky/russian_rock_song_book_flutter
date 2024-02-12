@@ -8,6 +8,7 @@ import 'app_actions.dart';
 import 'app_icons.dart';
 import 'app_state.dart';
 import 'app_theme.dart';
+import 'cloud_search_pager.dart';
 
 class CloudSearchPage extends StatefulWidget {
 
@@ -54,9 +55,9 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.cloudState.currentSearchState == SearchState.loaded) {
-      WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
-    }
+    // if (widget.cloudState.currentSearchState == SearchState.idle) {
+    //   WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
+    // }
     return Scaffold(
       backgroundColor: widget.theme.colorBg,
       appBar: AppBar(
@@ -87,13 +88,12 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
 
   Widget _content() {
     if (widget.cloudState.currentSearchState == SearchState.loading) {
+      widget.cloudState.currentSearchPager?.getPage(0, false);
       return _makeProgressIndicator();
-    } else if (widget.cloudState.currentSearchState == SearchState.loaded) {
-      return Flexible(child: _makeCloudTitleListView());
     } else if (widget.cloudState.currentSearchState == SearchState.empty) {
       return _makeEmptyListIndicator();
     } else {
-      throw UnimplementedError('not implemented yet');
+      return Flexible(child: _makeCloudTitleListView());
     }
   }
 
@@ -194,52 +194,82 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
     return menuItems;
   }
 
-  ListView _makeCloudTitleListView() => ListView.builder(
-      controller: _cloudTitleScrollController,
-      padding: EdgeInsets.zero,
-      itemCount: widget.cloudState.currentCloudSongs.length,
-      itemBuilder: (BuildContext context, int index) {
-        final cloudSong = widget.cloudState.currentCloudSongs[index];
-        return GestureDetector(
-          onTap: () {
-            _backupSearchState();
-            widget.onPerformAction(CloudSongClick(index));
-          },
-          child: Container(
-              height: _itemHeight,
-              color: widget.theme.colorBg,
-              child: Column(
-                children: [
-                  const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                          cloudSong.artist,
-                          style: TextStyle(color: widget.theme.colorMain)),
+  Widget _makeCloudTitleListView() => CustomScrollView(
+    controller: _cloudTitleScrollController,
+    slivers: [
+      SliverList(
+        delegate: SliverChildBuilderDelegate(
+          childCount: widget.cloudState.lastPage?.plus(1), (context, pageIndex) {
+            return FutureBuilder(
+              future: widget.cloudState.currentSearchPager?.getPage(pageIndex, false),
+              initialData: null,
+              builder: (context, snapshot) {
+                final titleViews = Iterable<int>.generate(
+                    snapshot.data?.length ?? 0).map((listIndex) {
+                  final cloudSong = snapshot.data!.elementAt(listIndex);
+                  final cloudSongIndex = pageIndex * pageSize + listIndex;
+                  return GestureDetector(
+                    onTap: () {
+                      _backupSearchState();
+                      widget.onPerformAction(CloudSongClick(cloudSongIndex));
+                    },
+                    child: Container(
+                        height: _itemHeight,
+                        color: widget.theme.colorBg,
+                        child: Column(
+                            children: [
+                              const Spacer(),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                      cloudSong.artist,
+                                      style: TextStyle(
+                                          color: widget.theme.colorMain)),
+                                ),
+                              ),
+                              const Spacer(),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                      cloudSong.visibleTitleWithRating,
+                                      style: TextStyle(
+                                          color: widget.theme.colorMain)),
+                                ),
+                              ),
+                              const Spacer(),
+                              AppDivider(
+                                height: _dividerHeight,
+                                color: widget.theme.colorMain,
+                              )
+                            ]
+                        )
                     ),
-                  ),
-                  const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                          cloudSong.visibleTitleWithRating,
-                          style: TextStyle(color: widget.theme.colorMain)),
+                  );
+                }).toList();
+                if (snapshot.data != null) {
+                  return SizedBox(
+                    height: _itemHeight * titleViews.length,
+                    child: Column(
+                      children: titleViews,
                     ),
-                  ),
-                  const Spacer(),
-                  AppDivider(
-                    height: _dividerHeight,
-                    color: widget.theme.colorMain,
-                  )
-                ]
-              )
-          ),
-        );
-      }
+                  );
+                } else {
+                  return const SizedBox(
+                    height: _itemHeight * pageSize / 3,
+                  );
+                }
+              },
+            );
+          }
+        ),
+      ),
+    ],
   );
 
   void _performCloudSearch() {

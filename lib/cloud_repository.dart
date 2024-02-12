@@ -41,6 +41,20 @@ class CloudRepository {
     }
   }
 
+  Future<List<CloudSong>> pagedSearch(String searchFor, String orderBy, int page) async {
+    final patchedSearchFor = searchFor.isEmpty ? 'empty_search_query' : searchFor;
+    log("$patchedSearchFor $orderBy $page");
+    final searchResult = await client?.pagedSearch(patchedSearchFor, orderBy, page.toString());
+    if (searchResult?.status != 'success') {
+      throw "fetch data error: ${searchResult?.message}";
+    } else {
+      return searchResult
+          ?.data
+          ?.map((e) => e.toCloudSong())
+          .toList() ?? [];
+    }
+  }
+
   Future<void> addWarning(Warning warning, Success success, ServerError serverError) async {
     final warningApiModel = WarningApiModel.fromWarning(warning);
     final warningJSON = jsonEncode(warningApiModel.toJson());
@@ -73,6 +87,12 @@ abstract class RestClient {
   Future<ResultWithCloudSongApiModelListData> searchSongs(
       @Path('searchFor') String searchFor,
       @Path('orderBy') String orderBy);
+
+  @GET('songs/pagedSearchWithLikes/{searchFor}/{orderBy}/{page}')
+  Future<ResultWithCloudSongApiModelListData> pagedSearch(
+      @Path('searchFor') String searchFor,
+      @Path('orderBy') String orderBy,
+      @Path('page') String page);
 
   @POST("warnings/add")
   @FormUrlEncoded()

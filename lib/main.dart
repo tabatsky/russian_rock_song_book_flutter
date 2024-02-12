@@ -76,9 +76,9 @@ class _MainPageState extends State<MainPage> {
 
   void _performAction(AppUIAction action) {
     final machineAcceptedAction = appStateMachine.performAction((newState) {
-      setState(() {
+      WidgetsBinding.instance.scheduleFrameCallback((_) => setState(() {
         appState = newState;
-      });
+      }));
     }, appState, action);
 
     if (machineAcceptedAction) {

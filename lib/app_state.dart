@@ -10,6 +10,7 @@ import 'app_actions.dart';
 import 'app_strings.dart';
 import 'app_theme.dart';
 import 'cloud_repository.dart';
+import 'cloud_search_pager.dart';
 import 'cloud_song.dart';
 import 'order_by.dart';
 
@@ -33,9 +34,10 @@ class LocalState {
 }
 
 class CloudState {
-  List<CloudSong> currentCloudSongs = [];
+  CloudSearchPager? currentSearchPager;
   SearchState currentSearchState = SearchState.loading;
   int currentCloudSongCount = 0;
+  int? lastPage;
   CloudSong? currentCloudSong;
   int currentCloudSongPosition = -1;
   int cloudScrollPosition = 0;
@@ -44,8 +46,6 @@ class CloudState {
 }
 
 enum PageVariant { start, songList, songText, cloudSearch, cloudSongText }
-
-enum SearchState { empty, error, loading, loaded }
 
 typedef AppStateChanger = void Function(AppState newState);
 
@@ -353,35 +353,23 @@ class AppStateMachine {
 
   Future<void> _performCloudSearch(AppStateChanger changeState, AppState appState, String searchFor, OrderBy orderBy) async {
     _resetCloudSearch(changeState, appState);
-    try {
-      final cloudSongs = await CloudRepository().cloudSearch(searchFor, orderBy.orderByStr);
-      final newAppState = appState;
-      final newCloudState = appState.cloudState;
-      if (cloudSongs.isNotEmpty) {
-        newCloudState.currentSearchState = SearchState.loaded;
-      } else {
-        newCloudState.currentSearchState = SearchState.empty;
-      }
-      newCloudState.currentCloudSongs = cloudSongs;
-      newCloudState.currentCloudSongCount = cloudSongs.length;
-      newAppState.cloudState = newCloudState;
-      changeState(newAppState);
-    } catch (e) {
-      log("Exception: $e");
-      final newAppState = appState;
-      final newCloudState = appState.cloudState;
-      newCloudState.currentSearchState = SearchState.error;
-      newAppState.cloudState = newCloudState;
-      changeState(newAppState);
-    }
+    final newState = appState;
+    newState.cloudState.currentSearchPager = CloudSearchPager(searchFor, orderBy, (searchState, count, lastPage) {
+      newState.cloudState.currentSearchState = searchState;
+      newState.cloudState.currentCloudSongCount = count;
+      newState.cloudState.lastPage = lastPage;
+      log("$searchState $count $lastPage");
+      changeState(newState);
+    });
+    changeState(newState);
   }
 
   void _resetCloudSearch(AppStateChanger changeState, AppState appState) {
     final newAppState = appState;
     final newCloudState = appState.cloudState;
     newCloudState.currentSearchState = SearchState.loading;
-    newCloudState.currentCloudSongs = [];
     newCloudState.currentCloudSongCount = 0;
+    newCloudState.lastPage = null;
     newCloudState.cloudScrollPosition = 0;
     newAppState.cloudState = newCloudState;
     changeState(newAppState);
@@ -396,36 +384,36 @@ class AppStateMachine {
     changeState(newAppState);
   }
 
-  void _selectCloudSong(AppStateChanger changeState, AppState appState, int position) {
+  Future<void> _selectCloudSong(AppStateChanger changeState, AppState appState, int position) async {
     final newAppState = appState;
     final newCloudState = appState.cloudState;
     newCloudState.currentCloudSongPosition = position;
     newCloudState.cloudScrollPosition = position;
-    newCloudState.currentCloudSong = newCloudState.currentCloudSongs[position];
+    newCloudState.currentCloudSong = await newCloudState.currentSearchPager?.getCloudSong(position);
     newAppState.currentPageVariant = PageVariant.cloudSongText;
     changeState(newAppState);
   }
 
-  void _prevCloudSong(AppStateChanger changeState, AppState appState) {
+  Future<void> _prevCloudSong(AppStateChanger changeState, AppState appState) async {
     if (appState.cloudState.currentCloudSongPosition > 0) {
       final newAppState = appState;
       final newCloudState = appState.cloudState;
       newCloudState.currentCloudSongPosition -= 1;
       newCloudState.cloudScrollPosition = newCloudState.currentCloudSongPosition;
-      newCloudState.currentCloudSong = newCloudState
-          .currentCloudSongs[newCloudState.currentCloudSongPosition];
+      newCloudState.currentCloudSong = await newCloudState.currentSearchPager?.getCloudSong(
+          newCloudState.currentCloudSongPosition);
       changeState(newAppState);
     }
   }
 
-  void _nextCloudSong(AppStateChanger changeState, AppState appState) {
-    if (appState.cloudState.currentCloudSongPosition < appState.cloudState.currentCloudSongs.length - 1) {
+  Future<void> _nextCloudSong(AppStateChanger changeState, AppState appState) async {
+    if (appState.cloudState.currentCloudSongPosition < appState.cloudState.currentCloudSongCount - 1) {
       final newAppState = appState;
       final newCloudState = appState.cloudState;
       newCloudState.currentCloudSongPosition += 1;
       newCloudState.cloudScrollPosition = newCloudState.currentCloudSongPosition;
-      newCloudState.currentCloudSong = newCloudState
-          .currentCloudSongs[newCloudState.currentCloudSongPosition];
+      newCloudState.currentCloudSong = await newCloudState.currentSearchPager?.getCloudSong(
+          newCloudState.currentCloudSongPosition);
       changeState(newAppState);
     }
   }
