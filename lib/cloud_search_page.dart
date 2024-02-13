@@ -156,10 +156,13 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                         onChanged: (String? value) {
                           final orderByStr = value ??
                               OrderBy.byIdDesc.orderByStr;
-                          setState(() {
-                            orderBy =
-                                OrderByStrings.parseFromString(orderByStr);
-                          });
+                          final newOrderBy = OrderByStrings.parseFromString(orderByStr);
+                          if (newOrderBy != orderBy) {
+                            setState(() {
+                              orderBy = newOrderBy;
+                            });
+                            _performCloudSearch();
+                          }
                         },
                         dropdownColor: widget.theme.colorBg,
                       ),
