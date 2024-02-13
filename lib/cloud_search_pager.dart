@@ -78,7 +78,6 @@ class CloudSearchPager {
 
     if (pageIndex > 1) {
       searchState = SearchState.loadingNextPage;
-      updateSearchPagerState(searchState, count, lastPage);
     }
 
     try {
@@ -88,23 +87,29 @@ class CloudSearchPager {
       log(pageList.toString());
       if (pageList.length < pageSize) {
         searchState = SearchState.done;
-        lastPage = pageIndex;
+        if (pageList.isNotEmpty) {
+          lastPage = pageIndex;
+        } else {
+          lastPage = pageIndex - 1;
+        }
       } else if (searchState != SearchState.done) {
         searchState = SearchState.idle;
       }
       if (pageList.isNotEmpty) {
         if (!readyPages.containsKey(pageIndex)) {
           readyPages[pageIndex] = pageList;
-          final newCount = pageIndex * pageSize + pageList.length;
-          count = newCount > count ? newCount : count;
         }
-      } else if (pageIndex == 0) {
+      }
+      if (pageIndex == 0 && pageList.isEmpty) {
         searchState = SearchState.empty;
       }
+      final newCount = pageIndex * pageSize + pageList.length;
+      count = newCount > count ? newCount : count;
     } catch (e) {
       log(e.toString());
       searchState = SearchState.error;
     }
+
     updateSearchPagerState(searchState, count, lastPage);
 
     log(readyPages.keys.toString());

@@ -9,6 +9,7 @@ import 'app_icons.dart';
 import 'app_state.dart';
 import 'app_theme.dart';
 import 'cloud_search_pager.dart';
+import 'cloud_song.dart';
 
 class CloudSearchPage extends StatefulWidget {
 
@@ -204,55 +205,14 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
               future: widget.cloudState.currentSearchPager?.getPage(pageIndex, false),
               initialData: null,
               builder: (context, snapshot) {
-                final titleViews = Iterable<int>.generate(
-                    snapshot.data?.length ?? 0).map((listIndex) {
-                  final cloudSong = snapshot.data!.elementAt(listIndex);
-                  final cloudSongIndex = pageIndex * pageSize + listIndex;
-                  return GestureDetector(
-                    onTap: () {
-                      _backupSearchState();
-                      widget.onPerformAction(CloudSongClick(cloudSongIndex));
-                    },
-                    child: Container(
-                        height: _itemHeight,
-                        color: widget.theme.colorBg,
-                        child: Column(
-                            children: [
-                              const Spacer(),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                      cloudSong.artist,
-                                      style: TextStyle(
-                                          color: widget.theme.colorMain)),
-                                ),
-                              ),
-                              const Spacer(),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                      cloudSong.visibleTitleWithRating,
-                                      style: TextStyle(
-                                          color: widget.theme.colorMain)),
-                                ),
-                              ),
-                              const Spacer(),
-                              AppDivider(
-                                height: _dividerHeight,
-                                color: widget.theme.colorMain,
-                              )
-                            ]
-                        )
-                    ),
-                  );
-                }).toList();
+                final List<Widget> titleViews;
                 if (snapshot.data != null) {
+                  titleViews = Iterable<int>.generate(
+                      snapshot.data?.length ?? 0).map((listIndex) {
+                    final cloudSong = snapshot.data!.elementAt(listIndex);
+                    final cloudSongIndex = pageIndex * pageSize + listIndex;
+                    return _titleItem(cloudSong, cloudSongIndex);
+                  }).toList();
                   return SizedBox(
                     height: _itemHeight * titleViews.length,
                     child: Column(
@@ -260,16 +220,67 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                     ),
                   );
                 } else {
-                  return const SizedBox(
-                    height: _itemHeight * pageSize / 3,
-                  );
+                  titleViews = Iterable<int>.generate(pageSize).map((listIndex) {
+                    final cloudSongIndex = pageIndex * pageSize + listIndex;
+                    return _titleItem(null, cloudSongIndex);
+                  }).toList();
                 }
+                return SizedBox(
+                  height: _itemHeight * titleViews.length,
+                  child: Column(
+                    children: titleViews,
+                  ),
+                );
               },
             );
           }
         ),
       ),
     ],
+  );
+
+  Widget _titleItem(CloudSong? cloudSong, int cloudSongIndex) => GestureDetector(
+    onTap: () {
+      _backupSearchState();
+      widget.onPerformAction(CloudSongClick(cloudSongIndex));
+    },
+    child: Container(
+        height: _itemHeight,
+        color: widget.theme.colorBg,
+        child: Column(
+            children: [
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                      cloudSong?.artist ?? '',
+                      style: TextStyle(
+                          color: widget.theme.colorMain)),
+                ),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                      cloudSong?.visibleTitleWithRating ?? '',
+                      style: TextStyle(
+                          color: widget.theme.colorMain)),
+                ),
+              ),
+              const Spacer(),
+              AppDivider(
+                height: _dividerHeight,
+                color: widget.theme.colorMain,
+              )
+            ]
+        )
+    ),
   );
 
   void _performCloudSearch() {
