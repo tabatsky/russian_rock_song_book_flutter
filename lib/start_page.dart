@@ -23,6 +23,7 @@ class StartPageState extends State<StartPage> {
 
   double indicatorValue = 0.0;
   String indicatorText = AppStrings.strFrom(0, SongRepository.artistMap.length);
+  bool wasUpdated = false;
 
   @override
   void initState() {
@@ -37,9 +38,14 @@ class StartPageState extends State<StartPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+        children: wasUpdated ? [
+          const Text(AppStrings.strStartPleaseWait,
+              style: TextStyle(color: AppTheme.colorLightYellow, fontSize: 22)),
+          const SizedBox(
+            height: 30,
+          ),
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 50),
             child: LinearProgressIndicator(
               value: indicatorValue,
               minHeight: 30,
@@ -47,10 +53,15 @@ class StartPageState extends State<StartPage> {
               color: AppTheme.colorLightYellow,
             ),
           ),
-          Container(
+          Text(indicatorText, style: const TextStyle(color: AppTheme.colorLightYellow, fontSize: 22)),
+          const SizedBox(
             height: 30,
           ),
-          Text(indicatorText, style: const TextStyle(color: AppTheme.colorLightYellow, fontSize: 24)),
+          const Text(AppStrings.strStartDbBuilding,
+              style: TextStyle(color: AppTheme.colorLightYellow, fontSize: 14)),
+        ] : [
+          const Text(AppStrings.strStartPleaseWait,
+              style: TextStyle(color: AppTheme.colorLightYellow, fontSize: 22)),
         ],
       ),
     );
@@ -59,6 +70,9 @@ class StartPageState extends State<StartPage> {
   Future<void> _initDB() async {
     await SongRepository().initDB();
     final appWasUpdated = await Version.appWasUpdated();
+    setState(() {
+      wasUpdated = appWasUpdated;
+    });
     if (appWasUpdated) {
       await SongRepository().fillDB((done, total) {
         log("done: $done of $total");

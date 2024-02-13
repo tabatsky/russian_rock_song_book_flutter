@@ -18,6 +18,8 @@ class AppStrings {
   static const strToastUploadDuplicate = 'Нельзя залить в облако: данный вариант аккордов поставляется вместе с приложением либо был сохранен из облака';
   static const strToastUploadSuccess = 'Успешно добавлено в облако';
   static const strToastVoteSuccess = 'Ваш голос засчитан';
+  static const strStartPleaseWait = 'ПОДОЖДИТЕ…';
+  static const strStartDbBuilding = 'Построение базы данных';
 
   static String strFrom(int done, int total) => "$done из $total";
 }
