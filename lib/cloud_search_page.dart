@@ -52,13 +52,14 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   void _scrollToActual() {
     _cloudTitleScrollController.animateTo(widget.cloudState.cloudScrollPosition * _itemHeight,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
+    widget.onPerformAction(UpdateCloudSongListNeedScroll(false));
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (widget.cloudState.currentSearchState == SearchState.idle) {
-    //   WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
-    // }
+    if (widget.cloudState.needScroll) {
+       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
+    }
     return Scaffold(
       backgroundColor: widget.theme.colorBg,
       appBar: AppBar(

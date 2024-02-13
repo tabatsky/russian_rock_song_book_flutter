@@ -41,6 +41,7 @@ class CloudState {
   CloudSong? currentCloudSong;
   int currentCloudSongPosition = -1;
   int cloudScrollPosition = 0;
+  bool needScroll = false;
   String searchForBackup = '';
   OrderBy orderByBackup = OrderBy.byIdDesc;
 }
@@ -96,6 +97,8 @@ class AppStateMachine {
       _likeCurrent(changeState, appState);
     } else if (action is DislikeCurrent) {
       _dislikeCurrent(changeState, appState);
+    } else if (action is UpdateCloudSongListNeedScroll) {
+      _updateCloudSongListNeedScroll(changeState, appState, action.needScroll);
     } else {
       return false;
     }
@@ -199,6 +202,7 @@ class AppStateMachine {
       final newCloudState = appState.cloudState;
       newCloudState.currentCloudSong = null;
       newCloudState.currentCloudSongPosition = -1;
+      newCloudState.needScroll = true;
       newAppState.cloudState = newCloudState;
       newAppState.currentPageVariant = PageVariant.cloudSearch;
       changeState(newAppState);
@@ -436,5 +440,11 @@ class AppStateMachine {
 
   void _dislikeCurrent(AppStateChanger changeState, AppState appState) {
     _showToast(appState, 'dislike will be here');
+  }
+
+  void _updateCloudSongListNeedScroll(AppStateChanger changeState, AppState appState, bool needScroll) {
+    final newState = appState;
+    newState.cloudState.needScroll = needScroll;
+    changeState(newState);
   }
 }

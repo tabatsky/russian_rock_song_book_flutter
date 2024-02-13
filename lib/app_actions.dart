@@ -80,3 +80,9 @@ class NextCLoudSong extends AppUIAction {}
 class DownloadCurrent extends AppUIAction {}
 class LikeCurrent extends AppUIAction {}
 class DislikeCurrent extends AppUIAction {}
+
+class UpdateCloudSongListNeedScroll extends AppUIAction {
+  bool needScroll;
+
+  UpdateCloudSongListNeedScroll(this.needScroll);
+}
