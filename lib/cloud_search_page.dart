@@ -243,49 +243,61 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
     ],
   );
 
-  Widget _titleItem(CloudSong? cloudSong, int cloudSongIndex) => GestureDetector(
-    onTap: () {
-      _backupSearchState();
-      widget.onPerformAction(CloudSongClick(cloudSongIndex));
-    },
-    child: Container(
-        height: _itemHeight,
-        color: widget.theme.colorBg,
-        child: Column(
-            children: [
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                      cloudSong?.artist ?? '',
-                      style: TextStyle(
-                          color: widget.theme.colorMain)),
+  Widget _titleItem(CloudSong? cloudSong, int cloudSongIndex) {
+    final extraLikes;
+    final extraDislikes;
+    if (cloudSong != null) {
+      extraLikes = widget.cloudState.allLikes[cloudSong] ?? 0;
+      extraDislikes = widget.cloudState.allDislikes[cloudSong] ?? 0;
+    } else {
+      extraLikes = 0;
+      extraDislikes = 0;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        _backupSearchState();
+        widget.onPerformAction(CloudSongClick(cloudSongIndex));
+      },
+      child: Container(
+          height: _itemHeight,
+          color: widget.theme.colorBg,
+          child: Column(
+              children: [
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                        cloudSong?.artist ?? '',
+                        style: TextStyle(
+                            color: widget.theme.colorMain)),
+                  ),
                 ),
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                      cloudSong?.visibleTitleWithRating ?? '',
-                      style: TextStyle(
-                          color: widget.theme.colorMain)),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                        cloudSong?.visibleTitleWithRating(extraLikes, extraDislikes) ?? '',
+                        style: TextStyle(
+                            color: widget.theme.colorMain)),
+                  ),
                 ),
-              ),
-              const Spacer(),
-              AppDivider(
-                height: _dividerHeight,
-                color: widget.theme.colorMain,
-              )
-            ]
-        )
-    ),
-  );
+                const Spacer(),
+                AppDivider(
+                  height: _dividerHeight,
+                  color: widget.theme.colorMain,
+                )
+              ]
+          )
+      ),
+    );
+  }
 
   void _performCloudSearch() {
     _backupSearchState();

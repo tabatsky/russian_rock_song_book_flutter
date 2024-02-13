@@ -28,12 +28,17 @@ class CloudSong {
   @override
   String toString() => description();
 
-  String get formattedRating => "$thumbUp$likeCount $thumbDown$dislikeCount";
+  String formattedRating(int extraLikes, int extraDislikes) {
+    final actualLikeCount = likeCount + extraLikes;
+    final actualDislikeCount = dislikeCount + extraDislikes;
+    return "$thumbUp$actualLikeCount $thumbDown$actualDislikeCount";
+  }
   String get visibleVariant => variant==0 ? '' : " ($variant)";
   String get visibleTitle => "$title$visibleVariant";
-  String get visibleTitleWithRating => "$visibleTitle | $formattedRating";
-  String get visibleTitleWithArtistAndRating =>
-      "$visibleTitle | $artist | $formattedRating";
+  String visibleTitleWithRating(int extraLikes, int extraDislikes) =>
+      "$visibleTitle | ${formattedRating(extraLikes, extraDislikes)}";
+  String visibleTitleWithArtistAndRating(int extraLikes, int extraDislikes) =>
+      "$visibleTitle | $artist | ${formattedRating(extraLikes, extraDislikes)}";
 
   String get searchFor => "$artist $title";
 

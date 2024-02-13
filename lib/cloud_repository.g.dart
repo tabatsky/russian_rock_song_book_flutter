@@ -25,6 +25,20 @@ Map<String, dynamic> _$ResultWithCloudSongApiModelListDataToJson(
       'data': instance.data,
     };
 
+ResultWithNumber _$ResultWithNumberFromJson(Map<String, dynamic> json) =>
+    ResultWithNumber(
+      json['status'] as String,
+      json['message'] as String?,
+      (json['data'] as num?)?.toDouble(),
+    );
+
+Map<String, dynamic> _$ResultWithNumberToJson(ResultWithNumber instance) =>
+    <String, dynamic>{
+      'status': instance.status,
+      'message': instance.message,
+      'data': instance.data,
+    };
+
 ResultWithoutData _$ResultWithoutDataFromJson(Map<String, dynamic> json) =>
     ResultWithoutData(
       json['status'] as String,
@@ -139,7 +153,7 @@ class _RestClient implements RestClient {
   Future<ResultWithCloudSongApiModelListData> pagedSearch(
     String searchFor,
     String orderBy,
-    String page,
+    int page,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -219,6 +233,40 @@ class _RestClient implements RestClient {
               baseUrl,
             ))));
     final value = ResultWithoutData.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ResultWithNumber> vote(
+    String googleAccount,
+    String deviceIdHash,
+    String artist,
+    String title,
+    int variant,
+    int voteValue,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ResultWithNumber>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'songs/vote/${googleAccount}/${deviceIdHash}/${artist}/${title}/${variant}/${voteValue}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = ResultWithNumber.fromJson(_result.data!);
     return value;
   }
 

@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:developer';
 
 import 'package:fluttertoast/fluttertoast.dart';
@@ -44,6 +45,11 @@ class CloudState {
   bool needScroll = false;
   String searchForBackup = '';
   OrderBy orderByBackup = OrderBy.byIdDesc;
+  Map<CloudSong, int> allLikes = HashMap();
+  Map<CloudSong, int> allDislikes = HashMap();
+
+  int get extraLikesForCurrent => allLikes[currentCloudSong!] ?? 0;
+  int get extraDislikesForCurrent => allDislikes[currentCloudSong!] ?? 0;
 }
 
 enum PageVariant { start, songList, songText, cloudSearch, cloudSongText }
@@ -375,6 +381,8 @@ class AppStateMachine {
     newCloudState.currentCloudSongCount = 0;
     newCloudState.lastPage = null;
     newCloudState.cloudScrollPosition = 0;
+    newCloudState.allLikes = HashMap();
+    newCloudState.allDislikes = HashMap();
     newAppState.cloudState = newCloudState;
     changeState(newAppState);
   }
@@ -435,11 +443,29 @@ class AppStateMachine {
   }
 
   void _likeCurrent(AppStateChanger changeState, AppState appState) {
-    _showToast(appState, 'like will be here');
+    final cloudSong = appState.cloudState.currentCloudSong!;
+    CloudRepository().vote(cloudSong, 1, (voteValue) {
+      final newState = appState;
+      final oldCount = newState.cloudState.allLikes[cloudSong] ?? 0;
+      newState.cloudState.allLikes[cloudSong] = oldCount + 1;
+      changeState(newState);
+      _showToast(appState, AppStrings.strToastVoteSuccess);
+    }, (message) {
+      _showToast(appState, message);
+    });
   }
 
   void _dislikeCurrent(AppStateChanger changeState, AppState appState) {
-    _showToast(appState, 'dislike will be here');
+    final cloudSong = appState.cloudState.currentCloudSong!;
+    CloudRepository().vote(cloudSong, -1, (voteValue) {
+      final newState = appState;
+      final oldCount = newState.cloudState.allDislikes[cloudSong] ?? 0;
+      newState.cloudState.allDislikes[cloudSong] = oldCount + 1;
+      changeState(newState);
+      _showToast(appState, AppStrings.strToastVoteSuccess);
+    }, (message) {
+      _showToast(appState, message);
+    });
   }
 
   void _updateCloudSongListNeedScroll(AppStateChanger changeState, AppState appState, bool needScroll) {

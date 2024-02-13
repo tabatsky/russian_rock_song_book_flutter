@@ -80,6 +80,9 @@ class CloudSongTextPage extends StatelessWidget {
             height: 1.5,
           );
 
+          final extraLikes = cloudState.extraLikesForCurrent;
+          final extraDislikes = cloudState.extraDislikesForCurrent;
+
           return Column(
             children: [
               Expanded(
@@ -93,7 +96,7 @@ class CloudSongTextPage extends StatelessWidget {
                     child: Wrap(
                       children: [
                         Text(cloudState.currentCloudSong
-                            ?.visibleTitleWithArtistAndRating ?? 'null',
+                            ?.visibleTitleWithArtistAndRating(extraLikes, extraDislikes) ?? 'null',
                             style: TextStyle(
                                 color: theme.colorMain,
                                 fontSize: 24)),

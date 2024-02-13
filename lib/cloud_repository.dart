@@ -11,6 +11,7 @@ import 'cloud_song.dart';
 part 'cloud_repository.g.dart';
 
 typedef Success = void Function();
+typedef VoteSuccess = void Function(int voteValue);
 typedef ServerError = void Function(String message);
 
 class CloudRepository {
@@ -44,7 +45,7 @@ class CloudRepository {
   Future<List<CloudSong>> pagedSearch(String searchFor, String orderBy, int page) async {
     final patchedSearchFor = searchFor.isEmpty ? 'empty_search_query' : searchFor;
     log("$patchedSearchFor $orderBy $page");
-    final searchResult = await client?.pagedSearch(patchedSearchFor, orderBy, page.toString());
+    final searchResult = await client?.pagedSearch(patchedSearchFor, orderBy, page);
     if (searchResult?.status != 'success') {
       throw "fetch data error: ${searchResult?.message}";
     } else {
@@ -77,6 +78,22 @@ class CloudRepository {
       serverError(result?.message ?? 'null');
     }
   }
+
+  Future<void> vote(CloudSong cloudSong, int voteValue, VoteSuccess voteSuccess, ServerError serverError) async {
+    final result = await client?.vote(
+        'Flutter_debug',
+        'Flutter_debug',
+        cloudSong.artist,
+        cloudSong.title,
+        cloudSong.variant,
+        voteValue);
+    if (result?.status == 'success') {
+      final voteValue = result?.data?.toInt() ?? 0;
+      voteSuccess(voteValue);
+    } else {
+      serverError(result?.message ?? 'null');
+    }
+  }
 }
 
 @RestApi(baseUrl: 'http://tabatsky.ru/SongBook2/api/')
@@ -92,7 +109,7 @@ abstract class RestClient {
   Future<ResultWithCloudSongApiModelListData> pagedSearch(
       @Path('searchFor') String searchFor,
       @Path('orderBy') String orderBy,
-      @Path('page') String page);
+      @Path('page') int page);
 
   @POST("warnings/add")
   @FormUrlEncoded()
@@ -101,6 +118,15 @@ abstract class RestClient {
   @POST("songs/add")
   @FormUrlEncoded()
   Future<ResultWithoutData> addSong(@Field('cloudSongJSON') String cloudSongJSON);
+
+  @GET("songs/vote/{googleAccount}/{deviceIdHash}/{artist}/{title}/{variant}/{voteValue}")
+  Future<ResultWithNumber> vote(
+      @Path("googleAccount") String googleAccount,
+      @Path("deviceIdHash") String deviceIdHash,
+      @Path("artist") String artist,
+      @Path("title") String title,
+      @Path("variant") int variant,
+      @Path("voteValue") int voteValue);
 }
 
 @JsonSerializable()
@@ -114,6 +140,19 @@ class ResultWithCloudSongApiModelListData {
   factory ResultWithCloudSongApiModelListData.fromJson(Map<String, dynamic> json) => _$ResultWithCloudSongApiModelListDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$ResultWithCloudSongApiModelListDataToJson(this);
+}
+
+@JsonSerializable()
+class ResultWithNumber {
+  final String status;
+  final String? message;
+  final double? data;
+
+  const ResultWithNumber(this.status, this.message, this.data);
+
+  factory ResultWithNumber.fromJson(Map<String, dynamic> json) => _$ResultWithNumberFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ResultWithNumberToJson(this);
 }
 
 @JsonSerializable()
