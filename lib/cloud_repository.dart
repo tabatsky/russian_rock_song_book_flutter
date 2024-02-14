@@ -13,6 +13,7 @@ part 'cloud_repository.g.dart';
 typedef Success = void Function();
 typedef VoteSuccess = void Function(int voteValue);
 typedef ServerError = void Function(String message);
+typedef InAppError = void Function();
 
 class CloudRepository {
   static final CloudRepository _instance = CloudRepository._privateConstructor();
@@ -56,42 +57,54 @@ class CloudRepository {
     }
   }
 
-  Future<void> addWarning(Warning warning, Success success, ServerError serverError) async {
-    final warningApiModel = WarningApiModel.fromWarning(warning);
-    final warningJSON = jsonEncode(warningApiModel.toJson());
-    log(warningJSON);
-    final result = await client?.addWarning(warningJSON);
-    if (result?.status == 'success') {
-      success();
-    } else {
-      serverError(result?.message ?? 'null');
+  Future<void> addWarning(Warning warning, Success success, ServerError serverError, InAppError inAppError) async {
+    try {
+      final warningApiModel = WarningApiModel.fromWarning(warning);
+      final warningJSON = jsonEncode(warningApiModel.toJson());
+      log(warningJSON);
+      final result = await client?.addWarning(warningJSON);
+      if (result?.status == 'success') {
+        success();
+      } else {
+        serverError(result?.message ?? 'null');
+      }
+    } catch (e) {
+      inAppError();
     }
   }
 
-  Future<void> addCloudSong(CloudSong cloudSong, Success success, ServerError serverError) async {
-    final cloudSongApiModel = CloudSongApiModel.fromCloudSong(cloudSong);
-    final cloudSongJSON = jsonEncode(cloudSongApiModel.toJson());
-    final result = await client?.addSong(cloudSongJSON);
-    if (result?.status == 'success') {
-      success();
-    } else {
-      serverError(result?.message ?? 'null');
+  Future<void> addCloudSong(CloudSong cloudSong, Success success, ServerError serverError, InAppError inAppError) async {
+    try {
+      final cloudSongApiModel = CloudSongApiModel.fromCloudSong(cloudSong);
+      final cloudSongJSON = jsonEncode(cloudSongApiModel.toJson());
+      final result = await client?.addSong(cloudSongJSON);
+      if (result?.status == 'success') {
+        success();
+      } else {
+        serverError(result?.message ?? 'null');
+      }
+    } catch (e) {
+      inAppError();
     }
   }
 
-  Future<void> vote(CloudSong cloudSong, int voteValue, VoteSuccess voteSuccess, ServerError serverError) async {
-    final result = await client?.vote(
-        'Flutter_debug',
-        'Flutter_debug',
-        cloudSong.artist,
-        cloudSong.title,
-        cloudSong.variant,
-        voteValue);
-    if (result?.status == 'success') {
-      final voteValue = result?.data?.toInt() ?? 0;
-      voteSuccess(voteValue);
-    } else {
-      serverError(result?.message ?? 'null');
+  Future<void> vote(CloudSong cloudSong, int voteValue, VoteSuccess voteSuccess, ServerError serverError, InAppError inAppError) async {
+    try {
+      final result = await client?.vote(
+          'Flutter_debug',
+          'Flutter_debug',
+          cloudSong.artist,
+          cloudSong.title,
+          cloudSong.variant,
+          voteValue);
+      if (result?.status == 'success') {
+        final voteValue = result?.data?.toInt() ?? 0;
+        voteSuccess(voteValue);
+      } else {
+        serverError(result?.message ?? 'null');
+      }
+    } catch (e) {
+      inAppError();
     }
   }
 }

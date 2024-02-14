@@ -94,6 +94,8 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
       return _makeProgressIndicator();
     } else if (widget.cloudState.currentSearchState == SearchState.empty) {
       return _makeEmptyListIndicator();
+    } else if (widget.cloudState.currentSearchState == SearchState.error) {
+      return _makeErrorIndicator();
     } else {
       return Flexible(child: _makeCloudTitleListView());
     }
@@ -120,6 +122,18 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
             fontSize: 24,
           ),
         )
+      )
+  );
+
+  Widget _makeErrorIndicator() => Expanded(
+      child: Center(
+          child: Text(
+            AppStrings.strErrorFetchData,
+            style: TextStyle(
+              color: widget.theme.colorMain,
+              fontSize: 24,
+            ),
+          )
       )
   );
 

@@ -289,6 +289,8 @@ class AppStateMachine {
         _showToast(appState, AppStrings.strToastUploadSuccess);
       }, (message) {
         _showToast(appState, message);
+      }, () {
+        _showToast(appState, AppStrings.strToastInAppError);
       });
     }
   }
@@ -358,6 +360,8 @@ class AppStateMachine {
       _showToast(appState, AppStrings.strToastWarningSendSuccess);
     }, (message) {
       _showToast(appState, AppStrings.strToastWarningSendError);
+    }, () {
+      _showToast(appState, AppStrings.strToastInAppError);
     });
   }
 
@@ -452,6 +456,8 @@ class AppStateMachine {
       _showToast(appState, AppStrings.strToastVoteSuccess);
     }, (message) {
       _showToast(appState, message);
+    }, () {
+      _showToast(appState, AppStrings.strToastInAppError);
     });
   }
 
@@ -465,6 +471,8 @@ class AppStateMachine {
       _showToast(appState, AppStrings.strToastVoteSuccess);
     }, (message) {
       _showToast(appState, message);
+    }, () {
+      _showToast(appState, AppStrings.strToastInAppError);
     });
   }
 

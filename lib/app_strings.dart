@@ -20,6 +20,8 @@ class AppStrings {
   static const strToastVoteSuccess = 'Ваш голос засчитан';
   static const strStartPleaseWait = 'ПОДОЖДИТЕ…';
   static const strStartDbBuilding = 'Построение базы данных';
+  static const strToastInAppError = 'Ошибка в приложении';
+  static const strErrorFetchData = 'Возникла ошибка';
 
   static String strFrom(int done, int total) => "$done из $total";
 }
