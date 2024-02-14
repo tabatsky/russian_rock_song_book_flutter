@@ -43,7 +43,6 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   OrderBy orderBy = OrderBy.byIdDesc;
 
   @override
-  @override
   void initState() {
     super.initState();
     _restoreSearchState();
