@@ -4,20 +4,17 @@ import 'package:russian_rock_song_book/app_divider.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'app_actions.dart';
 import 'app_state.dart';
 
 class SongListPage extends StatefulWidget{
-
-  final AppTheme theme;
-
-  final LocalState localState;
+  final ValueStream<AppState> appStateStream;
   final void Function(AppUIAction action) onPerformAction;
 
   const SongListPage(
-      this.theme,
-      this.localState,
+      this.appStateStream,
       this.onPerformAction,
       {super.key});
 
@@ -42,21 +39,42 @@ class _SongListPageState extends State<SongListPage> {
   );
   double _menuScrollOffset = 0.0;
 
-  void _scrollToActual() {
-    _titleScrollController.animateTo(widget.localState.scrollPosition * _itemHeight,
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<AppState>(
+        stream: widget.appStateStream,
+        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
+          final appState = snapshot.data;
+          if (appState == null) {
+            return const Center(
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: CircularProgressIndicator(
+                  color: AppTheme.colorLightYellow,
+                ),
+              ),
+            );
+          }
+          return _makePage(context, appState.theme, appState.localState);
+        }
+    );
+  }
+
+  void _scrollToActual(LocalState localState) {
+    _titleScrollController.animateTo(localState.scrollPosition * _itemHeight,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _makePage(BuildContext context, AppTheme theme, LocalState localState) {
     return Scaffold(
-      backgroundColor: widget.theme.colorBg,
+      backgroundColor: theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
-        title: Text(widget.localState.currentArtist),
+        title: Text(localState.currentArtist),
       ),
       drawer: Drawer(
-        child: _makeMenuListView(),
+        child: _makeMenuListView(theme, localState),
       ),
       onDrawerChanged: (isOpened) {
         if (isOpened) {
@@ -72,17 +90,17 @@ class _SongListPageState extends State<SongListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _makeContent(),
+            _makeContent(theme, localState),
           ],
         ),
       ),
     );
   }
 
-  ListView _makeMenuListView() => ListView.builder(
+  ListView _makeMenuListView(AppTheme theme, LocalState localState) => ListView.builder(
       controller: _menuScrollController,
       padding: EdgeInsets.zero,
-      itemCount: widget.localState.allArtists.length + 1,
+      itemCount: localState.allArtists.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
           return const SizedBox(
@@ -96,7 +114,7 @@ class _SongListPageState extends State<SongListPage> {
             ),
           );
         } else {
-          final artist = widget.localState.allArtists[index - 1];
+          final artist = localState.allArtists[index - 1];
           final fontWeight =
             SongRepository.predefinedArtists.contains(artist)
                 ? FontWeight.bold
@@ -110,7 +128,7 @@ class _SongListPageState extends State<SongListPage> {
                 },
                 child: Container(
                   height: _titleHeight,
-                  color: widget.theme.colorMain,
+                  color: theme.colorMain,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Align(
@@ -118,7 +136,7 @@ class _SongListPageState extends State<SongListPage> {
                       child: Text(
                           artist,
                           style: TextStyle(
-                            color: widget.theme.colorBg,
+                            color: theme.colorBg,
                             fontWeight: fontWeight,
                           )
                       ),
@@ -128,7 +146,7 @@ class _SongListPageState extends State<SongListPage> {
               ),
               AppDivider(
                 height: _dividerHeight,
-                color: widget.theme.colorBg,
+                color: theme.colorBg,
               ),
             ],
           );
@@ -136,33 +154,33 @@ class _SongListPageState extends State<SongListPage> {
       }
   );
 
-  Widget _makeContent() {
-    if (widget.localState.currentSongs.isEmpty) {
-      return _makeEmptyListIndicator();
+  Widget _makeContent(AppTheme theme, LocalState localState) {
+    if (localState.currentSongs.isEmpty) {
+      return _makeEmptyListIndicator(theme);
     } else {
-      WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
-      return Flexible(child: _makeTitleListView());
+      WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual(localState));
+      return Flexible(child: _makeTitleListView(theme, localState));
     }
   }
 
-  Widget _makeEmptyListIndicator() => Expanded(
+  Widget _makeEmptyListIndicator(AppTheme theme) => Expanded(
       child: Center(
           child: Text(
             AppStrings.strListIsEmpty,
             style: TextStyle(
-              color: widget.theme.colorMain,
+              color: theme.colorMain,
               fontSize: 24,
             ),
           )
       )
   );
 
-  ListView _makeTitleListView() => ListView.builder(
+  ListView _makeTitleListView(AppTheme theme, LocalState localState) => ListView.builder(
       controller: _titleScrollController,
       padding: EdgeInsets.zero,
-      itemCount: widget.localState.currentSongs.length,
+      itemCount: localState.currentSongs.length,
       itemBuilder: (BuildContext context, int index) {
-        final song = widget.localState.currentSongs[index];
+        final song = localState.currentSongs[index];
         return Column(
           children: [
             GestureDetector(
@@ -171,19 +189,19 @@ class _SongListPageState extends State<SongListPage> {
               },
               child: Container(
                   height: 50,
-                  color: widget.theme.colorBg,
+                  color: theme.colorBg,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(song.title, style: TextStyle(color: widget.theme.colorMain)),
+                      child: Text(song.title, style: TextStyle(color: theme.colorMain)),
                     ),
                   )
               ),
             ),
             AppDivider(
               height: _dividerHeight,
-              color: widget.theme.colorMain,
+              color: theme.colorMain,
             )
           ],
         );

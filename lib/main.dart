@@ -10,6 +10,7 @@ import 'package:rxdart/subjects.dart';
 
 import 'app_actions.dart';
 import 'app_state.dart';
+import 'app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,7 +51,13 @@ class _MainPageState extends State<MainPage> {
           final appState = snapshot.data;
           if (appState == null) {
             return const Center(
-              child: Text("Not ready yet"),
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: CircularProgressIndicator(
+                  color: AppTheme.colorLightYellow,
+                ),
+              ),
             );
           }
           switch (appState.currentPageVariant) {
@@ -60,8 +67,7 @@ class _MainPageState extends State<MainPage> {
               });
             case PageVariant.songList:
               return SongListPage(
-                  appState.theme,
-                  appState.localState,
+                  appStateSubject.stream,
                       (action) { _performAction(action); }
               );
             case PageVariant.songText:
