@@ -3,14 +3,14 @@ import 'package:russian_rock_song_book/app_state.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/warning.dart';
 import 'package:russian_rock_song_book/warning_dialog.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'app_actions.dart';
 import 'app_icons.dart';
 
 class CloudSongTextPage extends StatelessWidget {
 
-  final AppTheme theme;
-  final CloudState cloudState;
+  final ValueStream<AppState> appStateStream;
   final void Function(AppUIAction action) onPerformAction;
 
   final ScrollController scrollController = ScrollController(
@@ -19,13 +19,33 @@ class CloudSongTextPage extends StatelessWidget {
   );
 
   CloudSongTextPage(
-      this.theme,
-      this.cloudState,
+      this.appStateStream,
       this.onPerformAction,
       {super.key});
 
   @override
   Widget build(BuildContext context) {
+    return StreamBuilder<AppState>(
+        stream: appStateStream,
+        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
+          final appState = snapshot.data;
+          if (appState == null) {
+            return const Center(
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: CircularProgressIndicator(
+                  color: AppTheme.colorLightYellow,
+                ),
+              ),
+            );
+          }
+          return _makePage(context, appState.theme, appState.cloudState);
+        }
+    );
+  }
+
+  Widget _makePage(BuildContext context, AppTheme theme, CloudState cloudState) {
     return Scaffold(
       backgroundColor: theme.colorBg,
       appBar: AppBar(
@@ -58,13 +78,13 @@ class CloudSongTextPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _makeCloudSongTextView(context),
+          _makeCloudSongTextView(context, theme, cloudState),
         ],
       ),
     );
   }
 
-  Widget _makeCloudSongTextView(BuildContext context) {
+  Widget _makeCloudSongTextView(BuildContext context, AppTheme theme, CloudState cloudState) {
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -119,7 +139,7 @@ class CloudSongTextPage extends StatelessWidget {
                 width: width,
                 height: buttonSize,
                 color: theme.colorBg,
-                child: _bottomButtonRow(context, buttonSize),
+                child: _bottomButtonRow(context, buttonSize, cloudState),
               ),
               Container(
                 width: width,
@@ -133,7 +153,7 @@ class CloudSongTextPage extends StatelessWidget {
     );
   }
 
-  Widget _bottomButtonRow(BuildContext context, double buttonSize) => Row(
+  Widget _bottomButtonRow(BuildContext context, double buttonSize, CloudState cloudState) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Container(
