@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
@@ -45,18 +46,39 @@ class CloudState {
   bool needScroll = false;
   String searchForBackup = '';
   OrderBy orderByBackup = OrderBy.byIdDesc;
-  Map<CloudSong, int> allLikes = HashMap();
-  Map<CloudSong, int> allDislikes = HashMap();
+  Map<CloudSong?, int> allLikes = HashMap();
+  Map<CloudSong?, int> allDislikes = HashMap();
 
-  int get extraLikesForCurrent => allLikes[currentCloudSong!] ?? 0;
-  int get extraDislikesForCurrent => allDislikes[currentCloudSong!] ?? 0;
+  int get extraLikesForCurrent => allLikes[currentCloudSong] ?? 0;
+  int get extraDislikesForCurrent => allDislikes[currentCloudSong] ?? 0;
 }
 
-enum PageVariant { start, songList, songText, cloudSearch, cloudSongText }
+enum PageVariant {
+  start, songList, songText, cloudSearch, cloudSongText;
+
+  String get route {
+    switch (this) {
+      case start:
+        return '/start';
+      case songList:
+        return '/songList';
+      case songText:
+        return '/songText';
+      case cloudSearch:
+        return '/cloudSearch';
+      case cloudSongText:
+        return '/cloudSongText';
+    }
+  }
+}
 
 typedef AppStateChanger = void Function(AppState newState);
+typedef NavigatorStateGetter = NavigatorState? Function();
 
 class AppStateMachine {
+  final NavigatorStateGetter getNavigatorState;
+
+  AppStateMachine(this.getNavigatorState);
 
   bool performAction(AppStateChanger changeState, AppState appState, AppUIAction action) {
     if (action is ShowSongList) {
@@ -111,10 +133,33 @@ class AppStateMachine {
     return true;
   }
 
+  void _selectPageVariant(AppState appState, PageVariant newPageVariant) {
+    final oldPageVariant = appState.currentPageVariant;
+
+    if (oldPageVariant == PageVariant.start && newPageVariant == PageVariant.songList) {
+      getNavigatorState()?.pop();
+      getNavigatorState()?.pushNamed(PageVariant.songList.route);
+    } else if (oldPageVariant == PageVariant.songList && newPageVariant == PageVariant.songText) {
+      getNavigatorState()?.pushNamed(PageVariant.songText.route);
+    } else if (oldPageVariant == PageVariant.songText && newPageVariant == PageVariant.songList) {
+      getNavigatorState()?.pop();
+    } else if (oldPageVariant == PageVariant.songList && newPageVariant == PageVariant.cloudSearch) {
+      getNavigatorState()?.pushNamed(PageVariant.cloudSearch.route);
+    } else if (oldPageVariant == PageVariant.cloudSearch && newPageVariant == PageVariant.songList) {
+      getNavigatorState()?.pop();
+    } else if (oldPageVariant == PageVariant.cloudSearch && newPageVariant == PageVariant.cloudSongText) {
+      getNavigatorState()?.pushNamed(PageVariant.cloudSongText.route);
+    } else if (oldPageVariant == PageVariant.cloudSongText && newPageVariant == PageVariant.cloudSearch) {
+      getNavigatorState()?.pop();
+    }
+
+    appState.currentPageVariant = newPageVariant;
+  }
+
   void _showSongList(AppStateChanger changeState, AppState appState) {
     _initSongs(changeState, appState);
     final newAppState = appState;
-    newAppState.currentPageVariant = PageVariant.songList;
+    _selectPageVariant(newAppState, PageVariant.songList);
     changeState(newAppState);
   }
 
@@ -138,7 +183,7 @@ class AppStateMachine {
     if (artist == SongRepository.artistCloudSearch) {
       _backupSearchState(changeState, appState, '', OrderBy.byIdDesc);
       final newAppState = appState;
-      newAppState.currentPageVariant = PageVariant.cloudSearch;
+      _selectPageVariant(newAppState, PageVariant.cloudSearch);
       changeState(newAppState);
       _performCloudSearch(changeState, appState, '', OrderBy.byIdDesc);
     } else {
@@ -161,7 +206,7 @@ class AppStateMachine {
     newLocalState.scrollPosition = position;
     newLocalState.currentSong = newLocalState.currentSongs[position];
     newAppState.localState = newLocalState;
-    newAppState.currentPageVariant = PageVariant.songText;
+    _selectPageVariant(newAppState, PageVariant.songText);
     changeState(newAppState);
   }
 
@@ -194,23 +239,23 @@ class AppStateMachine {
     if (appState.currentPageVariant == PageVariant.songText) {
       final newAppState = appState;
       final newLocalState = appState.localState;
+      _selectPageVariant(newAppState, PageVariant.songList);
       newLocalState.currentSong = null;
       newLocalState.currentSongPosition = -1;
       newAppState.localState = newLocalState;
-      newAppState.currentPageVariant = PageVariant.songList;
       changeState(newAppState);
     } else if (appState.currentPageVariant == PageVariant.cloudSearch) {
       final newAppState = appState;
-      newAppState.currentPageVariant = PageVariant.songList;
+      _selectPageVariant(newAppState, PageVariant.songList);
       changeState(newAppState);
     } else if (appState.currentPageVariant == PageVariant.cloudSongText) {
       final newAppState = appState;
       final newCloudState = appState.cloudState;
+      _selectPageVariant(newAppState, PageVariant.cloudSearch);
       newCloudState.currentCloudSong = null;
       newCloudState.currentCloudSongPosition = -1;
       newCloudState.needScroll = true;
       newAppState.cloudState = newCloudState;
-      newAppState.currentPageVariant = PageVariant.cloudSearch;
       changeState(newAppState);
     }
   }
@@ -406,7 +451,7 @@ class AppStateMachine {
     newCloudState.currentCloudSongPosition = position;
     newCloudState.cloudScrollPosition = position;
     newCloudState.currentCloudSong = await newCloudState.currentSearchPager?.getCloudSong(position);
-    newAppState.currentPageVariant = PageVariant.cloudSongText;
+    _selectPageVariant(newAppState, PageVariant.cloudSongText);
     changeState(newAppState);
   }
 

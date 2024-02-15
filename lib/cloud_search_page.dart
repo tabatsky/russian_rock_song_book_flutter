@@ -277,15 +277,8 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   );
 
   Widget _titleItem(AppTheme theme, CloudState cloudState, CloudSong? cloudSong, int cloudSongIndex) {
-    final extraLikes;
-    final extraDislikes;
-    if (cloudSong != null) {
-      extraLikes = cloudState.allLikes[cloudSong] ?? 0;
-      extraDislikes = cloudState.allDislikes[cloudSong] ?? 0;
-    } else {
-      extraLikes = 0;
-      extraDislikes = 0;
-    }
+    final extraLikes = cloudState.allLikes[cloudSong] ?? 0;
+    final extraDislikes = cloudState.allDislikes[cloudSong] ?? 0;
 
     return GestureDetector(
       onTap: () {

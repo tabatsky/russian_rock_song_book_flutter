@@ -7,11 +7,9 @@ import 'package:russian_rock_song_book/song_list_page.dart';
 import 'package:russian_rock_song_book/song_text_page.dart';
 import 'package:russian_rock_song_book/start_page.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/subjects.dart';
 
 import 'app_actions.dart';
 import 'app_state.dart';
-import 'app_theme.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,8 +18,9 @@ void main() {
 typedef ActionPerformer = void Function(AppUIAction action);
 
 class MyApp extends StatelessWidget {
-  final appStateSubject = BehaviorSubject<AppState>.seeded(AppState());
-  final AppStateMachine appStateMachine = AppStateMachine();
+  final _navigatorKey = GlobalKey<NavigatorState>();
+  final _appStateSubject = BehaviorSubject<AppState>.seeded(AppState());
+  late final AppStateMachine _appStateMachine = AppStateMachine(() => _navigatorKey.currentState);
 
   MyApp({super.key});
 
@@ -29,18 +28,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      home: MainPage(
-        appStateStream: appStateSubject.stream,
-          performAction: _performAction
-      ),
+      title: 'RussianRockSongBook',
+      navigatorKey: _navigatorKey,
+      initialRoute: '/start',
+      routes: {
+        PageVariant.start.route: (context) => StartPage(() {
+          _performAction(ShowSongList());
+        }),
+        PageVariant.songList.route: (context) => SongListPage(
+            _appStateSubject.stream, _performAction
+        ),
+        PageVariant.songText.route: (context) => SongTextPage(
+            _appStateSubject.stream, _performAction
+        ),
+        PageVariant.cloudSearch.route: (context) => CloudSearchPage(
+            _appStateSubject.stream, _performAction
+        ),
+        PageVariant.cloudSongText.route: (context) => CloudSongTextPage(
+            _appStateSubject.stream, _performAction
+        ),
+      }
     );
   }
 
   void _performAction(AppUIAction action) {
-    final machineAcceptedAction = appStateMachine.performAction((newState) {
-      appStateSubject.add(newState);
-    }, appStateSubject.value, action);
+    final machineAcceptedAction = _appStateMachine.performAction((newState) {
+      _appStateSubject.add(newState);
+    }, _appStateSubject.value, action);
 
     if (machineAcceptedAction) {
       log('app state machine accepted action');
@@ -48,58 +62,4 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatefulWidget {
-  final ValueStream<AppState> appStateStream;
-  final ActionPerformer performAction;
-
-  const MainPage({super.key, required this.appStateStream, required this.performAction});
-
-  @override
-  State<MainPage> createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<AppState>(
-        stream: widget.appStateStream,
-        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
-          final appState = snapshot.data;
-          if (appState == null) {
-            return const Center(
-              child: SizedBox(
-                width: 100,
-                height: 100,
-                child: CircularProgressIndicator(
-                  color: AppTheme.colorLightYellow,
-                ),
-              ),
-            );
-          }
-          switch (appState.currentPageVariant) {
-            case PageVariant.start:
-              return StartPage(() {
-                widget.performAction(ShowSongList());
-              });
-            case PageVariant.songList:
-              return SongListPage(
-                  widget.appStateStream, widget.performAction
-              );
-            case PageVariant.songText:
-              return SongTextPage(
-                  widget.appStateStream, widget.performAction
-              );
-            case PageVariant.cloudSearch:
-              return CloudSearchPage(
-                  widget.appStateStream, widget.performAction
-              );
-            case PageVariant.cloudSongText:
-              return CloudSongTextPage(
-                  widget.appStateStream, widget.performAction
-              );
-          }
-        });
-  }
-}
 
