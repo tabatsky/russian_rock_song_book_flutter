@@ -72,8 +72,7 @@ class _MainPageState extends State<MainPage> {
               );
             case PageVariant.songText:
               return SongTextPage(
-                  appState.theme,
-                  appState.localState.currentSong,
+                  appStateSubject.stream,
                       (action) { _performAction(action); }
               );
             case PageVariant.cloudSearch:

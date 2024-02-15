@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 
 import 'package:russian_rock_song_book/app_icons.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
-import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/warning.dart';
 import 'package:russian_rock_song_book/warning_dialog.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'app_actions.dart';
+import 'app_state.dart';
+import 'song.dart';
 
 class SongTextPage extends StatefulWidget {
 
-  final AppTheme theme;
-  final Song? currentSong;
+  final ValueStream<AppState> appStateStream;
   final void Function(AppUIAction action) onPerformAction;
 
   const SongTextPage(
-      this.theme,
-      this.currentSong,
+      this.appStateStream,
       this.onPerformAction,
       {super.key});
 
@@ -36,21 +36,47 @@ class _SongTextPageState extends State<SongTextPage> {
   bool _isEditorMode = false;
   final _textEditorController = TextEditingController();
 
+  Song? _currentSong;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<AppState>(
+        stream: widget.appStateStream,
+        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
+          final appState = snapshot.data;
+          if (appState == null) {
+            return const Center(
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: CircularProgressIndicator(
+                  color: AppTheme.colorLightYellow,
+                ),
+              ),
+            );
+          }
+          _updateSong(appState.localState.currentSong);
+          return _makePage(context, appState.theme, appState.localState.currentSong);
+        }
+    );
+  }
+
   void _scrollToTop() {
     scrollController.animateTo(0.0,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
   }
 
-  @override
-  void didUpdateWidget(SongTextPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _scrollToTop();
+  void _updateSong(Song? newSong) {
+    if (_currentSong != newSong) {
+      _currentSong = newSong;
+      WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToTop());
+    }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _makePage(BuildContext context, AppTheme theme, Song? currentSong) {
     return Scaffold(
-      backgroundColor: widget.theme.colorBg,
+      backgroundColor: theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
         leading: IconButton(
@@ -69,7 +95,7 @@ class _SongTextPageState extends State<SongTextPage> {
             },
           ),
           IconButton(
-            icon: Image.asset(widget.currentSong?.favorite == true ? AppIcons.icDelete : AppIcons.icStar),
+            icon: Image.asset(currentSong?.favorite == true ? AppIcons.icDelete : AppIcons.icStar),
             iconSize: 50,
             onPressed: () {
               widget.onPerformAction(ToggleFavorite());
@@ -87,13 +113,13 @@ class _SongTextPageState extends State<SongTextPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _makeSongTextView(context),
+          _makeSongTextView(context, theme, currentSong),
         ],
       ),
     );
   }
 
-  Widget _makeSongTextView(BuildContext context) {
+  Widget _makeSongTextView(BuildContext context, AppTheme theme, Song? currentSong) {
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -101,7 +127,7 @@ class _SongTextPageState extends State<SongTextPage> {
           double height = constraints.maxHeight;
           double buttonSize = width / 7.0;
           final textStyle = TextStyle(
-              color: widget.theme.colorMain,
+              color: theme.colorMain,
               fontFamily: 'monospace',
               fontFamilyFallback: const <String>["Courier"],
               fontSize: 16,
@@ -117,11 +143,11 @@ class _SongTextPageState extends State<SongTextPage> {
                   padding: EdgeInsets.zero,
                   child: Container(
                     constraints: BoxConstraints(minHeight: height, minWidth: width),
-                    color: widget.theme.colorBg,
+                    color: theme.colorBg,
                     padding: const EdgeInsets.all(8),
                     child: Wrap(
                       children: [
-                        Text(widget.currentSong?.title ?? 'null', style: TextStyle(color: widget.theme.colorMain, fontSize: 24)),
+                        Text(currentSong?.title ?? 'null', style: TextStyle(color: theme.colorMain, fontSize: 24)),
                         Container(
                           height: 20,
                         ),
@@ -137,7 +163,7 @@ class _SongTextPageState extends State<SongTextPage> {
                           style: textStyle,
                         )
                         : Text(
-                            widget.currentSong?.text ?? 'null',
+                            currentSong?.text ?? 'null',
                             style: textStyle,
                         ),
                         Container(
@@ -151,13 +177,13 @@ class _SongTextPageState extends State<SongTextPage> {
               Container(
                 width: width,
                 height: buttonSize,
-                color: widget.theme.colorBg,
-                child: _bottomButtonRow(buttonSize),
+                color: theme.colorBg,
+                child: _bottomButtonRow(buttonSize, currentSong),
               ),
               Container(
                 width: width,
                 height: buttonSize / 2,
-                color: widget.theme.colorBg,
+                color: theme.colorBg,
               ),
             ],
           );
@@ -166,7 +192,7 @@ class _SongTextPageState extends State<SongTextPage> {
     );
   }
 
-  Widget _bottomButtonRow(double buttonSize) => Row(
+  Widget _bottomButtonRow(double buttonSize, Song? currentSong) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Container(
@@ -179,7 +205,7 @@ class _SongTextPageState extends State<SongTextPage> {
           padding: const EdgeInsets.all(8),
           onPressed: () {
             widget.onPerformAction(OpenVkMusic(
-                widget.currentSong?.searchFor ?? 'null'
+                currentSong?.searchFor ?? 'null'
             ));
           },
         ),
@@ -194,7 +220,7 @@ class _SongTextPageState extends State<SongTextPage> {
           padding: const EdgeInsets.all(8),
           onPressed: () {
             widget.onPerformAction(OpenYoutubeMusic(
-                widget.currentSong?.searchFor ?? 'null'
+                currentSong?.searchFor ?? 'null'
             ));
           },
         ),
@@ -222,7 +248,7 @@ class _SongTextPageState extends State<SongTextPage> {
           padding: const EdgeInsets.all(8),
           onPressed: () {
             WarningDialog.showWarningDialog(context, (comment) {
-              final warning = Warning.fromSongWithComment(widget.currentSong!, comment);
+              final warning = Warning.fromSongWithComment(currentSong!, comment);
               widget.onPerformAction(SendWarning(warning));
             });
           },
@@ -253,7 +279,7 @@ class _SongTextPageState extends State<SongTextPage> {
             if (_isEditorMode) {
               _saveText();
             } else {
-              _editText();
+              _editText(currentSong);
             }
           },
         ),
@@ -261,8 +287,8 @@ class _SongTextPageState extends State<SongTextPage> {
     ],
   );
 
-  Future<void> _editText() async {
-    _textEditorController.text = widget.currentSong?.text ?? 'null';
+  Future<void> _editText(Song? currentSong) async {
+    _textEditorController.text = currentSong?.text ?? 'null';
     setState(() {
       _isEditorMode = true;
     });
