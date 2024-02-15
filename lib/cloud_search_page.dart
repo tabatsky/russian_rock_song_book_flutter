@@ -3,6 +3,7 @@ import 'package:russian_rock_song_book/app_divider.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
 import 'package:russian_rock_song_book/order_by.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'app_actions.dart';
 import 'app_icons.dart';
@@ -13,13 +14,11 @@ import 'cloud_song.dart';
 
 class CloudSearchPage extends StatefulWidget {
 
-  final AppTheme theme;
-  final CloudState cloudState;
+  final ValueStream<AppState> appStateStream;
   final void Function(AppUIAction action) onPerformAction;
 
   const CloudSearchPage(
-      this.theme,
-      this.cloudState,
+      this.appStateStream,
       this.onPerformAction,
       {super.key});
 
@@ -45,22 +44,43 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   @override
   void initState() {
     super.initState();
-    _restoreSearchState();
+    _restoreSearchState(widget.appStateStream.value.cloudState);
   }
 
-  void _scrollToActual() {
-    _cloudTitleScrollController.animateTo(widget.cloudState.cloudScrollPosition * _itemHeight,
+  void _scrollToActual(CloudState cloudState) {
+    _cloudTitleScrollController.animateTo(cloudState.cloudScrollPosition * _itemHeight,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
     widget.onPerformAction(UpdateCloudSongListNeedScroll(false));
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.cloudState.needScroll) {
-       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual());
+    return StreamBuilder<AppState>(
+        stream: widget.appStateStream,
+        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
+          final appState = snapshot.data;
+          if (appState == null) {
+            return const Center(
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: CircularProgressIndicator(
+                  color: AppTheme.colorLightYellow,
+                ),
+              ),
+            );
+          }
+          return _makePage(context, appState.theme, appState.cloudState);
+        }
+    );
+  }
+
+  Widget _makePage(BuildContext context, AppTheme theme, CloudState cloudState) {
+    if (cloudState.needScroll) {
+       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual(cloudState));
     }
     return Scaffold(
-      backgroundColor: widget.theme.colorBg,
+      backgroundColor: theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
         title: const Text(SongRepository.artistCloudSearch),
@@ -78,8 +98,8 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              _makeCloudSearchPanel(maxWidth),
-              _content(),
+              _makeCloudSearchPanel(maxWidth, theme),
+              _content(theme, cloudState),
             ],
           );
         }),
@@ -87,56 +107,56 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
     );
   }
 
-  Widget _content() {
-    if (widget.cloudState.currentSearchState == SearchState.loading) {
-      widget.cloudState.currentSearchPager?.getPage(0, false);
-      return _makeProgressIndicator();
-    } else if (widget.cloudState.currentSearchState == SearchState.empty) {
-      return _makeEmptyListIndicator();
-    } else if (widget.cloudState.currentSearchState == SearchState.error) {
-      return _makeErrorIndicator();
+  Widget _content(AppTheme theme, CloudState cloudState) {
+    if (cloudState.currentSearchState == SearchState.loading) {
+      cloudState.currentSearchPager?.getPage(0, false);
+      return _makeProgressIndicator(theme);
+    } else if (cloudState.currentSearchState == SearchState.empty) {
+      return _makeEmptyListIndicator(theme);
+    } else if (cloudState.currentSearchState == SearchState.error) {
+      return _makeErrorIndicator(theme);
     } else {
-      return Flexible(child: _makeCloudTitleListView());
+      return Flexible(child: _makeCloudTitleListView(theme, cloudState));
     }
   }
 
-  Widget _makeProgressIndicator() => Expanded(
+  Widget _makeProgressIndicator(AppTheme theme) => Expanded(
       child: Center(
         child: SizedBox(
           width: 100,
           height: 100,
           child: CircularProgressIndicator(
-            color: widget.theme.colorMain,
+            color: theme.colorMain,
           ),
         ),
       )
   );
 
-  Widget _makeEmptyListIndicator() => Expanded(
+  Widget _makeEmptyListIndicator(AppTheme theme) => Expanded(
       child: Center(
         child: Text(
           AppStrings.strListIsEmpty,
           style: TextStyle(
-            color: widget.theme.colorMain,
+            color: theme.colorMain,
             fontSize: 24,
           ),
         )
       )
   );
 
-  Widget _makeErrorIndicator() => Expanded(
+  Widget _makeErrorIndicator(AppTheme theme) => Expanded(
       child: Center(
           child: Text(
             AppStrings.strErrorFetchData,
             style: TextStyle(
-              color: widget.theme.colorMain,
+              color: theme.colorMain,
               fontSize: 24,
             ),
           )
       )
   );
 
-  Widget _makeCloudSearchPanel(double maxWidth) {
+  Widget _makeCloudSearchPanel(double maxWidth, AppTheme theme) {
     return Container(
       height: 96,
       padding: const EdgeInsets.all(4),
@@ -151,11 +171,11 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(
                             vertical: 12),
-                        fillColor: widget.theme.colorMain,
+                        fillColor: theme.colorMain,
                         filled: true,
                       ),
                       style: TextStyle(
-                        color: widget.theme.colorBg,
+                        color: theme.colorBg,
                         fontSize: 16,
                       ),
                     ),
@@ -164,7 +184,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                       height: 40,
                       child: DropdownButton(
                         value: orderBy.orderByStr,
-                        items: orderByDropdownItems,
+                        items: orderByDropdownItems(theme),
                         isExpanded: true,
                         onChanged: (String? value) {
                           final orderByStr = value ??
@@ -177,7 +197,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                             _performCloudSearch();
                           }
                         },
-                        dropdownColor: widget.theme.colorBg,
+                        dropdownColor: theme.colorBg,
                       ),
                     ),
                   ]
@@ -204,22 +224,22 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
     );
   }
 
-  List<DropdownMenuItem<String>> get orderByDropdownItems{
+  List<DropdownMenuItem<String>> orderByDropdownItems(AppTheme theme) {
     List<DropdownMenuItem<String>> menuItems = OrderBy.values.map((orderBy) =>
-        DropdownMenuItem(value: orderBy.orderByStr, child: Text(orderBy.orderByRus, style: TextStyle(color: widget.theme.colorMain)))
+        DropdownMenuItem(value: orderBy.orderByStr, child: Text(orderBy.orderByRus, style: TextStyle(color: theme.colorMain)))
     ).toList();
 
     return menuItems;
   }
 
-  Widget _makeCloudTitleListView() => CustomScrollView(
+  Widget _makeCloudTitleListView(AppTheme theme, CloudState cloudState) => CustomScrollView(
     controller: _cloudTitleScrollController,
     slivers: [
       SliverList(
         delegate: SliverChildBuilderDelegate(
-          childCount: widget.cloudState.lastPage?.plus(1), (context, pageIndex) {
+          childCount: cloudState.lastPage?.plus(1), (context, pageIndex) {
             return FutureBuilder(
-              future: widget.cloudState.currentSearchPager?.getPage(pageIndex, false),
+              future: cloudState.currentSearchPager?.getPage(pageIndex, false),
               initialData: null,
               builder: (context, snapshot) {
                 final List<Widget> titleViews;
@@ -228,7 +248,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                       snapshot.data?.length ?? 0).map((listIndex) {
                     final cloudSong = snapshot.data!.elementAt(listIndex);
                     final cloudSongIndex = pageIndex * pageSize + listIndex;
-                    return _titleItem(cloudSong, cloudSongIndex);
+                    return _titleItem(theme, cloudState, cloudSong, cloudSongIndex);
                   }).toList();
                   return SizedBox(
                     height: _itemHeight * titleViews.length,
@@ -239,7 +259,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                 } else {
                   titleViews = Iterable<int>.generate(pageSize).map((listIndex) {
                     final cloudSongIndex = pageIndex * pageSize + listIndex;
-                    return _titleItem(null, cloudSongIndex);
+                    return _titleItem(theme, cloudState, null, cloudSongIndex);
                   }).toList();
                 }
                 return SizedBox(
@@ -256,12 +276,12 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
     ],
   );
 
-  Widget _titleItem(CloudSong? cloudSong, int cloudSongIndex) {
+  Widget _titleItem(AppTheme theme, CloudState cloudState, CloudSong? cloudSong, int cloudSongIndex) {
     final extraLikes;
     final extraDislikes;
     if (cloudSong != null) {
-      extraLikes = widget.cloudState.allLikes[cloudSong] ?? 0;
-      extraDislikes = widget.cloudState.allDislikes[cloudSong] ?? 0;
+      extraLikes = cloudState.allLikes[cloudSong] ?? 0;
+      extraDislikes = cloudState.allDislikes[cloudSong] ?? 0;
     } else {
       extraLikes = 0;
       extraDislikes = 0;
@@ -274,7 +294,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
       },
       child: Container(
           height: _itemHeight,
-          color: widget.theme.colorBg,
+          color: theme.colorBg,
           child: Column(
               children: [
                 const Spacer(),
@@ -286,7 +306,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                     child: Text(
                         cloudSong?.artist ?? '',
                         style: TextStyle(
-                            color: widget.theme.colorMain)),
+                            color: theme.colorMain)),
                   ),
                 ),
                 const Spacer(),
@@ -298,13 +318,13 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                     child: Text(
                         cloudSong?.visibleTitleWithRating(extraLikes, extraDislikes) ?? '',
                         style: TextStyle(
-                            color: widget.theme.colorMain)),
+                            color: theme.colorMain)),
                   ),
                 ),
                 const Spacer(),
                 AppDivider(
                   height: _dividerHeight,
-                  color: widget.theme.colorMain,
+                  color: theme.colorMain,
                 )
               ]
           )
@@ -323,10 +343,10 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
     widget.onPerformAction(BackupSearchState(searchFor, orderBy));
   }
 
-  void _restoreSearchState() {
-    _cloudSearchTextFieldController.text = widget.cloudState.searchForBackup;
+  void _restoreSearchState(CloudState cloudState) {
+    _cloudSearchTextFieldController.text = cloudState.searchForBackup;
     setState(() {
-      orderBy = widget.cloudState.orderByBackup;
+      orderBy = cloudState.orderByBackup;
     });
   }
 }
