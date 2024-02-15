@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:russian_rock_song_book/song_list_page.dart';
 import 'package:russian_rock_song_book/song_text_page.dart';
 import 'package:russian_rock_song_book/start_page.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 
 import 'app_actions.dart';
@@ -13,40 +14,56 @@ import 'app_state.dart';
 import 'app_theme.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
+typedef ActionPerformer = void Function(AppUIAction action);
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final appStateSubject = BehaviorSubject<AppState>.seeded(AppState());
+  final AppStateMachine appStateMachine = AppStateMachine();
+
+  MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Flutter Demo',
-      home: MainPage(title: 'Flutter Demo Home Page'),
+      home: MainPage(
+        appStateStream: appStateSubject.stream,
+          performAction: _performAction
+      ),
     );
+  }
+
+  void _performAction(AppUIAction action) {
+    final machineAcceptedAction = appStateMachine.performAction((newState) {
+      appStateSubject.add(newState);
+    }, appStateSubject.value, action);
+
+    if (machineAcceptedAction) {
+      log('app state machine accepted action');
+    }
   }
 }
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key, required this.title});
+  final ValueStream<AppState> appStateStream;
+  final ActionPerformer performAction;
 
-  final String title;
+  const MainPage({super.key, required this.appStateStream, required this.performAction});
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  final appStateSubject = BehaviorSubject<AppState>.seeded(AppState());
-
-  AppStateMachine appStateMachine = AppStateMachine();
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<AppState>(
-        stream: appStateSubject.stream,
+        stream: widget.appStateStream,
         builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
           final appState = snapshot.data;
           if (appState == null) {
@@ -63,40 +80,26 @@ class _MainPageState extends State<MainPage> {
           switch (appState.currentPageVariant) {
             case PageVariant.start:
               return StartPage(() {
-                _performAction(ShowSongList());
+                widget.performAction(ShowSongList());
               });
             case PageVariant.songList:
               return SongListPage(
-                  appStateSubject.stream,
-                      (action) { _performAction(action); }
+                  widget.appStateStream, widget.performAction
               );
             case PageVariant.songText:
               return SongTextPage(
-                  appStateSubject.stream,
-                      (action) { _performAction(action); }
+                  widget.appStateStream, widget.performAction
               );
             case PageVariant.cloudSearch:
               return CloudSearchPage(
-                  appStateSubject.stream,
-                      (action) { _performAction(action); }
+                  widget.appStateStream, widget.performAction
               );
             case PageVariant.cloudSongText:
               return CloudSongTextPage(
-                  appStateSubject.stream,
-                      (action) { _performAction(action); }
+                  widget.appStateStream, widget.performAction
               );
           }
         });
-  }
-
-  void _performAction(AppUIAction action) {
-    final machineAcceptedAction = appStateMachine.performAction((newState) {
-      appStateSubject.add(newState);
-    }, appStateSubject.value, action);
-
-    if (machineAcceptedAction) {
-      log('app state machine accepted action');
-    }
   }
 }
 
