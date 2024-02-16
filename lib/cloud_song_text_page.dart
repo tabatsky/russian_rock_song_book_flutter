@@ -30,15 +30,7 @@ class CloudSongTextPage extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
           final appState = snapshot.data;
           if (appState == null) {
-            return const Center(
-              child: SizedBox(
-                width: 100,
-                height: 100,
-                child: CircularProgressIndicator(
-                  color: AppTheme.colorLightYellow,
-                ),
-              ),
-            );
+            return Container();
           }
           return _makePage(context, appState.theme, appState.cloudState);
         }
