@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:russian_rock_song_book/listen_to_music.dart';
 import 'package:russian_rock_song_book/song.dart';
 import 'package:russian_rock_song_book/song_repository.dart';
 import 'package:russian_rock_song_book/warning.dart';
@@ -18,6 +19,7 @@ import 'order_by.dart';
 
 class AppState {
   AppTheme theme = AppTheme.themeDark;
+  ListenToMusicPreference listenToMusicPreference = ListenToMusicPreference.vkAndYandex;
 
   PageVariant currentPageVariant = PageVariant.start;
 

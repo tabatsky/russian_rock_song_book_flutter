@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/app_icons.dart';
 import 'package:russian_rock_song_book/app_strings.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
+import 'package:russian_rock_song_book/listen_to_music.dart';
 import 'package:russian_rock_song_book/warning.dart';
 import 'package:russian_rock_song_book/warning_dialog.dart';
 import 'package:rxdart/rxdart.dart';
@@ -49,7 +50,7 @@ class _SongTextPageState extends State<SongTextPage> {
             return Container();
           }
           _updateSong(appState.localState.currentSong);
-          return _makePage(context, appState.theme, appState.localState.currentSong);
+          return _makePage(context, appState.theme, appState.listenToMusicPreference, appState.localState.currentSong);
         }
     );
   }
@@ -66,7 +67,7 @@ class _SongTextPageState extends State<SongTextPage> {
     }
   }
 
-  Widget _makePage(BuildContext context, AppTheme theme, Song? currentSong) {
+  Widget _makePage(BuildContext context, AppTheme theme, ListenToMusicPreference listenToMusicPreference, Song? currentSong) {
     return Scaffold(
       backgroundColor: theme.colorBg,
       appBar: AppBar(
@@ -105,13 +106,13 @@ class _SongTextPageState extends State<SongTextPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _makeSongTextView(context, theme, currentSong),
+          _makeSongTextView(context, theme, listenToMusicPreference, currentSong),
         ],
       ),
     );
   }
 
-  Widget _makeSongTextView(BuildContext context, AppTheme theme, Song? currentSong) {
+  Widget _makeSongTextView(BuildContext context, AppTheme theme, ListenToMusicPreference listenToMusicPreference, Song? currentSong) {
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -170,7 +171,7 @@ class _SongTextPageState extends State<SongTextPage> {
                 width: width,
                 height: buttonSize,
                 color: theme.colorBg,
-                child: _bottomButtonRow(buttonSize, currentSong),
+                child: _bottomButtonRow(buttonSize, listenToMusicPreference, currentSong),
               ),
               Container(
                 width: width,
@@ -184,39 +185,11 @@ class _SongTextPageState extends State<SongTextPage> {
     );
   }
 
-  Widget _bottomButtonRow(double buttonSize, Song? currentSong) => Row(
+  Widget _bottomButtonRow(double buttonSize, ListenToMusicPreference listenToMusicPreference, Song? currentSong) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icVk),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            widget.onPerformAction(OpenVkMusic(
-                currentSong?.searchFor ?? 'null'
-            ));
-          },
-        ),
-      ),
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icYoutube),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            widget.onPerformAction(OpenYoutubeMusic(
-                currentSong?.searchFor ?? 'null'
-            ));
-          },
-        ),
-      ),
+      _makeMusicButton(listenToMusicPreference.supportedVariants[0], currentSong, buttonSize),
+      _makeMusicButton(listenToMusicPreference.supportedVariants[1], currentSong, buttonSize),
       Container(
         width: buttonSize,
         height: buttonSize,
@@ -278,6 +251,43 @@ class _SongTextPageState extends State<SongTextPage> {
       ),
     ],
   );
+
+  Widget _makeMusicButton(ListenToMusicVariant variant, Song? currentSong, double buttonSize) {
+    final String icon;
+    final AppUIAction action;
+
+    switch (variant) {
+      case ListenToMusicVariant.vk:
+        icon = AppIcons.icVk;
+        action = OpenVkMusic(
+            currentSong?.searchFor ?? 'null'
+        );
+      case ListenToMusicVariant.yandex:
+        icon = AppIcons.icYandex;
+        action = OpenYandexMusic(
+            currentSong?.searchFor ?? 'null'
+        );
+      case ListenToMusicVariant.youtube:
+        icon = AppIcons.icYoutube;
+        action = OpenYoutubeMusic(
+            currentSong?.searchFor ?? 'null'
+        );
+    }
+
+    return Container(
+      width: buttonSize,
+      height: buttonSize,
+      color: AppTheme.colorDarkYellow,
+      child:
+      IconButton(
+        icon: Image.asset(icon),
+        padding: const EdgeInsets.all(8),
+        onPressed: () {
+          widget.onPerformAction(action);
+        },
+      ),
+    );
+  }
 
   Future<void> _editText(Song? currentSong) async {
     _textEditorController.text = currentSong?.text ?? 'null';

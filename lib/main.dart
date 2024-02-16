@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/app_theme.dart';
 import 'package:russian_rock_song_book/cloud_search_page.dart';
 import 'package:russian_rock_song_book/cloud_song_text_page.dart';
+import 'package:russian_rock_song_book/listen_to_music.dart';
 import 'dart:developer';
 
 import 'package:russian_rock_song_book/song_list_page.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    _loadTheme();
+    _loadPrefs();
     return MaterialApp(
       title: 'RussianRockSongBook',
       navigatorKey: _navigatorKey,
@@ -64,10 +65,12 @@ class MyApp extends StatelessWidget {
     }
   }
 
-  Future<void> _loadTheme() async {
+  Future<void> _loadPrefs() async {
     final theme = await ThemeVariant.getCurrentTheme();
+    final listenToMusicPreference = await ListenToMusicPreference.getCurrentPreference();
     final appState = _appStateSubject.value;
     appState.theme = theme;
+    appState.listenToMusicPreference = listenToMusicPreference;
     _appStateSubject.add(appState);
   }
 }
