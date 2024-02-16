@@ -47,7 +47,6 @@ class StartPageState extends State<StartPage> {
     );
   }
 
-  @override
   Widget _makePage(BuildContext context, AppTheme theme) {
     return Material(
       color: theme.colorBg,
