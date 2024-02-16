@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppTheme {
   static const materialBlack = MaterialColor(
@@ -25,9 +26,23 @@ class AppTheme {
   static final themeDark = AppTheme(colorLightYellow, materialBlack, colorDarkYellow);
   static final themeLight = AppTheme(materialBlack, colorLightYellow, colorDarkYellow);
 
+  static final allThemes = [themeDark, themeLight];
+
   Color colorMain;
   Color colorBg;
   Color colorCommon;
 
   AppTheme(this.colorMain, this.colorBg, this.colorCommon);
+
+  static AppTheme getByIndex(int index) => allThemes[index];
+}
+
+class ThemeVariant {
+  static const themeKey = 'themeIndex';
+
+  static Future<AppTheme> getCurrentTheme() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final index = prefs.getInt(themeKey) ?? 0;
+    return AppTheme.getByIndex(index);
+  }
 }
