@@ -34,7 +34,8 @@ class MyApp extends StatelessWidget {
       navigatorKey: _navigatorKey,
       initialRoute: '/start',
       routes: {
-        PageVariant.start.route: (context) => StartPage(() {
+        PageVariant.start.route: (context) => StartPage(
+           _appStateSubject.stream, () {
           _performAction(ShowSongList());
         }),
         PageVariant.songList.route: (context) => SongListPage(
