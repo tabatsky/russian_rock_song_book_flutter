@@ -22,6 +22,8 @@ class AppStrings {
   static const strStartDbBuilding = 'Построение базы данных';
   static const strToastInAppError = 'Ошибка в приложении';
   static const strErrorFetchData = 'Возникла ошибка';
+  static const strSettings = 'Настройки';
+  static const strSave = 'Сохранить';
 
   static String strFrom(int done, int total) => "$done из $total";
 }

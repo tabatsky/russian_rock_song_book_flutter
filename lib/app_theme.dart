@@ -23,18 +23,22 @@ class AppTheme {
   static const colorLightYellow = Color(0xFFFFFFBB);
   static const colorDarkYellow = Color(0xFF777755);
 
-  static final themeDark = AppTheme(colorLightYellow, materialBlack, colorDarkYellow);
-  static final themeLight = AppTheme(materialBlack, colorLightYellow, colorDarkYellow);
+  static final themeDark = AppTheme('Темная', colorLightYellow, materialBlack, colorDarkYellow);
+  static final themeLight = AppTheme('Светлая', materialBlack, colorLightYellow, colorDarkYellow);
 
   static final allThemes = [themeDark, themeLight];
 
-  Color colorMain;
-  Color colorBg;
-  Color colorCommon;
+  final String description;
+  final Color colorMain;
+  final Color colorBg;
+  final Color colorCommon;
 
-  AppTheme(this.colorMain, this.colorBg, this.colorCommon);
+  AppTheme(this.description, this.colorMain, this.colorBg, this.colorCommon);
 
   static AppTheme getByIndex(int index) => allThemes[index];
+
+  static int indexFromDescription(String description) =>
+      allThemes.indexWhere((element) => element.description == description);
 }
 
 class ThemeVariant {
@@ -44,5 +48,10 @@ class ThemeVariant {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final index = prefs.getInt(themeKey) ?? 0;
     return AppTheme.getByIndex(index);
+  }
+
+  static Future<void> saveThemeIndex(int index) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(themeKey, index);
   }
 }

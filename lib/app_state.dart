@@ -59,7 +59,7 @@ class CloudState {
 }
 
 enum PageVariant {
-  start, songList, songText, cloudSearch, cloudSongText;
+  start, songList, songText, cloudSearch, cloudSongText, settings;
 
   String get route {
     switch (this) {
@@ -73,6 +73,8 @@ enum PageVariant {
         return '/cloudSearch';
       case cloudSongText:
         return '/cloudSongText';
+      case settings:
+        return '/settings';
     }
   }
 }
@@ -132,6 +134,10 @@ class AppStateMachine {
       _dislikeCurrent(changeState, appState);
     } else if (action is UpdateCloudSongListNeedScroll) {
       _updateCloudSongListNeedScroll(changeState, appState, action.needScroll);
+    } else if (action is OpenSettings) {
+      _openSettings(changeState, appState);
+    } else if (action is SaveSettings) {
+      _saveSettings(changeState, appState, action.settings);
     } else if (action is ReloadSettings) {
       _reloadSettings(changeState, appState);
     } else {
@@ -157,6 +163,10 @@ class AppStateMachine {
     } else if (oldPageVariant == PageVariant.cloudSearch && newPageVariant == PageVariant.cloudSongText) {
       getNavigatorState()?.pushNamed(PageVariant.cloudSongText.route);
     } else if (oldPageVariant == PageVariant.cloudSongText && newPageVariant == PageVariant.cloudSearch) {
+      getNavigatorState()?.pop();
+    } else if (oldPageVariant == PageVariant.songList && newPageVariant == PageVariant.settings) {
+      getNavigatorState()?.pushNamed(PageVariant.settings.route);
+    } else if (oldPageVariant == PageVariant.settings && newPageVariant == PageVariant.songList) {
       getNavigatorState()?.pop();
     }
 
@@ -263,6 +273,10 @@ class AppStateMachine {
       newCloudState.currentCloudSongPosition = -1;
       newCloudState.needScroll = true;
       newAppState.cloudState = newCloudState;
+      changeState(newAppState);
+    } else if (appState.currentPageVariant == PageVariant.settings) {
+      final newAppState = appState;
+      _selectPageVariant(newAppState, PageVariant.songList);
       changeState(newAppState);
     }
   }
@@ -534,6 +548,13 @@ class AppStateMachine {
     changeState(newState);
   }
 
+  Future<void> _saveSettings(AppStateChanger changeState, AppState appState, AppSettings settings) async {
+    final newThemeIndex = AppTheme.indexFromDescription(settings.theme.description);
+    await ThemeVariant.saveThemeIndex(newThemeIndex);
+
+    await _reloadSettings(changeState, appState);
+  }
+
   Future<void> _reloadSettings(AppStateChanger changeState, AppState appState) async {
     final theme = await ThemeVariant.getCurrentTheme();
     final listenToMusicPreference = await ListenToMusicPreference.getCurrentPreference();
@@ -541,5 +562,11 @@ class AppStateMachine {
     newState.settings.theme = theme;
     newState.settings.listenToMusicPreference = listenToMusicPreference;
     changeState(newState);
+  }
+
+  Future<void> _openSettings(AppStateChanger changeState, AppState appState) async {
+    final newAppState = appState;
+    _selectPageVariant(newAppState, PageVariant.settings);
+    changeState(newAppState);
   }
 }

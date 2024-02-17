@@ -1,3 +1,4 @@
+import 'package:russian_rock_song_book/app_state.dart';
 import 'package:russian_rock_song_book/order_by.dart';
 import 'package:russian_rock_song_book/warning.dart';
 
@@ -87,4 +88,10 @@ class UpdateCloudSongListNeedScroll extends AppUIAction {
   UpdateCloudSongListNeedScroll(this.needScroll);
 }
 
+class OpenSettings extends AppUIAction {}
+class SaveSettings extends AppUIAction {
+  AppSettings settings;
+
+  SaveSettings(this.settings);
+}
 class ReloadSettings extends AppUIAction {}

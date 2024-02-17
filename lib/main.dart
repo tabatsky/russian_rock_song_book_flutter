@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/cloud_search_page.dart';
 import 'package:russian_rock_song_book/cloud_song_text_page.dart';
+import 'package:russian_rock_song_book/settings_page.dart';
 import 'dart:developer';
 
 import 'package:russian_rock_song_book/song_list_page.dart';
@@ -47,6 +48,9 @@ class MyApp extends StatelessWidget {
             _appStateSubject.stream, _performAction
         ),
         PageVariant.cloudSongText.route: (context) => CloudSongTextPage(
+            _appStateSubject.stream, _performAction
+        ),
+        PageVariant.settings.route: (context) => SettingsPage(
             _appStateSubject.stream, _performAction
         ),
       }

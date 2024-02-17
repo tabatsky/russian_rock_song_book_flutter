@@ -7,6 +7,7 @@ import 'package:russian_rock_song_book/app_strings.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'app_actions.dart';
+import 'app_icons.dart';
 import 'app_state.dart';
 
 class SongListPage extends StatefulWidget{
@@ -64,6 +65,15 @@ class _SongListPageState extends State<SongListPage> {
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
         title: Text(localState.currentArtist),
+        actions: [
+          IconButton(
+            icon: Image.asset(AppIcons.icSettings),
+            iconSize: 50,
+            onPressed: () {
+              widget.onPerformAction(OpenSettings());
+            },
+          ),
+        ],
       ),
       drawer: Drawer(
         child: _makeMenuListView(theme, localState),
