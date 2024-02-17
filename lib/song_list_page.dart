@@ -48,7 +48,7 @@ class _SongListPageState extends State<SongListPage> {
           if (appState == null) {
             return Container();
           }
-          return _makePage(context, appState.theme, appState.localState);
+          return _makePage(context, appState.settings.theme, appState.localState);
         }
     );
   }

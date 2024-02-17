@@ -42,7 +42,7 @@ class StartPageState extends State<StartPage> {
           if (appState == null) {
             return Container();
           }
-          return _makePage(context, appState.theme);
+          return _makePage(context, appState.settings.theme);
         }
     );
   }

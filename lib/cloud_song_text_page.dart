@@ -32,7 +32,7 @@ class CloudSongTextPage extends StatelessWidget {
           if (appState == null) {
             return Container();
           }
-          return _makePage(context, appState.theme, appState.cloudState);
+          return _makePage(context, appState.settings.theme, appState.cloudState);
         }
     );
   }

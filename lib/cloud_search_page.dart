@@ -62,7 +62,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
           if (appState == null) {
             return Container();
           }
-          return _makePage(context, appState.theme, appState.cloudState);
+          return _makePage(context, appState.settings.theme, appState.cloudState);
         }
     );
   }

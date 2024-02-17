@@ -86,3 +86,5 @@ class UpdateCloudSongListNeedScroll extends AppUIAction {
 
   UpdateCloudSongListNeedScroll(this.needScroll);
 }
+
+class ReloadSettings extends AppUIAction {}

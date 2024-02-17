@@ -18,13 +18,16 @@ import 'cloud_song.dart';
 import 'order_by.dart';
 
 class AppState {
-  AppTheme theme = AppTheme.themeDark;
-  ListenToMusicPreference listenToMusicPreference = ListenToMusicPreference.vkAndYandex;
-
   PageVariant currentPageVariant = PageVariant.start;
 
+  AppSettings settings = AppSettings();
   LocalState localState = LocalState();
   CloudState cloudState = CloudState();
+}
+
+class AppSettings {
+  AppTheme theme = AppTheme.themeDark;
+  ListenToMusicPreference listenToMusicPreference = ListenToMusicPreference.yandexAndYoutube;
 }
 
 class LocalState {
@@ -129,6 +132,8 @@ class AppStateMachine {
       _dislikeCurrent(changeState, appState);
     } else if (action is UpdateCloudSongListNeedScroll) {
       _updateCloudSongListNeedScroll(changeState, appState, action.needScroll);
+    } else if (action is ReloadSettings) {
+      _reloadSettings(changeState, appState);
     } else {
       return false;
     }
@@ -370,8 +375,8 @@ class AppStateMachine {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: appState.theme.colorMain,
-        textColor: appState.theme.colorBg,
+        backgroundColor: appState.settings.theme.colorMain,
+        textColor: appState.settings.theme.colorBg,
         fontSize: 16.0
     );
   }
@@ -526,6 +531,15 @@ class AppStateMachine {
   void _updateCloudSongListNeedScroll(AppStateChanger changeState, AppState appState, bool needScroll) {
     final newState = appState;
     newState.cloudState.needScroll = needScroll;
+    changeState(newState);
+  }
+
+  Future<void> _reloadSettings(AppStateChanger changeState, AppState appState) async {
+    final theme = await ThemeVariant.getCurrentTheme();
+    final listenToMusicPreference = await ListenToMusicPreference.getCurrentPreference();
+    final newState = appState;
+    newState.settings.theme = theme;
+    newState.settings.listenToMusicPreference = listenToMusicPreference;
     changeState(newState);
   }
 }

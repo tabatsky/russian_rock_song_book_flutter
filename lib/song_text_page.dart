@@ -50,7 +50,7 @@ class _SongTextPageState extends State<SongTextPage> {
             return Container();
           }
           _updateSong(appState.localState.currentSong);
-          return _makePage(context, appState.theme, appState.listenToMusicPreference, appState.localState.currentSong);
+          return _makePage(context, appState.settings, appState.localState.currentSong);
         }
     );
   }
@@ -67,9 +67,9 @@ class _SongTextPageState extends State<SongTextPage> {
     }
   }
 
-  Widget _makePage(BuildContext context, AppTheme theme, ListenToMusicPreference listenToMusicPreference, Song? currentSong) {
+  Widget _makePage(BuildContext context, AppSettings settings, Song? currentSong) {
     return Scaffold(
-      backgroundColor: theme.colorBg,
+      backgroundColor: settings.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
         leading: IconButton(
@@ -106,13 +106,13 @@ class _SongTextPageState extends State<SongTextPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _makeSongTextView(context, theme, listenToMusicPreference, currentSong),
+          _makeSongTextView(context, settings, currentSong),
         ],
       ),
     );
   }
 
-  Widget _makeSongTextView(BuildContext context, AppTheme theme, ListenToMusicPreference listenToMusicPreference, Song? currentSong) {
+  Widget _makeSongTextView(BuildContext context, AppSettings settings, Song? currentSong) {
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -120,7 +120,7 @@ class _SongTextPageState extends State<SongTextPage> {
           double height = constraints.maxHeight;
           double buttonSize = width / 7.0;
           final textStyle = TextStyle(
-              color: theme.colorMain,
+              color: settings.theme.colorMain,
               fontFamily: 'monospace',
               fontFamilyFallback: const <String>["Courier"],
               fontSize: 16,
@@ -136,11 +136,11 @@ class _SongTextPageState extends State<SongTextPage> {
                   padding: EdgeInsets.zero,
                   child: Container(
                     constraints: BoxConstraints(minHeight: height, minWidth: width),
-                    color: theme.colorBg,
+                    color: settings.theme.colorBg,
                     padding: const EdgeInsets.all(8),
                     child: Wrap(
                       children: [
-                        Text(currentSong?.title ?? 'null', style: TextStyle(color: theme.colorMain, fontSize: 24)),
+                        Text(currentSong?.title ?? 'null', style: TextStyle(color: settings.theme.colorMain, fontSize: 24)),
                         Container(
                           height: 20,
                         ),
@@ -170,13 +170,13 @@ class _SongTextPageState extends State<SongTextPage> {
               Container(
                 width: width,
                 height: buttonSize,
-                color: theme.colorBg,
-                child: _bottomButtonRow(buttonSize, listenToMusicPreference, currentSong),
+                color: settings.theme.colorBg,
+                child: _bottomButtonRow(buttonSize, settings.listenToMusicPreference, currentSong),
               ),
               Container(
                 width: width,
                 height: buttonSize / 2,
-                color: theme.colorBg,
+                color: settings.theme.colorBg,
               ),
             ],
           );
