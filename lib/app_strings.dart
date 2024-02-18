@@ -24,6 +24,7 @@ class AppStrings {
   static const strErrorFetchData = 'Возникла ошибка';
   static const strSettings = 'Настройки';
   static const strSave = 'Сохранить';
+  static const strTheme = 'Тема:';
 
   static String strFrom(int done, int total) => "$done из $total";
 }

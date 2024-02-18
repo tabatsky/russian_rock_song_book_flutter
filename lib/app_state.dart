@@ -551,6 +551,9 @@ class AppStateMachine {
   Future<void> _saveSettings(AppStateChanger changeState, AppState appState, AppSettings settings) async {
     final newThemeIndex = AppTheme.indexFromDescription(settings.theme.description);
     await ThemeVariant.saveThemeIndex(newThemeIndex);
+    final newMusicPreferenceIndex = ListenToMusicPreference
+        .indexFromDescription(settings.listenToMusicPreference.description);
+    await ListenToMusicPreference.savePreferenceIndex(newMusicPreferenceIndex);
 
     await _reloadSettings(changeState, appState);
   }

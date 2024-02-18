@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/listen_to_music.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'app_actions.dart';
@@ -20,12 +21,14 @@ class SettingsPage extends StatefulWidget {
 class _SettingsState extends State<SettingsPage> {
 
   AppTheme _theTheme = AppTheme.themeDark;
+  ListenToMusicPreference _theListenToMusicPreference = ListenToMusicPreference.yandexAndYoutube;
 
   bool _loadDone = false;
 
   void _loadStateFromSettings(AppSettings settings) {
     setState(() {
       _theTheme = settings.theme;
+      _theListenToMusicPreference = settings.listenToMusicPreference;
       _loadDone = true;
     });
   }
@@ -63,39 +66,21 @@ class _SettingsState extends State<SettingsPage> {
         ),
       ),
       body: Container(
-        child: _makeSettingsView(context, settings),
+        child:  LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+          double maxWidth = constraints.maxWidth;
+          return _makeSettingsView(maxWidth, settings);
+        }),
       ),
     );
   }
 
-  Widget _makeSettingsView(BuildContext context, AppSettings settings) {
+  Widget _makeSettingsView(double width, AppSettings settings) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            SizedBox(
-              width: 200,
-              height: 80,
-              child: DropdownButton(
-                value: _theTheme.description,
-                items: themeDropdownItems(settings.theme),
-                isExpanded: true,
-                onChanged: (String? value) {
-                  final description = value ??
-                      _theTheme.description;
-                  final newIndex = AppTheme.indexFromDescription(description);
-                  final newTheme = AppTheme.allThemes[newIndex];
-                  setState(() {
-                    _theTheme = newTheme;
-                  });
-                },
-                dropdownColor: settings.theme.colorBg,
-              ),
-            ),
-          ],
-        ),
+        _makeThemeRow(width, settings),
+        _makeListenToMusicRow(width, settings),
         const Spacer(),
         TextButton(
             onPressed: () { _saveSettings(settings); },
@@ -115,7 +100,91 @@ class _SettingsState extends State<SettingsPage> {
     );
   }
 
-  List<DropdownMenuItem<String>> themeDropdownItems(AppTheme appTheme) {
+  Widget _makeThemeRow(double width, AppSettings settings) => Row(
+    children: [
+      SizedBox(
+        width: width / 2,
+        height: 60,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(AppStrings.strTheme,
+              style: TextStyle(
+                color: settings.theme.colorMain,
+                fontSize: 16,),
+            ),
+          ),
+        ),
+      ),
+      SizedBox(
+        width: width / 2,
+        height: 60,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: DropdownButton(
+            value: _theTheme.description,
+            items: _themeDropdownItems(settings.theme),
+            isExpanded: true,
+            onChanged: (String? value) {
+              final description = value ??
+                  _theTheme.description;
+              final newIndex = AppTheme.indexFromDescription(description);
+              final newTheme = AppTheme.allThemes[newIndex];
+              setState(() {
+                _theTheme = newTheme;
+              });
+            },
+            dropdownColor: settings.theme.colorBg,
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget _makeListenToMusicRow(double width, AppSettings settings) => Row(
+    children: [
+      SizedBox(
+        width: width / 2,
+        height: 60,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(AppStrings.strTheme,
+              style: TextStyle(
+                color: settings.theme.colorMain,
+                fontSize: 16,),
+            ),
+          ),
+        ),
+      ),
+      SizedBox(
+        width: width / 2,
+        height: 60,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: DropdownButton(
+            value: _theListenToMusicPreference.description,
+            items: _listenToMusicDropdownItems(settings.theme),
+            isExpanded: true,
+            onChanged: (String? value) {
+              final description = value ??
+                  _theListenToMusicPreference.description;
+              final newIndex = ListenToMusicPreference.indexFromDescription(description);
+              final newPreference = ListenToMusicPreference.allVariants[newIndex];
+              setState(() {
+                _theListenToMusicPreference = newPreference;
+              });
+            },
+            dropdownColor: settings.theme.colorBg,
+          ),
+        ),
+      ),
+    ],
+  );
+
+  List<DropdownMenuItem<String>> _themeDropdownItems(AppTheme appTheme) {
     List<DropdownMenuItem<String>> menuItems = AppTheme.allThemes.map((theTheme) =>
         DropdownMenuItem(value: theTheme.description,
             child: Text(theTheme.description, style: TextStyle(color: appTheme.colorMain)))
@@ -124,9 +193,19 @@ class _SettingsState extends State<SettingsPage> {
     return menuItems;
   }
 
+  List<DropdownMenuItem<String>> _listenToMusicDropdownItems(AppTheme appTheme) {
+    List<DropdownMenuItem<String>> menuItems = ListenToMusicPreference.allVariants.map((thePreference) =>
+        DropdownMenuItem(value: thePreference.description,
+            child: Text(thePreference.description, style: TextStyle(color: appTheme.colorMain)))
+    ).toList();
+
+    return menuItems;
+  }
+
   void _saveSettings(AppSettings settings) {
     final newSettings = settings;
     newSettings.theme = _theTheme;
+    newSettings.listenToMusicPreference = _theListenToMusicPreference;
     widget.onPerformAction(SaveSettings(newSettings));
   }
 }
