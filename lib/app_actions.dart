@@ -18,7 +18,11 @@ class ArtistClick extends AppUIAction {
   ArtistClick(this.artist);
 }
 
-class Back extends AppUIAction {}
+class Back extends AppUIAction {
+  bool systemBack;
+
+  Back({this.systemBack = false});
+}
 class PrevSong extends AppUIAction {}
 class NextSong extends AppUIAction {}
 class ToggleFavorite extends AppUIAction {}

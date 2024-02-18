@@ -99,7 +99,7 @@ class AppStateMachine {
     } else if (action is NextSong) {
       _nextSong(changeState, appState);
     } else if (action is Back) {
-      _back(changeState, appState);
+      _back(changeState, appState, systemBack: action.systemBack);
     } else if (action is ToggleFavorite) {
       _toggleFavorite(changeState, appState);
     } else if (action is SaveSongText) {
@@ -146,7 +146,7 @@ class AppStateMachine {
     return true;
   }
 
-  void _selectPageVariant(AppState appState, PageVariant newPageVariant) {
+  void _selectPageVariant(AppState appState, PageVariant newPageVariant, {bool systemBack = false}) {
     final oldPageVariant = appState.currentPageVariant;
 
     if (oldPageVariant == PageVariant.start && newPageVariant == PageVariant.songList) {
@@ -154,19 +154,19 @@ class AppStateMachine {
       getNavigatorState()?.pushNamed(PageVariant.songList.route);
     } else if (oldPageVariant == PageVariant.songList && newPageVariant == PageVariant.songText) {
       getNavigatorState()?.pushNamed(PageVariant.songText.route);
-    } else if (oldPageVariant == PageVariant.songText && newPageVariant == PageVariant.songList) {
+    } else if (oldPageVariant == PageVariant.songText && newPageVariant == PageVariant.songList && !systemBack) {
       getNavigatorState()?.pop();
     } else if (oldPageVariant == PageVariant.songList && newPageVariant == PageVariant.cloudSearch) {
       getNavigatorState()?.pushNamed(PageVariant.cloudSearch.route);
-    } else if (oldPageVariant == PageVariant.cloudSearch && newPageVariant == PageVariant.songList) {
+    } else if (oldPageVariant == PageVariant.cloudSearch && newPageVariant == PageVariant.songList && !systemBack) {
       getNavigatorState()?.pop();
     } else if (oldPageVariant == PageVariant.cloudSearch && newPageVariant == PageVariant.cloudSongText) {
       getNavigatorState()?.pushNamed(PageVariant.cloudSongText.route);
-    } else if (oldPageVariant == PageVariant.cloudSongText && newPageVariant == PageVariant.cloudSearch) {
+    } else if (oldPageVariant == PageVariant.cloudSongText && newPageVariant == PageVariant.cloudSearch && !systemBack) {
       getNavigatorState()?.pop();
     } else if (oldPageVariant == PageVariant.songList && newPageVariant == PageVariant.settings) {
       getNavigatorState()?.pushNamed(PageVariant.settings.route);
-    } else if (oldPageVariant == PageVariant.settings && newPageVariant == PageVariant.songList) {
+    } else if (oldPageVariant == PageVariant.settings && newPageVariant == PageVariant.songList && !systemBack) {
       getNavigatorState()?.pop();
     }
 
@@ -251,24 +251,24 @@ class AppStateMachine {
     }
   }
 
-  void _back(AppStateChanger changeState, AppState appState) {
-    log('back');
+  void _back(AppStateChanger changeState, AppState appState, {bool systemBack = false}) {
+    log("back, system: $systemBack");
     if (appState.currentPageVariant == PageVariant.songText) {
       final newAppState = appState;
       final newLocalState = appState.localState;
-      _selectPageVariant(newAppState, PageVariant.songList);
+      _selectPageVariant(newAppState, PageVariant.songList, systemBack: systemBack);
       newLocalState.currentSong = null;
       newLocalState.currentSongPosition = -1;
       newAppState.localState = newLocalState;
       changeState(newAppState);
     } else if (appState.currentPageVariant == PageVariant.cloudSearch) {
       final newAppState = appState;
-      _selectPageVariant(newAppState, PageVariant.songList);
+      _selectPageVariant(newAppState, PageVariant.songList, systemBack: systemBack);
       changeState(newAppState);
     } else if (appState.currentPageVariant == PageVariant.cloudSongText) {
       final newAppState = appState;
       final newCloudState = appState.cloudState;
-      _selectPageVariant(newAppState, PageVariant.cloudSearch);
+      _selectPageVariant(newAppState, PageVariant.cloudSearch, systemBack: systemBack);
       newCloudState.currentCloudSong = null;
       newCloudState.currentCloudSongPosition = -1;
       newCloudState.needScroll = true;
@@ -276,7 +276,7 @@ class AppStateMachine {
       changeState(newAppState);
     } else if (appState.currentPageVariant == PageVariant.settings) {
       final newAppState = appState;
-      _selectPageVariant(newAppState, PageVariant.songList);
+      _selectPageVariant(newAppState, PageVariant.songList, systemBack: systemBack);
       changeState(newAppState);
     }
   }

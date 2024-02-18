@@ -41,17 +41,34 @@ class MyApp extends StatelessWidget {
         PageVariant.songList.route: (context) => SongListPage(
             _appStateSubject.stream, _performAction
         ),
-        PageVariant.songText.route: (context) => SongTextPage(
-            _appStateSubject.stream, _performAction
+        PageVariant.songText.route: (context) => PopScope(
+            canPop: true,
+            onPopInvoked: (didPop) { _performAction(Back(systemBack: true)); },
+            child: SongTextPage(
+                _appStateSubject.stream, _performAction
+            ),
         ),
-        PageVariant.cloudSearch.route: (context) => CloudSearchPage(
-            _appStateSubject.stream, _performAction
+        PageVariant.cloudSearch.route: (context) =>
+            PopScope(
+                canPop: true,
+                onPopInvoked: (didPop) { _performAction(Back(systemBack: true)); },
+                child: CloudSearchPage(
+                    _appStateSubject.stream, _performAction
+                ),
+            ),
+        PageVariant.cloudSongText.route: (context) => PopScope(
+            canPop: true,
+            onPopInvoked: (didPop) { _performAction(Back(systemBack: true)); },
+            child: CloudSongTextPage(
+                _appStateSubject.stream, _performAction
+            ),
         ),
-        PageVariant.cloudSongText.route: (context) => CloudSongTextPage(
-            _appStateSubject.stream, _performAction
-        ),
-        PageVariant.settings.route: (context) => SettingsPage(
-            _appStateSubject.stream, _performAction
+        PageVariant.settings.route: (context) => PopScope(
+            canPop: true,
+            onPopInvoked: (didPop) { _performAction(Back(systemBack: true)); },
+            child: SettingsPage(
+                _appStateSubject.stream, _performAction
+            ),
         ),
       }
     );
