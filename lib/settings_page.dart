@@ -91,7 +91,7 @@ class _SettingsState extends State<SettingsPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Text(AppStrings.strSave,
-                      style: TextStyle(color: settings.theme.colorMain, fontSize: 24)),
+                      style: settings.textStyler.textStyleTitle),
                 ),
               ),
             ),
@@ -110,9 +110,7 @@ class _SettingsState extends State<SettingsPage> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(AppStrings.strTheme,
-              style: TextStyle(
-                color: settings.theme.colorMain,
-                fontSize: 16,),
+              style: settings.textStyler.textStyleCommon,
             ),
           ),
         ),
@@ -124,7 +122,7 @@ class _SettingsState extends State<SettingsPage> {
           alignment: Alignment.centerLeft,
           child: DropdownButton(
             value: _theTheme.description,
-            items: _themeDropdownItems(settings.theme),
+            items: _themeDropdownItems(settings),
             isExpanded: true,
             onChanged: (String? value) {
               final description = value ??
@@ -152,9 +150,7 @@ class _SettingsState extends State<SettingsPage> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(AppStrings.strListenToMusic,
-              style: TextStyle(
-                color: settings.theme.colorMain,
-                fontSize: 16,),
+              style: settings.textStyler.textStyleCommon,
             ),
           ),
         ),
@@ -166,7 +162,7 @@ class _SettingsState extends State<SettingsPage> {
           alignment: Alignment.centerLeft,
           child: DropdownButton(
             value: _theListenToMusicPreference.description,
-            items: _listenToMusicDropdownItems(settings.theme),
+            items: _listenToMusicDropdownItems(settings),
             isExpanded: true,
             onChanged: (String? value) {
               final description = value ??
@@ -184,19 +180,19 @@ class _SettingsState extends State<SettingsPage> {
     ],
   );
 
-  List<DropdownMenuItem<String>> _themeDropdownItems(AppTheme appTheme) {
+  List<DropdownMenuItem<String>> _themeDropdownItems(AppSettings settings) {
     List<DropdownMenuItem<String>> menuItems = AppTheme.allThemes.map((theTheme) =>
         DropdownMenuItem(value: theTheme.description,
-            child: Text(theTheme.description, style: TextStyle(color: appTheme.colorMain)))
+            child: Text(theTheme.description, style: settings.textStyler.textStyleCommon))
     ).toList();
 
     return menuItems;
   }
 
-  List<DropdownMenuItem<String>> _listenToMusicDropdownItems(AppTheme appTheme) {
+  List<DropdownMenuItem<String>> _listenToMusicDropdownItems(AppSettings settings) {
     List<DropdownMenuItem<String>> menuItems = ListenToMusicPreference.allVariants.map((thePreference) =>
         DropdownMenuItem(value: thePreference.description,
-            child: Text(thePreference.description, style: TextStyle(color: appTheme.colorMain)))
+            child: Text(thePreference.description, style: settings.textStyler.textStyleCommon))
     ).toList();
 
     return menuItems;
