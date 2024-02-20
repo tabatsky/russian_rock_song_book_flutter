@@ -13,6 +13,10 @@ class AppTextStyler {
 
   TextStyle get textStyleCommon => TextStyle(
       color: theme.colorMain, fontSize: fontSizeCommon);
+  TextStyle get textStyleCommonInverted => TextStyle(
+      color: theme.colorBg, fontSize: fontSizeCommon);
+  TextStyle get textStyleCommonBlackBold => TextStyle(
+      color: AppTheme.materialBlack, fontSize: fontSizeCommon, fontWeight: FontWeight.bold);
   TextStyle get textStyleTitle => TextStyle(
       color: theme.colorMain, fontSize: fontSizeTitle);
   TextStyle get textStyleSongText => TextStyle(

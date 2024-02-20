@@ -49,7 +49,7 @@ class _SongListPageState extends State<SongListPage> {
           if (appState == null) {
             return Container();
           }
-          return _makePage(context, appState.settings.theme, appState.localState);
+          return _makePage(context, appState.settings, appState.localState);
         }
     );
   }
@@ -59,12 +59,12 @@ class _SongListPageState extends State<SongListPage> {
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
   }
 
-  Widget _makePage(BuildContext context, AppTheme theme, LocalState localState) {
+  Widget _makePage(BuildContext context, AppSettings settings, LocalState localState) {
     return Scaffold(
-      backgroundColor: theme.colorBg,
+      backgroundColor: settings.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
-        title: Text(localState.currentArtist),
+        title: Text(localState.currentArtist, style: settings.textStyler.textStyleCommonBlackBold),
         actions: [
           IconButton(
             icon: Image.asset(AppIcons.icSettings),
@@ -76,7 +76,7 @@ class _SongListPageState extends State<SongListPage> {
         ],
       ),
       drawer: Drawer(
-        child: _makeMenuListView(theme, localState),
+        child: _makeMenuListView(settings, localState),
       ),
       onDrawerChanged: (isOpened) {
         if (isOpened) {
@@ -92,27 +92,27 @@ class _SongListPageState extends State<SongListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _makeContent(theme, localState),
+            _makeContent(settings, localState),
           ],
         ),
       ),
     );
   }
 
-  ListView _makeMenuListView(AppTheme theme, LocalState localState) => ListView.builder(
+  ListView _makeMenuListView(AppSettings settings, LocalState localState) => ListView.builder(
       controller: _menuScrollController,
       padding: EdgeInsets.zero,
       itemCount: localState.allArtists.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
-          return const SizedBox(
+          return SizedBox(
             height: 120,
             child: DrawerHeader(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppTheme.colorDarkYellow,
               ),
               margin: EdgeInsets.zero,
-              child: Text(AppStrings.strMenu, style: TextStyle(color: AppTheme.materialBlack)),
+              child: Text(AppStrings.strMenu, style: settings.textStyler.textStyleCommonBlackBold),
             ),
           );
         } else {
@@ -130,7 +130,7 @@ class _SongListPageState extends State<SongListPage> {
                 },
                 child: Container(
                   height: _titleHeight,
-                  color: theme.colorMain,
+                  color: settings.theme.colorMain,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Align(
@@ -138,8 +138,9 @@ class _SongListPageState extends State<SongListPage> {
                       child: Text(
                           artist,
                           style: TextStyle(
-                            color: theme.colorBg,
+                            color: settings.theme.colorBg,
                             fontWeight: fontWeight,
+                            fontSize: settings.textStyler.fontSizeCommon,
                           )
                       ),
                     ),
@@ -148,7 +149,7 @@ class _SongListPageState extends State<SongListPage> {
               ),
               AppDivider(
                 height: _dividerHeight,
-                color: theme.colorBg,
+                color: settings.theme.colorBg,
               ),
             ],
           );
@@ -156,28 +157,25 @@ class _SongListPageState extends State<SongListPage> {
       }
   );
 
-  Widget _makeContent(AppTheme theme, LocalState localState) {
+  Widget _makeContent(AppSettings settings, LocalState localState) {
     if (localState.currentSongs.isEmpty) {
-      return _makeEmptyListIndicator(theme);
+      return _makeEmptyListIndicator(settings);
     } else {
       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual(localState));
-      return Flexible(child: _makeTitleListView(theme, localState));
+      return Flexible(child: _makeTitleListView(settings, localState));
     }
   }
 
-  Widget _makeEmptyListIndicator(AppTheme theme) => Expanded(
+  Widget _makeEmptyListIndicator(AppSettings settings) => Expanded(
       child: Center(
           child: Text(
             AppStrings.strListIsEmpty,
-            style: TextStyle(
-              color: theme.colorMain,
-              fontSize: 24,
-            ),
+            style: settings.textStyler.textStyleTitle,
           )
       )
   );
 
-  ListView _makeTitleListView(AppTheme theme, LocalState localState) => ListView.builder(
+  ListView _makeTitleListView(AppSettings settings, LocalState localState) => ListView.builder(
       controller: _titleScrollController,
       padding: EdgeInsets.zero,
       itemCount: localState.currentSongs.length,
@@ -191,19 +189,19 @@ class _SongListPageState extends State<SongListPage> {
               },
               child: Container(
                   height: 50,
-                  color: theme.colorBg,
+                  color: settings.theme.colorBg,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(song.title, style: TextStyle(color: theme.colorMain)),
+                      child: Text(song.title, style: settings.textStyler.textStyleCommon),
                     ),
                   )
               ),
             ),
             AppDivider(
               height: _dividerHeight,
-              color: theme.colorMain,
+              color: settings.theme.colorMain,
             )
           ],
         );
