@@ -10,6 +10,7 @@ import 'package:russian_rock_song_book/warning.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'app_actions.dart';
+import 'app_font.dart';
 import 'app_strings.dart';
 import 'app_theme.dart';
 import 'cloud_repository.dart';
@@ -27,6 +28,7 @@ class AppState {
 
 class AppSettings {
   AppTheme theme = AppTheme.themeDark;
+  AppTextStyler textStyler = AppTextStyler(AppTheme.themeDark, 1.0);
   ListenToMusicPreference listenToMusicPreference = ListenToMusicPreference.yandexAndYoutube;
 }
 
@@ -563,6 +565,7 @@ class AppStateMachine {
     final listenToMusicPreference = await ListenToMusicPreference.getCurrentPreference();
     final newState = appState;
     newState.settings.theme = theme;
+    newState.settings.textStyler = AppTextStyler(theme, 1.0);
     newState.settings.listenToMusicPreference = listenToMusicPreference;
     changeState(newState);
   }

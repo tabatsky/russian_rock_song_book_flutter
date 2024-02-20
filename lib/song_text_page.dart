@@ -119,14 +119,6 @@ class _SongTextPageState extends State<SongTextPage> {
           double width = constraints.maxWidth;
           double height = constraints.maxHeight;
           double buttonSize = width / 7.0;
-          final textStyle = TextStyle(
-              color: settings.theme.colorMain,
-              fontFamily: 'monospace',
-              fontFamilyFallback: const <String>["Courier"],
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              height: 1.5,
-          );
 
           return Column(
             children: [
@@ -140,7 +132,7 @@ class _SongTextPageState extends State<SongTextPage> {
                     padding: const EdgeInsets.all(8),
                     child: Wrap(
                       children: [
-                        Text(currentSong?.title ?? 'null', style: TextStyle(color: settings.theme.colorMain, fontSize: 24)),
+                        Text(currentSong?.title ?? 'null', style: settings.textStyler.textStyleTitle),
                         Container(
                           height: 20,
                         ),
@@ -153,11 +145,11 @@ class _SongTextPageState extends State<SongTextPage> {
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.zero,
                           ),
-                          style: textStyle,
+                          style: settings.textStyler.textStyleSongText,
                         )
                         : Text(
                             currentSong?.text ?? 'null',
-                            style: textStyle,
+                            style: settings.textStyler.textStyleSongText,
                         ),
                         Container(
                           height: 80,
