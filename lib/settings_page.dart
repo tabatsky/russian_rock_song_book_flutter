@@ -151,7 +151,7 @@ class _SettingsState extends State<SettingsPage> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text(AppStrings.strTheme,
+            child: Text(AppStrings.strListenToMusic,
               style: TextStyle(
                 color: settings.theme.colorMain,
                 fontSize: 16,),
