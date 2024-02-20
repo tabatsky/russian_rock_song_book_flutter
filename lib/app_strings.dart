@@ -26,6 +26,7 @@ class AppStrings {
   static const strSave = 'Сохранить';
   static const strTheme = 'Тема:';
   static const strListenToMusic = 'Слушать музыку:';
+  static const strFontScale = 'Размер шрифта:';
 
   static String strFrom(int done, int total) => "$done из $total";
 }

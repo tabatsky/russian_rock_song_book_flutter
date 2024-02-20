@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/app_font.dart';
 import 'package:russian_rock_song_book/listen_to_music.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -22,6 +23,7 @@ class _SettingsState extends State<SettingsPage> {
 
   AppTheme _theTheme = AppTheme.themeDark;
   ListenToMusicPreference _theListenToMusicPreference = ListenToMusicPreference.yandexAndYoutube;
+  FontScaleVariant _theFontScaleVariant = FontScaleVariant.m;
 
   bool _loadDone = false;
 
@@ -29,6 +31,7 @@ class _SettingsState extends State<SettingsPage> {
     setState(() {
       _theTheme = settings.theme;
       _theListenToMusicPreference = settings.listenToMusicPreference;
+      _theFontScaleVariant = settings.fontScaleVariant;
       _loadDone = true;
     });
   }
@@ -81,6 +84,7 @@ class _SettingsState extends State<SettingsPage> {
       children: [
         _makeThemeRow(width, settings),
         _makeListenToMusicRow(width, settings),
+        _makeFontScaleRow(width, settings),
         const Spacer(),
         TextButton(
             onPressed: () { _saveSettings(settings); },
@@ -180,6 +184,46 @@ class _SettingsState extends State<SettingsPage> {
     ],
   );
 
+  Widget _makeFontScaleRow(double width, AppSettings settings) => Row(
+    children: [
+      SizedBox(
+        width: width / 2,
+        height: 60,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(AppStrings.strFontScale,
+              style: settings.textStyler.textStyleCommon,
+            ),
+          ),
+        ),
+      ),
+      SizedBox(
+        width: width / 2,
+        height: 60,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: DropdownButton(
+            value: _theFontScaleVariant.description,
+            items: _fontScaleDropdownItems(settings),
+            isExpanded: true,
+            onChanged: (String? value) {
+              final description = value ??
+                  _theFontScaleVariant.description;
+              final newIndex = FontScaleVariant.indexFromDescription(description);
+              final newVariant = FontScaleVariant.allVariants[newIndex];
+              setState(() {
+                _theFontScaleVariant = newVariant;
+              });
+            },
+            dropdownColor: settings.theme.colorBg,
+          ),
+        ),
+      ),
+    ],
+  );
+
   List<DropdownMenuItem<String>> _themeDropdownItems(AppSettings settings) {
     List<DropdownMenuItem<String>> menuItems = AppTheme.allThemes.map((theTheme) =>
         DropdownMenuItem(value: theTheme.description,
@@ -198,10 +242,20 @@ class _SettingsState extends State<SettingsPage> {
     return menuItems;
   }
 
+  List<DropdownMenuItem<String>> _fontScaleDropdownItems(AppSettings settings) {
+    List<DropdownMenuItem<String>> menuItems = FontScaleVariant.allVariants.map((theVariant) =>
+        DropdownMenuItem(value: theVariant.description,
+            child: Text(theVariant.description, style: settings.textStyler.textStyleCommon))
+    ).toList();
+
+    return menuItems;
+  }
+
   void _saveSettings(AppSettings settings) {
     final newSettings = settings;
     newSettings.theme = _theTheme;
     newSettings.listenToMusicPreference = _theListenToMusicPreference;
+    newSettings.fontScaleVariant = _theFontScaleVariant;
     widget.onPerformAction(SaveSettings(newSettings));
   }
 }

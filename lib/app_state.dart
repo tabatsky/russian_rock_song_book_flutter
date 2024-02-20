@@ -29,6 +29,7 @@ class AppState {
 class AppSettings {
   AppTheme theme = AppTheme.themeDark;
   AppTextStyler textStyler = AppTextStyler(AppTheme.themeDark, 1.0);
+  FontScaleVariant fontScaleVariant = FontScaleVariant.m;
   ListenToMusicPreference listenToMusicPreference = ListenToMusicPreference.yandexAndYoutube;
 }
 
@@ -556,6 +557,9 @@ class AppStateMachine {
     final newMusicPreferenceIndex = ListenToMusicPreference
         .indexFromDescription(settings.listenToMusicPreference.description);
     await ListenToMusicPreference.savePreferenceIndex(newMusicPreferenceIndex);
+    final newFontScaleVariantIndex = FontScaleVariant
+        .indexFromDescription(settings.fontScaleVariant.description);
+    await FontScaleVariant.savePreferenceIndex(newFontScaleVariantIndex);
 
     await _reloadSettings(changeState, appState);
   }
@@ -563,9 +567,10 @@ class AppStateMachine {
   Future<void> _reloadSettings(AppStateChanger changeState, AppState appState) async {
     final theme = await ThemeVariant.getCurrentTheme();
     final listenToMusicPreference = await ListenToMusicPreference.getCurrentPreference();
+    final fontScaleVariant = await FontScaleVariant.getCurrentPreference();
     final newState = appState;
     newState.settings.theme = theme;
-    newState.settings.textStyler = AppTextStyler(theme, 1.0);
+    newState.settings.textStyler = AppTextStyler(theme, fontScaleVariant.fontScale);
     newState.settings.listenToMusicPreference = listenToMusicPreference;
     changeState(newState);
   }
