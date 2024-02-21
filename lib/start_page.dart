@@ -42,20 +42,20 @@ class StartPageState extends State<StartPage> {
           if (appState == null) {
             return Container();
           }
-          return _makePage(context, appState.settings.theme);
+          return _makePage(context, appState.settings);
         }
     );
   }
 
-  Widget _makePage(BuildContext context, AppTheme theme) {
+  Widget _makePage(BuildContext context, AppSettings settings) {
     return Material(
-      color: theme.colorBg,
+      color: settings.theme.colorBg,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: wasUpdated ? [
           Text(AppStrings.strStartPleaseWait,
-              style: TextStyle(color: theme.colorMain, fontSize: 22)),
+              style: settings.textStyler.textStyleSmallTitle),
           const SizedBox(
             height: 30,
           ),
@@ -65,18 +65,18 @@ class StartPageState extends State<StartPage> {
               value: indicatorValue,
               minHeight: 30,
               backgroundColor: AppTheme.colorDarkYellow,
-              color: theme.colorMain,
+              color: settings.theme.colorMain,
             ),
           ),
-          Text(indicatorText, style: TextStyle(color: theme.colorMain, fontSize: 22)),
+          Text(indicatorText, style: settings.textStyler.textStyleSmallTitle),
           const SizedBox(
             height: 30,
           ),
           Text(AppStrings.strStartDbBuilding,
-              style: TextStyle(color: theme.colorMain, fontSize: 14)),
+              style: settings.textStyler.textStyleSmall),
         ] : [
           Text(AppStrings.strStartPleaseWait,
-              style: TextStyle(color: theme.colorMain, fontSize: 22)),
+              style: settings.textStyler.textStyleSmallTitle),
         ],
       ),
     );

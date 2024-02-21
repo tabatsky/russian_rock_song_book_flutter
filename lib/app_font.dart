@@ -11,6 +11,8 @@ class AppTextStyler {
 
   double get fontSizeCommon => fontScale * 20;
   double get fontSizeTitle => fontScale * 32;
+  double get fontSizeSmallTitle => fontScale * 24;
+  double get fontSizeSmall => fontScale * 16;
   static const double fontSizeFixed = 24;
 
   TextStyle get textStyleCommon => TextStyle(
@@ -23,6 +25,10 @@ class AppTextStyler {
       color: AppTheme.materialBlack, fontSize: fontSizeFixed, fontWeight: FontWeight.bold);
   TextStyle get textStyleTitle => TextStyle(
       color: theme.colorMain, fontSize: fontSizeTitle);
+  TextStyle get textStyleSmallTitle => TextStyle(
+      color: theme.colorMain, fontSize: fontSizeSmallTitle);
+  TextStyle get textStyleSmall => TextStyle(
+      color: theme.colorMain, fontSize: fontSizeSmall);
   TextStyle get textStyleSongText => TextStyle(
     color: theme.colorMain,
     fontFamily: 'monospace',
