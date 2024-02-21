@@ -11,13 +11,16 @@ class AppTextStyler {
 
   double get fontSizeCommon => fontScale * 20;
   double get fontSizeTitle => fontScale * 32;
+  static const double fontSizeFixed = 24;
 
   TextStyle get textStyleCommon => TextStyle(
       color: theme.colorMain, fontSize: fontSizeCommon);
   TextStyle get textStyleCommonInverted => TextStyle(
       color: theme.colorBg, fontSize: fontSizeCommon);
-  TextStyle get textStyleCommonBlackBold => TextStyle(
-      color: AppTheme.materialBlack, fontSize: fontSizeCommon, fontWeight: FontWeight.bold);
+  TextStyle get textStyleCommonInvertedBold => TextStyle(
+      color: theme.colorBg, fontSize: fontSizeCommon, fontWeight: FontWeight.bold);
+  TextStyle get textStyleFixedBlackBold => const TextStyle(
+      color: AppTheme.materialBlack, fontSize: fontSizeFixed, fontWeight: FontWeight.bold);
   TextStyle get textStyleTitle => TextStyle(
       color: theme.colorMain, fontSize: fontSizeTitle);
   TextStyle get textStyleSongText => TextStyle(

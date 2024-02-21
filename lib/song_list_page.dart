@@ -64,7 +64,7 @@ class _SongListPageState extends State<SongListPage> {
       backgroundColor: settings.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
-        title: Text(localState.currentArtist, style: settings.textStyler.textStyleCommonBlackBold),
+        title: Text(localState.currentArtist, style: settings.textStyler.textStyleFixedBlackBold),
         actions: [
           IconButton(
             icon: Image.asset(AppIcons.icSettings),
@@ -112,15 +112,15 @@ class _SongListPageState extends State<SongListPage> {
                 color: AppTheme.colorDarkYellow,
               ),
               margin: EdgeInsets.zero,
-              child: Text(AppStrings.strMenu, style: settings.textStyler.textStyleCommonBlackBold),
+              child: Text(AppStrings.strMenu, style: settings.textStyler.textStyleFixedBlackBold),
             ),
           );
         } else {
           final artist = localState.allArtists[index - 1];
-          final fontWeight =
+          final textStyle =
             SongRepository.predefinedArtists.contains(artist)
-                ? FontWeight.bold
-                : FontWeight.normal;
+                ? settings.textStyler.textStyleCommonInvertedBold
+                : settings.textStyler.textStyleCommonInverted;
           return Column(
             children: [
               GestureDetector(
@@ -135,14 +135,7 @@ class _SongListPageState extends State<SongListPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                          artist,
-                          style: TextStyle(
-                            color: settings.theme.colorBg,
-                            fontWeight: fontWeight,
-                            fontSize: settings.textStyler.fontSizeCommon,
-                          )
-                      ),
+                      child: Text(artist, style: textStyle),
                     ),
                   ),
                 ),
