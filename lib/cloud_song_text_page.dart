@@ -32,14 +32,14 @@ class CloudSongTextPage extends StatelessWidget {
           if (appState == null) {
             return Container();
           }
-          return _makePage(context, appState.settings.theme, appState.cloudState);
+          return _makePage(context, appState.settings, appState.cloudState);
         }
     );
   }
 
-  Widget _makePage(BuildContext context, AppTheme theme, CloudState cloudState) {
+  Widget _makePage(BuildContext context, AppSettings settings, CloudState cloudState) {
     return Scaffold(
-      backgroundColor: theme.colorBg,
+      backgroundColor: settings.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
         leading: IconButton(
@@ -57,7 +57,10 @@ class CloudSongTextPage extends StatelessWidget {
               onPerformAction(PrevCloudSong());
             },
           ),
-          Text("${cloudState.currentCloudSongPosition + 1} / ${cloudState.currentCloudSongCount}"),
+          Text(
+            "${cloudState.currentCloudSongPosition + 1} / ${cloudState.currentCloudSongCount}",
+            style: settings.textStyler.textStyleFixedBlackBold,
+          ),
           IconButton(
             icon: Image.asset(AppIcons.icRight),
             iconSize: 50,
@@ -70,27 +73,19 @@ class CloudSongTextPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _makeCloudSongTextView(context, theme, cloudState),
+          _makeCloudSongTextView(context, settings, cloudState),
         ],
       ),
     );
   }
 
-  Widget _makeCloudSongTextView(BuildContext context, AppTheme theme, CloudState cloudState) {
+  Widget _makeCloudSongTextView(BuildContext context, AppSettings settings, CloudState cloudState) {
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           double width = constraints.maxWidth;
           double height = constraints.maxHeight;
           double buttonSize = width / 7.0;
-          final textStyle = TextStyle(
-            color: theme.colorMain,
-            fontFamily: 'monospace',
-            fontFamilyFallback: const <String>["Courier"],
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            height: 1.5,
-          );
 
           final extraLikes = cloudState.extraLikesForCurrent;
           final extraDislikes = cloudState.extraDislikesForCurrent;
@@ -103,21 +98,20 @@ class CloudSongTextPage extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   child: Container(
                     constraints: BoxConstraints(minHeight: height, minWidth: width),
-                    color: theme.colorBg,
+                    color: settings.theme.colorBg,
                     padding: const EdgeInsets.all(8),
                     child: Wrap(
                       children: [
                         Text(cloudState.currentCloudSong
                             ?.visibleTitleWithArtistAndRating(extraLikes, extraDislikes) ?? 'null',
-                            style: TextStyle(
-                                color: theme.colorMain,
-                                fontSize: 24)),
+                            style: settings.textStyler.textStyleTitle,
+                        ),
                         Container(
                           height: 20,
                         ),
                         Text(
                           cloudState.currentCloudSong?.text ?? 'null',
-                          style: textStyle,
+                          style: settings.textStyler.textStyleSongText,
                         ),
                         Container(
                           height: 80,
@@ -130,13 +124,13 @@ class CloudSongTextPage extends StatelessWidget {
               Container(
                 width: width,
                 height: buttonSize,
-                color: theme.colorBg,
+                color: settings.theme.colorBg,
                 child: _bottomButtonRow(context, buttonSize, cloudState),
               ),
               Container(
                 width: width,
                 height: buttonSize / 2,
-                color: theme.colorBg,
+                color: settings.theme.colorBg,
               ),
             ],
           );
