@@ -570,6 +570,7 @@ class AppStateMachine {
     final fontScaleVariant = await FontScaleVariant.getCurrentPreference();
     final newState = appState;
     newState.settings.theme = theme;
+    newState.settings.fontScaleVariant = fontScaleVariant;
     newState.settings.textStyler = AppTextStyler(theme, fontScaleVariant.fontScale);
     newState.settings.listenToMusicPreference = listenToMusicPreference;
     changeState(newState);
