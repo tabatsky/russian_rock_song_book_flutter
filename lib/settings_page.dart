@@ -59,7 +59,7 @@ class _SettingsState extends State<SettingsPage> {
       backgroundColor: settings.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
-        title: const Text(AppStrings.strSettings),
+        title: Text(AppStrings.strSettings, style: settings.textStyler.textStyleFixedBlackBold),
         leading: IconButton(
           icon: Image.asset(AppIcons.icBack),
           iconSize: 50,
