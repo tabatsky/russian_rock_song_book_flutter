@@ -62,20 +62,20 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
           if (appState == null) {
             return Container();
           }
-          return _makePage(context, appState.settings.theme, appState.cloudState);
+          return _makePage(context, appState.settings, appState.cloudState);
         }
     );
   }
 
-  Widget _makePage(BuildContext context, AppTheme theme, CloudState cloudState) {
+  Widget _makePage(BuildContext context, AppSettings settings, CloudState cloudState) {
     if (cloudState.needScroll) {
        WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual(cloudState));
     }
     return Scaffold(
-      backgroundColor: theme.colorBg,
+      backgroundColor: settings.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
-        title: const Text(SongRepository.artistCloudSearch),
+        title: Text(SongRepository.artistCloudSearch, style: settings.textStyler.textStyleFixedBlackBold),
         leading: IconButton(
           icon: Image.asset(AppIcons.icBack),
           iconSize: 50,
@@ -90,8 +90,8 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              _makeCloudSearchPanel(maxWidth, theme),
-              _content(theme, cloudState),
+              _makeCloudSearchPanel(maxWidth, settings),
+              _content(settings, cloudState),
             ],
           );
         }),
@@ -99,16 +99,16 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
     );
   }
 
-  Widget _content(AppTheme theme, CloudState cloudState) {
+  Widget _content(AppSettings settings, CloudState cloudState) {
     if (cloudState.currentSearchState == SearchState.loading) {
       cloudState.currentSearchPager?.getPage(0, false);
-      return _makeProgressIndicator(theme);
+      return _makeProgressIndicator(settings.theme);
     } else if (cloudState.currentSearchState == SearchState.empty) {
-      return _makeEmptyListIndicator(theme);
+      return _makeEmptyListIndicator(settings);
     } else if (cloudState.currentSearchState == SearchState.error) {
-      return _makeErrorIndicator(theme);
+      return _makeErrorIndicator(settings);
     } else {
-      return Flexible(child: _makeCloudTitleListView(theme, cloudState));
+      return Flexible(child: _makeCloudTitleListView(settings, cloudState));
     }
   }
 
@@ -124,31 +124,25 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
       )
   );
 
-  Widget _makeEmptyListIndicator(AppTheme theme) => Expanded(
+  Widget _makeEmptyListIndicator(AppSettings settings) => Expanded(
       child: Center(
         child: Text(
           AppStrings.strListIsEmpty,
-          style: TextStyle(
-            color: theme.colorMain,
-            fontSize: 24,
-          ),
+          style: settings.textStyler.textStyleTitle,
         )
       )
   );
 
-  Widget _makeErrorIndicator(AppTheme theme) => Expanded(
+  Widget _makeErrorIndicator(AppSettings settings) => Expanded(
       child: Center(
           child: Text(
             AppStrings.strErrorFetchData,
-            style: TextStyle(
-              color: theme.colorMain,
-              fontSize: 24,
-            ),
+            style: settings.textStyler.textStyleTitle,
           )
       )
   );
 
-  Widget _makeCloudSearchPanel(double maxWidth, AppTheme theme) {
+  Widget _makeCloudSearchPanel(double maxWidth, AppSettings settings) {
     return Container(
       height: 96,
       padding: const EdgeInsets.all(4),
@@ -157,18 +151,20 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
             Expanded(
               child: Column(
                   children: [
-                    TextField(
-                      controller: _cloudSearchTextFieldController,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 12),
-                        fillColor: theme.colorMain,
-                        filled: true,
-                      ),
-                      style: TextStyle(
-                        color: theme.colorBg,
-                        fontSize: 16,
+                    SizedBox(
+                      width: maxWidth - 100,
+                      height: 48,
+                      child:
+                      TextField(
+                        controller: _cloudSearchTextFieldController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: (32 - settings.textStyler.fontSizeCommon) / 2),
+                          fillColor: settings.theme.colorMain,
+                          filled: true,
+                        ),
+                        style: settings.textStyler.textStyleCommonInverted,
                       ),
                     ),
                     SizedBox(
@@ -176,7 +172,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                       height: 40,
                       child: DropdownButton(
                         value: orderBy.orderByStr,
-                        items: orderByDropdownItems(theme),
+                        items: orderByDropdownItems(settings),
                         isExpanded: true,
                         onChanged: (String? value) {
                           final orderByStr = value ??
@@ -189,7 +185,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                             _performCloudSearch();
                           }
                         },
-                        dropdownColor: theme.colorBg,
+                        dropdownColor: settings.theme.colorBg,
                       ),
                     ),
                   ]
@@ -216,15 +212,15 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
     );
   }
 
-  List<DropdownMenuItem<String>> orderByDropdownItems(AppTheme theme) {
+  List<DropdownMenuItem<String>> orderByDropdownItems(AppSettings settings) {
     List<DropdownMenuItem<String>> menuItems = OrderBy.values.map((orderBy) =>
-        DropdownMenuItem(value: orderBy.orderByStr, child: Text(orderBy.orderByRus, style: TextStyle(color: theme.colorMain)))
+        DropdownMenuItem(value: orderBy.orderByStr, child: Text(orderBy.orderByRus, style: settings.textStyler.textStyleCommon))
     ).toList();
 
     return menuItems;
   }
 
-  Widget _makeCloudTitleListView(AppTheme theme, CloudState cloudState) => CustomScrollView(
+  Widget _makeCloudTitleListView(AppSettings settings, CloudState cloudState) => CustomScrollView(
     controller: _cloudTitleScrollController,
     slivers: [
       SliverList(
@@ -240,7 +236,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                       snapshot.data?.length ?? 0).map((listIndex) {
                     final cloudSong = snapshot.data!.elementAt(listIndex);
                     final cloudSongIndex = pageIndex * pageSize + listIndex;
-                    return _titleItem(theme, cloudState, cloudSong, cloudSongIndex);
+                    return _titleItem(settings, cloudState, cloudSong, cloudSongIndex);
                   }).toList();
                   return SizedBox(
                     height: _itemHeight * titleViews.length,
@@ -251,7 +247,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                 } else {
                   titleViews = Iterable<int>.generate(pageSize).map((listIndex) {
                     final cloudSongIndex = pageIndex * pageSize + listIndex;
-                    return _titleItem(theme, cloudState, null, cloudSongIndex);
+                    return _titleItem(settings, cloudState, null, cloudSongIndex);
                   }).toList();
                 }
                 return SizedBox(
@@ -268,7 +264,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
     ],
   );
 
-  Widget _titleItem(AppTheme theme, CloudState cloudState, CloudSong? cloudSong, int cloudSongIndex) {
+  Widget _titleItem(AppSettings settings, CloudState cloudState, CloudSong? cloudSong, int cloudSongIndex) {
     final extraLikes = cloudState.allLikes[cloudSong] ?? 0;
     final extraDislikes = cloudState.allDislikes[cloudSong] ?? 0;
 
@@ -279,7 +275,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
       },
       child: Container(
           height: _itemHeight,
-          color: theme.colorBg,
+          color: settings.theme.colorBg,
           child: Column(
               children: [
                 const Spacer(),
@@ -290,8 +286,8 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                         cloudSong?.artist ?? '',
-                        style: TextStyle(
-                            color: theme.colorMain)),
+                        style: settings.textStyler.textStyleCommon,
+                    ),
                   ),
                 ),
                 const Spacer(),
@@ -302,14 +298,13 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                         cloudSong?.visibleTitleWithRating(extraLikes, extraDislikes) ?? '',
-                        style: TextStyle(
-                            color: theme.colorMain)),
+                        style: settings.textStyler.textStyleCommon),
                   ),
                 ),
                 const Spacer(),
                 AppDivider(
                   height: _dividerHeight,
-                  color: theme.colorMain,
+                  color: settings.theme.colorMain,
                 )
               ]
           )
