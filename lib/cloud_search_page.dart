@@ -215,7 +215,14 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
 
   List<DropdownMenuItem<String>> orderByDropdownItems(AppSettings settings) {
     List<DropdownMenuItem<String>> menuItems = OrderBy.values.map((orderBy) =>
-        DropdownMenuItem(value: orderBy.orderByStr, child: Text(orderBy.orderByRus, style: settings.textStyler.textStyleCommon))
+        DropdownMenuItem(
+            value: orderBy.orderByStr,
+            child: Text(
+              orderBy.orderByRus,
+              style: settings.textStyler.textStyleCommon,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ))
     ).toList();
 
     return menuItems;
