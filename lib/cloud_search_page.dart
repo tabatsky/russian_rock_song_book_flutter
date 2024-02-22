@@ -286,9 +286,10 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                        cloudSong?.artist ?? '',
-                        style: settings.textStyler.textStyleCommon,
-                        maxLines: 1,
+                      cloudSong?.artist ?? '',
+                      style: settings.textStyler.textStyleCommon,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),
@@ -299,9 +300,10 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                        cloudSong?.visibleTitleWithRating(extraLikes, extraDislikes) ?? '',
-                        style: settings.textStyler.textStyleCommon,
-                        maxLines: 2,
+                      cloudSong?.visibleTitleWithRating(extraLikes, extraDislikes) ?? '',
+                      style: settings.textStyler.textStyleCommon,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),
