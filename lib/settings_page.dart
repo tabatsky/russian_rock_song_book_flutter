@@ -115,6 +115,8 @@ class _SettingsState extends State<SettingsPage> {
             alignment: Alignment.centerLeft,
             child: Text(AppStrings.strTheme,
               style: settings.textStyler.textStyleCommon,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
@@ -155,6 +157,8 @@ class _SettingsState extends State<SettingsPage> {
             alignment: Alignment.centerLeft,
             child: Text(AppStrings.strListenToMusic,
               style: settings.textStyler.textStyleCommon,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
@@ -195,6 +199,8 @@ class _SettingsState extends State<SettingsPage> {
             alignment: Alignment.centerLeft,
             child: Text(AppStrings.strFontScale,
               style: settings.textStyler.textStyleCommon,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
@@ -227,7 +233,12 @@ class _SettingsState extends State<SettingsPage> {
   List<DropdownMenuItem<String>> _themeDropdownItems(AppSettings settings) {
     List<DropdownMenuItem<String>> menuItems = AppTheme.allThemes.map((theTheme) =>
         DropdownMenuItem(value: theTheme.description,
-            child: Text(theTheme.description, style: settings.textStyler.textStyleCommon))
+            child: Text(
+              theTheme.description,
+              style: settings.textStyler.textStyleCommon,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ))
     ).toList();
 
     return menuItems;
@@ -236,7 +247,12 @@ class _SettingsState extends State<SettingsPage> {
   List<DropdownMenuItem<String>> _listenToMusicDropdownItems(AppSettings settings) {
     List<DropdownMenuItem<String>> menuItems = ListenToMusicPreference.allVariants.map((thePreference) =>
         DropdownMenuItem(value: thePreference.description,
-            child: Text(thePreference.description, style: settings.textStyler.textStyleCommon))
+            child: Text(
+              thePreference.description,
+              style: settings.textStyler.textStyleCommon,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ))
     ).toList();
 
     return menuItems;
@@ -245,7 +261,12 @@ class _SettingsState extends State<SettingsPage> {
   List<DropdownMenuItem<String>> _fontScaleDropdownItems(AppSettings settings) {
     List<DropdownMenuItem<String>> menuItems = FontScaleVariant.allVariants.map((theVariant) =>
         DropdownMenuItem(value: theVariant.description,
-            child: Text(theVariant.description, style: settings.textStyler.textStyleCommon))
+            child: Text(
+              theVariant.description,
+              style: settings.textStyler.textStyleCommon,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ))
     ).toList();
 
     return menuItems;
