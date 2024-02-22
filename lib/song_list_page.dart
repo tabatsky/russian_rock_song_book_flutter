@@ -25,9 +25,9 @@ class SongListPage extends StatefulWidget{
 
 class _SongListPageState extends State<SongListPage> {
 
-  static const _titleHeight = 50.0;
+  static double _titleHeight = 50.0;
   static const _dividerHeight = 1.0;
-  static const _itemHeight = _titleHeight + _dividerHeight;
+  static double get _itemHeight => _titleHeight + _dividerHeight;
 
   final _titleScrollController = ScrollController(
     initialScrollOffset: 0.0,
@@ -60,6 +60,7 @@ class _SongListPageState extends State<SongListPage> {
   }
 
   Widget _makePage(BuildContext context, AppSettings settings, LocalState localState) {
+    _titleHeight = settings.textStyler.fontSizeCommon * 1.5 + 20;
     return Scaffold(
       backgroundColor: settings.theme.colorBg,
       appBar: AppBar(
@@ -135,7 +136,12 @@ class _SongListPageState extends State<SongListPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(artist, style: textStyle),
+                      child: Text(
+                        artist,
+                        style: textStyle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                 ),
@@ -181,13 +187,18 @@ class _SongListPageState extends State<SongListPage> {
                 widget.onPerformAction(SongClick(index));
               },
               child: Container(
-                  height: 50,
+                  height: _titleHeight,
                   color: settings.theme.colorBg,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(song.title, style: settings.textStyler.textStyleCommon),
+                      child: Text(
+                        song.title,
+                        style: settings.textStyler.textStyleCommon,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   )
               ),

@@ -28,9 +28,9 @@ class CloudSearchPage extends StatefulWidget {
 
 class _CloudSearchPageState extends State<CloudSearchPage> {
 
-  static const _titleHeight = 75.0;
+  static double _titleHeight = 110.0;
   static const _dividerHeight = 1.0;
-  static const _itemHeight = _titleHeight + _dividerHeight;
+  static double get _itemHeight => _titleHeight + _dividerHeight;
 
   final _cloudSearchTextFieldController = TextEditingController();
 
@@ -68,6 +68,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
   }
 
   Widget _makePage(BuildContext context, AppSettings settings, CloudState cloudState) {
+    _titleHeight = settings.textStyler.fontSizeCommon * 3 + 50;
     if (cloudState.needScroll) {
        WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual(cloudState));
     }
@@ -287,6 +288,7 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                     child: Text(
                         cloudSong?.artist ?? '',
                         style: settings.textStyler.textStyleCommon,
+                        maxLines: 1,
                     ),
                   ),
                 ),
@@ -298,7 +300,9 @@ class _CloudSearchPageState extends State<CloudSearchPage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                         cloudSong?.visibleTitleWithRating(extraLikes, extraDislikes) ?? '',
-                        style: settings.textStyler.textStyleCommon),
+                        style: settings.textStyler.textStyleCommon,
+                        maxLines: 2,
+                    ),
                   ),
                 ),
                 const Spacer(),
