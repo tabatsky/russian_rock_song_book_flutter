@@ -4,6 +4,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:russian_rock_song_book/data/cloud/cloud_search_pager/cloud_search_pager.dart';
+import 'package:russian_rock_song_book/data/settings/font_scale_variant.dart';
+import 'package:russian_rock_song_book/data/settings/theme_variant.dart';
 import 'package:russian_rock_song_book/ui/font/app_font.dart';
 import 'package:russian_rock_song_book/data/cloud/repository/cloud_repository.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
@@ -29,7 +31,7 @@ class AppSettings {
   AppTheme theme = AppTheme.themeDark;
   AppTextStyler textStyler = AppTextStyler(AppTheme.themeDark, 1.0);
   FontScaleVariant fontScaleVariant = FontScaleVariant.m;
-  ListenToMusicPreference listenToMusicPreference = ListenToMusicPreference.yandexAndYoutube;
+  ListenToMusicVariant listenToMusicPreference = ListenToMusicVariant.yandexAndYoutube;
 }
 
 class LocalState {
@@ -553,9 +555,9 @@ class AppStateMachine {
   Future<void> _saveSettings(AppStateChanger changeState, AppState appState, AppSettings settings) async {
     final newThemeIndex = AppTheme.indexFromDescription(settings.theme.description);
     await ThemeVariant.saveThemeIndex(newThemeIndex);
-    final newMusicPreferenceIndex = ListenToMusicPreference
+    final newMusicPreferenceIndex = ListenToMusicVariant
         .indexFromDescription(settings.listenToMusicPreference.description);
-    await ListenToMusicPreference.savePreferenceIndex(newMusicPreferenceIndex);
+    await ListenToMusicVariant.savePreferenceIndex(newMusicPreferenceIndex);
     final newFontScaleVariantIndex = FontScaleVariant
         .indexFromDescription(settings.fontScaleVariant.description);
     await FontScaleVariant.savePreferenceIndex(newFontScaleVariantIndex);
@@ -564,8 +566,9 @@ class AppStateMachine {
   }
 
   Future<void> _reloadSettings(AppStateChanger changeState, AppState appState) async {
-    final theme = await ThemeVariant.getCurrentTheme();
-    final listenToMusicPreference = await ListenToMusicPreference.getCurrentPreference();
+    final themeIndex = await ThemeVariant.getCurrentThemeIndex();
+    final theme = AppTheme.getByIndex(themeIndex);
+    final listenToMusicPreference = await ListenToMusicVariant.getCurrentPreference();
     final fontScaleVariant = await FontScaleVariant.getCurrentPreference();
     final newState = appState;
     newState.settings.theme = theme;

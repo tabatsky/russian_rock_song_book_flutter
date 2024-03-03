@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/data/settings/font_scale_variant.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
-import 'package:russian_rock_song_book/ui/font/app_font.dart';
 import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
@@ -21,7 +21,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsState extends State<SettingsPage> {
 
   AppTheme _theTheme = AppTheme.themeDark;
-  ListenToMusicPreference _theListenToMusicPreference = ListenToMusicPreference.yandexAndYoutube;
+  ListenToMusicVariant _theListenToMusicVariant = ListenToMusicVariant.yandexAndYoutube;
   FontScaleVariant _theFontScaleVariant = FontScaleVariant.m;
 
   bool _loadDone = false;
@@ -29,7 +29,7 @@ class _SettingsState extends State<SettingsPage> {
   void _loadStateFromSettings(AppSettings settings) {
     setState(() {
       _theTheme = settings.theme;
-      _theListenToMusicPreference = settings.listenToMusicPreference;
+      _theListenToMusicVariant = settings.listenToMusicPreference;
       _theFontScaleVariant = settings.fontScaleVariant;
       _loadDone = true;
     });
@@ -168,16 +168,16 @@ class _SettingsState extends State<SettingsPage> {
         child: Align(
           alignment: Alignment.centerLeft,
           child: DropdownButton(
-            value: _theListenToMusicPreference.description,
+            value: _theListenToMusicVariant.description,
             items: _listenToMusicDropdownItems(settings),
             isExpanded: true,
             onChanged: (String? value) {
               final description = value ??
-                  _theListenToMusicPreference.description;
-              final newIndex = ListenToMusicPreference.indexFromDescription(description);
-              final newPreference = ListenToMusicPreference.allVariants[newIndex];
+                  _theListenToMusicVariant.description;
+              final newIndex = ListenToMusicVariant.indexFromDescription(description);
+              final newPreference = ListenToMusicVariant.allVariants[newIndex];
               setState(() {
-                _theListenToMusicPreference = newPreference;
+                _theListenToMusicVariant = newPreference;
               });
             },
             dropdownColor: settings.theme.colorBg,
@@ -244,10 +244,10 @@ class _SettingsState extends State<SettingsPage> {
   }
 
   List<DropdownMenuItem<String>> _listenToMusicDropdownItems(AppSettings settings) {
-    List<DropdownMenuItem<String>> menuItems = ListenToMusicPreference.allVariants.map((thePreference) =>
-        DropdownMenuItem(value: thePreference.description,
+    List<DropdownMenuItem<String>> menuItems = ListenToMusicVariant.allVariants.map((theVariant) =>
+        DropdownMenuItem(value: theVariant.description,
             child: Text(
-              thePreference.description,
+              theVariant.description,
               style: settings.textStyler.textStyleCommon,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -274,7 +274,7 @@ class _SettingsState extends State<SettingsPage> {
   void _saveSettings(AppSettings settings) {
     final newSettings = settings;
     newSettings.theme = _theTheme;
-    newSettings.listenToMusicPreference = _theListenToMusicPreference;
+    newSettings.listenToMusicPreference = _theListenToMusicVariant;
     newSettings.fontScaleVariant = _theFontScaleVariant;
     widget.onPerformAction(SaveSettings(newSettings));
   }

@@ -1,32 +1,32 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum ListenToMusicVariant {
+enum ListenToMusicOption {
   vk, yandex, youtube
 }
 
-class ListenToMusicPreference {
-  static final yandexAndYoutube = ListenToMusicPreference('Яндекс и Youtube', [
-    ListenToMusicVariant.yandex,
-    ListenToMusicVariant.youtube
+class ListenToMusicVariant {
+  static final yandexAndYoutube = ListenToMusicVariant('Яндекс и Youtube', [
+    ListenToMusicOption.yandex,
+    ListenToMusicOption.youtube
   ]);
-  static final vkAndYandex = ListenToMusicPreference('VK и Яндекс', [
-    ListenToMusicVariant.vk,
-    ListenToMusicVariant.yandex
+  static final vkAndYandex = ListenToMusicVariant('VK и Яндекс', [
+    ListenToMusicOption.vk,
+    ListenToMusicOption.yandex
   ]);
-  static final vkAndYoutube = ListenToMusicPreference('VK и Youtube', [
-    ListenToMusicVariant.vk,
-    ListenToMusicVariant.youtube
+  static final vkAndYoutube = ListenToMusicVariant('VK и Youtube', [
+    ListenToMusicOption.vk,
+    ListenToMusicOption.youtube
   ]);
   static final allVariants = [yandexAndYoutube, vkAndYandex, vkAndYoutube];
 
   static const musicKey = 'musicIndex';
 
   final String description;
-  final List<ListenToMusicVariant> supportedVariants;
+  final List<ListenToMusicOption> supportedVariants;
 
-  ListenToMusicPreference(this.description, this.supportedVariants);
+  ListenToMusicVariant(this.description, this.supportedVariants);
 
-  static Future<ListenToMusicPreference> getCurrentPreference() async {
+  static Future<ListenToMusicVariant> getCurrentPreference() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final index = prefs.getInt(musicKey) ?? 0;
     return allVariants[index];

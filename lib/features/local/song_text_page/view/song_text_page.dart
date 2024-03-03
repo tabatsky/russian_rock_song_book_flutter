@@ -176,11 +176,11 @@ class _SongTextPageState extends State<SongTextPage> {
     );
   }
 
-  Widget _bottomButtonRow(double buttonSize, ListenToMusicPreference listenToMusicPreference, Song? currentSong) => Row(
+  Widget _bottomButtonRow(double buttonSize, ListenToMusicVariant listenToMusicVariant, Song? currentSong) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      _makeMusicButton(listenToMusicPreference.supportedVariants[0], currentSong, buttonSize),
-      _makeMusicButton(listenToMusicPreference.supportedVariants[1], currentSong, buttonSize),
+      _makeMusicButton(listenToMusicVariant.supportedVariants[0], currentSong, buttonSize),
+      _makeMusicButton(listenToMusicVariant.supportedVariants[1], currentSong, buttonSize),
       Container(
         width: buttonSize,
         height: buttonSize,
@@ -243,22 +243,22 @@ class _SongTextPageState extends State<SongTextPage> {
     ],
   );
 
-  Widget _makeMusicButton(ListenToMusicVariant variant, Song? currentSong, double buttonSize) {
+  Widget _makeMusicButton(ListenToMusicOption option, Song? currentSong, double buttonSize) {
     final String icon;
     final AppUIAction action;
 
-    switch (variant) {
-      case ListenToMusicVariant.vk:
+    switch (option) {
+      case ListenToMusicOption.vk:
         icon = AppIcons.icVk;
         action = OpenVkMusic(
             currentSong?.searchFor ?? 'null'
         );
-      case ListenToMusicVariant.yandex:
+      case ListenToMusicOption.yandex:
         icon = AppIcons.icYandex;
         action = OpenYandexMusic(
             currentSong?.searchFor ?? 'null'
         );
-      case ListenToMusicVariant.youtube:
+      case ListenToMusicOption.youtube:
         icon = AppIcons.icYoutube;
         action = OpenYoutubeMusic(
             currentSong?.searchFor ?? 'null'

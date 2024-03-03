@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AppTheme {
   static const materialBlack = MaterialColor(
@@ -37,19 +36,4 @@ class AppTheme {
 
   static int indexFromDescription(String description) =>
       allThemes.indexWhere((element) => element.description == description);
-}
-
-class ThemeVariant {
-  static const themeKey = 'themeIndex';
-
-  static Future<AppTheme> getCurrentTheme() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final index = prefs.getInt(themeKey) ?? 0;
-    return AppTheme.getByIndex(index);
-  }
-
-  static Future<void> saveThemeIndex(int index) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(themeKey, index);
-  }
 }
