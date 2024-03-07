@@ -9,7 +9,7 @@ import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 import 'package:rxdart/rxdart.dart';
 
-class SongListPage extends StatefulWidget{
+class SongListPage extends StatelessWidget{
   final ValueStream<AppState> appStateStream;
   final void Function(AppUIAction action) onPerformAction;
 
@@ -19,19 +19,36 @@ class SongListPage extends StatefulWidget{
       {super.key});
 
   @override
-  State<SongListPage> createState() => _SongListPageState();
+  Widget build(BuildContext context) {
+    return StreamBuilder<AppState>(
+        stream: appStateStream,
+        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
+          final appState = snapshot.data;
+          if (appState == null) {
+            return Container();
+          }
+          return _SongListPageContent(appState.settings, appState.localState, onPerformAction);
+        }
+    );
+  }
 }
 
-class _SongListPageState extends State<SongListPage> {
+class _SongListPageContent extends StatefulWidget {
+  final AppSettings settings;
+  final LocalState localState;
+  final void Function(AppUIAction action) onPerformAction;
 
+  const _SongListPageContent(this.settings, this.localState, this.onPerformAction);
+
+
+  @override
+  State<StatefulWidget> createState() => _SongListPageContentState();
+}
+
+class _SongListPageContentState extends State<_SongListPageContent> {
   static double _titleHeight = 50.0;
   static const _dividerHeight = 1.0;
   static double get _itemHeight => _titleHeight + _dividerHeight;
-
-  final _titleScrollController = ScrollController(
-    initialScrollOffset: 0.0,
-    keepScrollOffset: true,
-  );
 
   final _menuScrollController = ScrollController(
     initialScrollOffset: 0.0,
@@ -41,30 +58,12 @@ class _SongListPageState extends State<SongListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AppState>(
-        stream: widget.appStateStream,
-        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
-          final appState = snapshot.data;
-          if (appState == null) {
-            return Container();
-          }
-          return _makePage(context, appState.settings, appState.localState);
-        }
-    );
-  }
-
-  void _scrollToActual(LocalState localState) {
-    _titleScrollController.animateTo(localState.scrollPosition * _itemHeight,
-        duration: const Duration(milliseconds: 1), curve: Curves.ease);
-  }
-
-  Widget _makePage(BuildContext context, AppSettings settings, LocalState localState) {
-    _titleHeight = settings.textStyler.fontSizeCommon * 1.5 + 20;
+    _titleHeight = widget.settings.textStyler.fontSizeCommon * 1.5 + 20;
     return Scaffold(
-      backgroundColor: settings.theme.colorBg,
+      backgroundColor: widget.settings.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
-        title: Text(localState.currentArtist, style: settings.textStyler.textStyleFixedBlackBold),
+        title: Text(widget.localState.currentArtist, style: widget.settings.textStyler.textStyleFixedBlackBold),
         actions: [
           IconButton(
             icon: Image.asset(AppIcons.icSettings),
@@ -76,7 +75,13 @@ class _SongListPageState extends State<SongListPage> {
         ],
       ),
       drawer: Drawer(
-        child: _makeMenuListView(settings, localState),
+        child: _MenuListView(
+            widget.settings,
+            widget.localState,
+            _menuScrollController,
+            _titleHeight,
+            _dividerHeight,
+            widget.onPerformAction),
       ),
       onDrawerChanged: (isOpened) {
         if (isOpened) {
@@ -92,15 +97,27 @@ class _SongListPageState extends State<SongListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _makeContent(settings, localState),
+            _SongListBody(widget.settings, widget.localState, _titleHeight, _dividerHeight, _itemHeight, widget.onPerformAction),
           ],
         ),
       ),
     );
   }
+}
 
-  ListView _makeMenuListView(AppSettings settings, LocalState localState) => ListView.builder(
-      controller: _menuScrollController,
+class _MenuListView extends StatelessWidget {
+  final AppSettings settings;
+  final LocalState localState;
+  final ScrollController menuScrollController;
+  final double titleHeight;
+  final double dividerHeight;
+  final void Function(AppUIAction action) onPerformAction;
+
+  const _MenuListView(this.settings, this.localState, this.menuScrollController, this.titleHeight, this.dividerHeight, this.onPerformAction);
+
+  @override
+  Widget build(BuildContext context) => ListView.builder(
+      controller: menuScrollController,
       padding: EdgeInsets.zero,
       itemCount: localState.allArtists.length + 1,
       itemBuilder: (BuildContext context, int index) {
@@ -118,18 +135,18 @@ class _SongListPageState extends State<SongListPage> {
         } else {
           final artist = localState.allArtists[index - 1];
           final textStyle =
-            SongRepository.predefinedArtists.contains(artist)
-                ? settings.textStyler.textStyleCommonInvertedBold
-                : settings.textStyler.textStyleCommonInverted;
+          SongRepository.predefinedArtists.contains(artist)
+              ? settings.textStyler.textStyleCommonInvertedBold
+              : settings.textStyler.textStyleCommonInverted;
           return Column(
             children: [
               GestureDetector(
                 onTap: () {
                   Navigator.pop(context);
-                  widget.onPerformAction(ArtistClick(artist));
+                  onPerformAction(ArtistClick(artist));
                 },
                 child: Container(
-                  height: _titleHeight,
+                  height: titleHeight,
                   color: settings.theme.colorMain,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -146,7 +163,7 @@ class _SongListPageState extends State<SongListPage> {
                 ),
               ),
               AppDivider(
-                height: _dividerHeight,
+                height: dividerHeight,
                 color: settings.theme.colorBg,
               ),
             ],
@@ -154,27 +171,60 @@ class _SongListPageState extends State<SongListPage> {
         }
       }
   );
+}
 
-  Widget _makeContent(AppSettings settings, LocalState localState) {
+class _SongListBody extends StatelessWidget {
+  final AppSettings settings;
+  final LocalState localState;
+  final double titleHeight;
+  final double dividerHeight;
+  final double itemHeight;
+  final void Function(AppUIAction action) onPerformAction;
+
+  final _titleScrollController = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
+
+  _SongListBody(this.settings, this.localState, this.titleHeight, this.dividerHeight, this.itemHeight, this.onPerformAction);
+
+  @override
+  Widget build(BuildContext context) {
     if (localState.currentSongs.isEmpty) {
-      return _makeEmptyListIndicator(settings);
+      return _EmptyListIndicator(settings);
     } else {
       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual(localState));
-      return Flexible(child: _makeTitleListView(settings, localState));
+      return Flexible(child: _TitleListView(
+          settings,
+          localState,
+          _titleScrollController,
+          titleHeight,
+          dividerHeight,
+          onPerformAction
+      ));
     }
   }
 
-  Widget _makeEmptyListIndicator(AppSettings settings) => Expanded(
-      child: Center(
-          child: Text(
-            AppStrings.strListIsEmpty,
-            style: settings.textStyler.textStyleTitle,
-          )
-      )
-  );
+  void _scrollToActual(LocalState localState) {
+    _titleScrollController.animateTo(localState.scrollPosition * itemHeight,
+        duration: const Duration(milliseconds: 1), curve: Curves.ease);
+  }
 
-  ListView _makeTitleListView(AppSettings settings, LocalState localState) => ListView.builder(
-      controller: _titleScrollController,
+}
+
+class _TitleListView extends StatelessWidget {
+  final AppSettings settings;
+  final LocalState localState;
+  final ScrollController titleScrollController;
+  final double titleHeight;
+  final double dividerHeight;
+  final void Function(AppUIAction action) onPerformAction;
+
+  const _TitleListView(this.settings, this.localState, this.titleScrollController, this.titleHeight, this.dividerHeight, this.onPerformAction);
+
+  @override
+  Widget build(BuildContext context) => ListView.builder(
+      controller: titleScrollController,
       padding: EdgeInsets.zero,
       itemCount: localState.currentSongs.length,
       itemBuilder: (BuildContext context, int index) {
@@ -183,10 +233,10 @@ class _SongListPageState extends State<SongListPage> {
           children: [
             GestureDetector(
               onTap: () {
-                widget.onPerformAction(SongClick(index));
+                onPerformAction(SongClick(index));
               },
               child: Container(
-                  height: _titleHeight,
+                  height: titleHeight,
                   color: settings.theme.colorBg,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -203,11 +253,27 @@ class _SongListPageState extends State<SongListPage> {
               ),
             ),
             AppDivider(
-              height: _dividerHeight,
+              height: dividerHeight,
               color: settings.theme.colorMain,
             )
           ],
         );
       }
+  );
+}
+
+class _EmptyListIndicator extends StatelessWidget {
+  final AppSettings settings;
+
+  const _EmptyListIndicator(this.settings);
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+      child: Center(
+          child: Text(
+            AppStrings.strListIsEmpty,
+            style: settings.textStyler.textStyleTitle,
+          )
+      )
   );
 }
