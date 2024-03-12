@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
+import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
@@ -12,12 +14,7 @@ class CloudSongTextPage extends StatelessWidget {
   final ValueStream<AppState> appStateStream;
   final void Function(AppUIAction action) onPerformAction;
 
-  final ScrollController scrollController = ScrollController(
-    initialScrollOffset: 0.0,
-    keepScrollOffset: true,
-  );
-
-  CloudSongTextPage(
+  const CloudSongTextPage(
       this.appStateStream,
       this.onPerformAction,
       {super.key});
@@ -31,12 +28,21 @@ class CloudSongTextPage extends StatelessWidget {
           if (appState == null) {
             return Container();
           }
-          return _makePage(context, appState.settings, appState.cloudState);
+          return _CloudSongTextPageContent(appState.settings, appState.cloudState, onPerformAction);
         }
     );
   }
+}
 
-  Widget _makePage(BuildContext context, AppSettings settings, CloudState cloudState) {
+class _CloudSongTextPageContent extends StatelessWidget {
+  final AppSettings settings;
+  final CloudState cloudState;
+  final void Function(AppUIAction action) onPerformAction;
+
+  const _CloudSongTextPageContent(this.settings, this.cloudState, this.onPerformAction);
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: settings.theme.colorBg,
       appBar: AppBar(
@@ -72,13 +78,27 @@ class CloudSongTextPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _makeCloudSongTextView(context, settings, cloudState),
+          _CloudSongTextBody(settings, cloudState, onPerformAction),
         ],
       ),
     );
   }
+}
 
-  Widget _makeCloudSongTextView(BuildContext context, AppSettings settings, CloudState cloudState) {
+class _CloudSongTextBody extends StatelessWidget {
+  final AppSettings settings;
+  final CloudState cloudState;
+  final void Function(AppUIAction action) onPerformAction;
+
+  final ScrollController scrollController = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
+
+  _CloudSongTextBody(this.settings, this.cloudState, this.onPerformAction);
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -103,7 +123,7 @@ class CloudSongTextPage extends StatelessWidget {
                       children: [
                         Text(cloudState.currentCloudSong
                             ?.visibleTitleWithArtistAndRating(extraLikes, extraDislikes) ?? 'null',
-                            style: settings.textStyler.textStyleTitle,
+                          style: settings.textStyler.textStyleTitle,
                         ),
                         Container(
                           height: 20,
@@ -124,7 +144,11 @@ class CloudSongTextPage extends StatelessWidget {
                 width: width,
                 height: buttonSize,
                 color: settings.theme.colorBg,
-                child: _bottomButtonRow(context, buttonSize, cloudState),
+                child: _ButtonRow(
+                    settings.listenToMusicPreference,
+                    cloudState.currentCloudSong,
+                    buttonSize,
+                    onPerformAction),
               ),
               Container(
                 width: width,
@@ -138,7 +162,21 @@ class CloudSongTextPage extends StatelessWidget {
     );
   }
 
-  Widget _bottomButtonRow(BuildContext context, double buttonSize, CloudState cloudState) => Row(
+}
+
+class _ButtonRow extends StatelessWidget {
+  final ListenToMusicVariant listenToMusicVariant;
+  final CloudSong? currentCloudSong;
+  final double buttonSize;
+  final void Function(AppUIAction action) onPerformAction;
+
+  const _ButtonRow(this.listenToMusicVariant,
+      this.currentCloudSong,
+      this.buttonSize,
+      this.onPerformAction);
+
+  @override
+  Widget build(BuildContext context) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Container(
@@ -151,7 +189,7 @@ class CloudSongTextPage extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           onPressed: () {
             onPerformAction(OpenYandexMusic(
-                cloudState.currentCloudSong?.searchFor ?? 'null'
+                currentCloudSong?.searchFor ?? 'null'
             ));
           },
         ),
@@ -166,7 +204,7 @@ class CloudSongTextPage extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           onPressed: () {
             onPerformAction(OpenYoutubeMusic(
-                cloudState.currentCloudSong?.searchFor ?? 'null'
+                currentCloudSong?.searchFor ?? 'null'
             ));
           },
         ),
@@ -194,7 +232,7 @@ class CloudSongTextPage extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           onPressed: () {
             WarningDialog.showWarningDialog(context, (comment) {
-              final warning = Warning.fromCloudSongWithComment(cloudState.currentCloudSong!, comment);
+              final warning = Warning.fromCloudSongWithComment(currentCloudSong!, comment);
               onPerformAction(SendWarning(warning));
             });
           },
