@@ -86,20 +86,29 @@ class _CloudSongTextPageContent extends StatelessWidget {
   }
 }
 
-class _CloudSongTextBody extends StatelessWidget {
+class _CloudSongTextBody extends StatefulWidget {
   final AppSettings settings;
   final CloudState cloudState;
   final void Function(AppUIAction action) onPerformAction;
 
-  final ScrollController scrollController = ScrollController(
+  const _CloudSongTextBody(this.settings, this.cloudState, this.onPerformAction);
+
+  @override
+  State<StatefulWidget> createState() => _CloudSongTextBodyState();
+}
+
+class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
+
+  final ScrollController _scrollController = ScrollController(
     initialScrollOffset: 0.0,
     keepScrollOffset: true,
   );
 
-  _CloudSongTextBody(this.settings, this.cloudState, this.onPerformAction);
-
+  CloudSong? _currentCloudSong;
+  
   @override
   Widget build(BuildContext context) {
+    _updateCloudSong(widget.cloudState.currentCloudSong);
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -107,31 +116,31 @@ class _CloudSongTextBody extends StatelessWidget {
           double height = constraints.maxHeight;
           double buttonSize = width / 7.0;
 
-          final extraLikes = cloudState.extraLikesForCurrent;
-          final extraDislikes = cloudState.extraDislikesForCurrent;
+          final extraLikes = widget.cloudState.extraLikesForCurrent;
+          final extraDislikes =widget.cloudState.extraDislikesForCurrent;
 
           return Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  controller: scrollController,
+                  controller: _scrollController,
                   padding: EdgeInsets.zero,
                   child: Container(
                     constraints: BoxConstraints(minHeight: height, minWidth: width),
-                    color: settings.theme.colorBg,
+                    color: widget.settings.theme.colorBg,
                     padding: const EdgeInsets.all(8),
                     child: Wrap(
                       children: [
-                        Text(cloudState.currentCloudSong
+                        Text(widget.cloudState.currentCloudSong
                             ?.visibleTitleWithArtistAndRating(extraLikes, extraDislikes) ?? 'null',
-                          style: settings.textStyler.textStyleTitle,
+                          style: widget.settings.textStyler.textStyleTitle,
                         ),
                         Container(
                           height: 20,
                         ),
                         Text(
-                          cloudState.currentCloudSong?.text ?? 'null',
-                          style: settings.textStyler.textStyleSongText,
+                          widget.cloudState.currentCloudSong?.text ?? 'null',
+                          style: widget.settings.textStyler.textStyleSongText,
                         ),
                         Container(
                           height: 80,
@@ -144,17 +153,17 @@ class _CloudSongTextBody extends StatelessWidget {
               Container(
                 width: width,
                 height: buttonSize,
-                color: settings.theme.colorBg,
+                color: widget.settings.theme.colorBg,
                 child: _ButtonRow(
-                    settings.listenToMusicPreference,
-                    cloudState.currentCloudSong,
+                    widget.settings.listenToMusicPreference,
+                    widget.cloudState.currentCloudSong,
                     buttonSize,
-                    onPerformAction),
+                    widget.onPerformAction),
               ),
               Container(
                 width: width,
                 height: buttonSize / 2,
-                color: settings.theme.colorBg,
+                color: widget.settings.theme.colorBg,
               ),
             ],
           );
@@ -163,6 +172,17 @@ class _CloudSongTextBody extends StatelessWidget {
     );
   }
 
+  void _scrollToTop() {
+    _scrollController.animateTo(0.0,
+        duration: const Duration(milliseconds: 1), curve: Curves.ease);
+  }
+
+  void _updateCloudSong(CloudSong? newCloudSong) {
+    if (_currentCloudSong != newCloudSong) {
+      _currentCloudSong = newCloudSong;
+      WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToTop());
+    }
+  }
 }
 
 class _ButtonRow extends StatelessWidget {
