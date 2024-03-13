@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
+import 'package:russian_rock_song_book/features/common/widgets/music_button.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
@@ -179,36 +180,8 @@ class _ButtonRow extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icYandex),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            onPerformAction(OpenYandexMusic(
-                currentCloudSong?.searchFor ?? 'null'
-            ));
-          },
-        ),
-      ),
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icYoutube),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            onPerformAction(OpenYoutubeMusic(
-                currentCloudSong?.searchFor ?? 'null'
-            ));
-          },
-        ),
-      ),
+      MusicButton(listenToMusicVariant.supportedVariants[0], currentCloudSong?.searchFor ?? 'null', buttonSize, onPerformAction),
+      MusicButton(listenToMusicVariant.supportedVariants[1], currentCloudSong?.searchFor ?? 'null', buttonSize, onPerformAction),
       Container(
         width: buttonSize,
         height: buttonSize,
