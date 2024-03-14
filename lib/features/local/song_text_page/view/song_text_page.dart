@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/features/common/widgets/bottom_button.dart';
 import 'package:russian_rock_song_book/features/common/widgets/music_button.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
 
@@ -244,65 +245,25 @@ class _ButtonRow extends StatelessWidget {
     children: [
       MusicButton(listenToMusicVariant.supportedVariants[0], currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
       MusicButton(listenToMusicVariant.supportedVariants[1], currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icUpload),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            onPerformAction(UploadCurrentToCloud());
-          },
-        ),
-      ),
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icWarning),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            WarningDialog.showWarningDialog(context, (comment) {
-              final warning = Warning.fromSongWithComment(currentSong!, comment);
-              onPerformAction(SendWarning(warning));
-            });
-          },
-        ),
-      ),
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icTrash),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            _showDeleteToTrashConfirmDialog(context);
-          },
-        ),
-      ),
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(isEditorMode ? AppIcons.icSave : AppIcons.icEdit),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            if (isEditorMode) {
-              onSaveText();
-            } else {
-              onEditText(currentSong);
-            }
-          },
-        ),
-      ),
+      BottomButton(AppIcons.icUpload, buttonSize, () {
+        onPerformAction(UploadCurrentToCloud());
+      }),
+      BottomButton(AppIcons.icWarning, buttonSize, () {
+        WarningDialog.showWarningDialog(context, (comment) {
+          final warning = Warning.fromSongWithComment(currentSong!, comment);
+          onPerformAction(SendWarning(warning));
+        });
+      }),
+      BottomButton(AppIcons.icTrash, buttonSize, () {
+        _showDeleteToTrashConfirmDialog(context);
+      }),
+      BottomButton(isEditorMode ? AppIcons.icSave : AppIcons.icEdit, buttonSize, () {
+        if (isEditorMode) {
+          onSaveText();
+        } else {
+          onEditText(currentSong);
+        }
+      }),
     ],
   );
 

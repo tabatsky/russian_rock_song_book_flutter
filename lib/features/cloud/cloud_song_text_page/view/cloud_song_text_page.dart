@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
+import 'package:russian_rock_song_book/features/common/widgets/bottom_button.dart';
 import 'package:russian_rock_song_book/features/common/widgets/music_button.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
@@ -202,61 +203,21 @@ class _ButtonRow extends StatelessWidget {
     children: [
       MusicButton(listenToMusicVariant.supportedVariants[0], currentCloudSong?.searchFor ?? 'null', buttonSize, onPerformAction),
       MusicButton(listenToMusicVariant.supportedVariants[1], currentCloudSong?.searchFor ?? 'null', buttonSize, onPerformAction),
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icDownload),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            onPerformAction(DownloadCurrent());
-          },
-        ),
-      ),
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icWarning),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            WarningDialog.showWarningDialog(context, (comment) {
-              final warning = Warning.fromCloudSongWithComment(currentCloudSong!, comment);
-              onPerformAction(SendWarning(warning));
-            });
-          },
-        ),
-      ),
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icLike),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            onPerformAction(LikeCurrent());
-          },
-        ),
-      ),
-      Container(
-        width: buttonSize,
-        height: buttonSize,
-        color: AppTheme.colorDarkYellow,
-        child:
-        IconButton(
-          icon: Image.asset(AppIcons.icDislike),
-          padding: const EdgeInsets.all(8),
-          onPressed: () {
-            onPerformAction(DislikeCurrent());
-          },
-        ),
-      ),
+      BottomButton(AppIcons.icDownload, buttonSize, () {
+        onPerformAction(DownloadCurrent());
+      }),
+      BottomButton(AppIcons.icWarning, buttonSize, () {
+        WarningDialog.showWarningDialog(context, (comment) {
+          final warning = Warning.fromCloudSongWithComment(currentCloudSong!, comment);
+          onPerformAction(SendWarning(warning));
+        });
+      }),
+      BottomButton(AppIcons.icLike, buttonSize, () {
+        onPerformAction(LikeCurrent());
+      }),
+      BottomButton(AppIcons.icDislike, buttonSize, () {
+        onPerformAction(DislikeCurrent());
+      }),
     ],
   );
 }
