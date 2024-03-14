@@ -133,14 +133,14 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
                     child: Wrap(
                       children: [
                         Text(widget.cloudState.currentCloudSong
-                            ?.visibleTitleWithArtistAndRating(extraLikes, extraDislikes) ?? 'null',
+                            ?.visibleTitleWithArtistAndRating(extraLikes, extraDislikes) ?? '',
                           style: widget.settings.textStyler.textStyleTitle,
                         ),
                         Container(
                           height: 20,
                         ),
                         Text(
-                          widget.cloudState.currentCloudSong?.text ?? 'null',
+                          widget.cloudState.currentCloudSong?.text ?? '',
                           style: widget.settings.textStyler.textStyleSongText,
                         ),
                         Container(

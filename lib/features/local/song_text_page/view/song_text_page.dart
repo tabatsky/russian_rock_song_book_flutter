@@ -140,7 +140,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
                     padding: const EdgeInsets.all(8),
                     child: Wrap(
                       children: [
-                        Text(widget.currentSong?.title ?? 'null', style: widget
+                        Text(widget.currentSong?.title ?? '', style: widget
                             .settings.textStyler.textStyleTitle),
                         Container(
                           height: 20,
@@ -157,7 +157,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
                           style: widget.settings.textStyler.textStyleSongText,
                         )
                             : Text(
-                          widget.currentSong?.text ?? 'null',
+                          widget.currentSong?.text ?? '',
                           style: widget.settings.textStyler.textStyleSongText,
                         ),
                         Container(
@@ -194,7 +194,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
   }
 
   Future<void> _editText(Song? currentSong) async {
-    _textEditorController.text = currentSong?.text ?? 'null';
+    _textEditorController.text = currentSong?.text ?? '';
     setState(() {
       _isEditorMode = true;
     });
