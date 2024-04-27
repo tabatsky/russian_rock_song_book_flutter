@@ -181,11 +181,6 @@ class _SongTextBodyState extends State<_SongTextBody> {
                     _saveText,
                     widget.onPerformAction),
               ),
-              Container(
-                width: width,
-                height: buttonSize / 2,
-                color: widget.settings.theme.colorBg,
-              ),
             ],
           );
         },

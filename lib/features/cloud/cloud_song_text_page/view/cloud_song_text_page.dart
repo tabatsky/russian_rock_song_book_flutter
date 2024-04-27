@@ -161,11 +161,6 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
                     buttonSize,
                     widget.onPerformAction),
               ),
-              Container(
-                width: width,
-                height: buttonSize / 2,
-                color: widget.settings.theme.colorBg,
-              ),
             ],
           );
         },
