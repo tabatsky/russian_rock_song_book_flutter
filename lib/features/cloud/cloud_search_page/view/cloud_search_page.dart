@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/data/cloud/cloud_search_pager/cloud_search_pager.dart';
+import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
 import 'package:russian_rock_song_book/ui/widgets/app_divider.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
@@ -8,7 +9,6 @@ import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/order_by.dart';
-import 'package:russian_rock_song_book/data/local/repository/song_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CloudSearchPage extends StatelessWidget {

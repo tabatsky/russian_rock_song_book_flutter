@@ -3,9 +3,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
 import 'package:russian_rock_song_book/data/cloud/cloud_search_pager/cloud_search_pager.dart';
 import 'package:russian_rock_song_book/data/settings/font_scale_variant.dart';
 import 'package:russian_rock_song_book/data/settings/theme_variant.dart';
+import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
 import 'package:russian_rock_song_book/ui/font/app_font.dart';
 import 'package:russian_rock_song_book/data/cloud/repository/cloud_repository.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
@@ -13,7 +15,6 @@ import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/order_by.dart';
 import 'package:russian_rock_song_book/domain/models/local/song.dart';
-import 'package:russian_rock_song_book/data/local/repository/song_repository.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 import 'package:russian_rock_song_book/domain/models/common/warning.dart';
@@ -190,7 +191,7 @@ class AppStateMachine {
   }
 
   Future<void> _initAllArtists(AppStateChanger changeState, AppState appState) async {
-    final artists = await SongRepository().getArtists();
+    final artists = await GetIt.I<SongRepository>().getArtists();
     log(artists.toString());
     final newAppState = appState;
     final newLocalState = appState.localState;
@@ -208,7 +209,7 @@ class AppStateMachine {
       changeState(newAppState);
       _performCloudSearch(changeState, appState, '', OrderBy.byIdDesc);
     } else {
-      final songs = await SongRepository().getSongsByArtist(artist);
+      final songs = await GetIt.I<SongRepository>().getSongsByArtist(artist);
       final newAppState = appState;
       final newLocalState = appState.localState;
       newLocalState.currentArtist = artist;
@@ -293,10 +294,10 @@ class AppStateMachine {
       final song = newLocalState.currentSong!;
       final becomeFavorite = !song.favorite;
       song.favorite = becomeFavorite;
-      await SongRepository().updateSong(song);
+      await GetIt.I<SongRepository>().updateSong(song);
 
       if (!becomeFavorite && newLocalState.currentArtist == SongRepository.artistFavorite) {
-        final count = await SongRepository().getCountByArtist(SongRepository.artistFavorite);
+        final count = await GetIt.I<SongRepository>().getCountByArtist(SongRepository.artistFavorite);
         if (count > 0) {
           final int newSongPosition;
           if (newLocalState.currentSongPosition >= count) {
@@ -330,14 +331,14 @@ class AppStateMachine {
     if (appState.localState.currentSong != null) {
       final song = appState.localState.currentSong!;
       song.text = updatedText;
-      await SongRepository().updateSong(song);
+      await GetIt.I<SongRepository>().updateSong(song);
       await _refreshCurrentSong(changeState, appState);
     }
   }
 
   Future<void> _refreshCurrentSong(AppStateChanger changeState, AppState appState) async {
     log('refresh current song');
-    final songs = await SongRepository().getSongsByArtist(appState.localState.currentArtist);
+    final songs = await GetIt.I<SongRepository>().getSongsByArtist(appState.localState.currentArtist);
     final newAppState = appState;
     final newLocalState = appState.localState;
     newLocalState.currentSong = newLocalState.currentSongPosition >= 0
@@ -369,10 +370,10 @@ class AppStateMachine {
     final newState = appState;
     final song = newState.localState.currentSong!;
     song.deleted = true;
-    await SongRepository().updateSong(song);
-    final count = await SongRepository().getCountByArtist(newState.localState.currentArtist);
+    await GetIt.I<SongRepository>().updateSong(song);
+    final count = await GetIt.I<SongRepository>().getCountByArtist(newState.localState.currentArtist);
     newState.localState.currentCount = count;
-    newState.localState.allArtists = await SongRepository().getArtists();
+    newState.localState.allArtists = await GetIt.I<SongRepository>().getArtists();
     if (newState.localState.currentCount > 0) {
       if (newState.localState.currentSongPosition >= newState.localState.currentCount) {
         newState.localState.currentSongPosition -= 1;
@@ -381,7 +382,7 @@ class AppStateMachine {
     } else {
       _back(changeState, newState);
     }
-    newState.localState.currentSongs = await SongRepository()
+    newState.localState.currentSongs = await GetIt.I<SongRepository>()
         .getSongsByArtist(appState.localState.currentArtist);
     changeState(newState);
     _showToast(newState, AppStrings.strToastDeleted);
@@ -505,12 +506,12 @@ class AppStateMachine {
   }
 
   Future<void> _downloadCurrent(AppStateChanger changeState, AppState appState) async {
-    await SongRepository().addSongFromCloud(appState.cloudState.currentCloudSong!.asSong());
+    await GetIt.I<SongRepository>().addSongFromCloud(appState.cloudState.currentCloudSong!.asSong());
     final newState = appState;
-    newState.localState.allArtists = await SongRepository().getArtists();
-    final count = await SongRepository().getCountByArtist(newState.localState.currentArtist);
+    newState.localState.allArtists = await GetIt.I<SongRepository>().getArtists();
+    final count = await GetIt.I<SongRepository>().getCountByArtist(newState.localState.currentArtist);
     newState.localState.currentCount = count;
-    newState.localState.currentSongs = await SongRepository()
+    newState.localState.currentSongs = await GetIt.I<SongRepository>()
         .getSongsByArtist(appState.localState.currentArtist);
     changeState(newState);
     _showToast(newState, AppStrings.strToastDownloadSuccess);

@@ -1,7 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:russian_rock_song_book/data/local/repository/song_repository.dart';
+import 'package:get_it/get_it.dart';
+import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
@@ -82,13 +83,13 @@ class StartPageState extends State<StartPage> {
   }
 
   Future<void> _initDB() async {
-    await SongRepository().initDB();
+    await GetIt.I<SongRepository>().initDB();
     final appWasUpdated = await Version.appWasUpdated();
     setState(() {
       wasUpdated = appWasUpdated;
     });
     if (appWasUpdated) {
-      await SongRepository().fillDB((done, total) {
+      await GetIt.I<SongRepository>().fillDB((done, total) {
         log("done: $done of $total");
         setState(() {
           indicatorValue = 1.0 * done / total;
