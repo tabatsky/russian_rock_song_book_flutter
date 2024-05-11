@@ -130,116 +130,66 @@ class _SongTextBodyState extends State<_SongTextBody> {
 
           double buttonSize = isPortrait ? width / 7.0 : height / 7.0;
 
+          final bodyContent = [
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                child: Container(
+                  constraints: BoxConstraints(
+                      minHeight: height, minWidth: width),
+                  color: widget.settings.theme.colorBg,
+                  padding: const EdgeInsets.all(8),
+                  child: Wrap(
+                    children: [
+                      Text(widget.currentSong?.title ?? '', style: widget
+                          .settings.textStyler.textStyleTitle),
+                      Container(
+                        height: 20,
+                      ),
+                      _isEditorMode
+                          ? TextField(
+                        controller: _textEditorController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        style: widget.settings.textStyler.textStyleSongText,
+                      )
+                          : Text(
+                        widget.currentSong?.text ?? '',
+                        style: widget.settings.textStyler.textStyleSongText,
+                      ),
+                      Container(
+                        height: 80,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              width: isPortrait ? width : buttonSize,
+              height: isPortrait ? buttonSize : height,
+              color: widget.settings.theme.colorBg,
+              child: _ButtonPanel(
+                  isPortrait,
+                  widget.settings.listenToMusicPreference,
+                  widget.currentSong,
+                  _isEditorMode,
+                  buttonSize,
+                  _editText,
+                  _saveText,
+                  widget.onPerformAction),
+            ),
+          ];
+
           return isPortrait ? Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  padding: EdgeInsets.zero,
-                  child: Container(
-                    constraints: BoxConstraints(
-                        minHeight: height, minWidth: width),
-                    color: widget.settings.theme.colorBg,
-                    padding: const EdgeInsets.all(8),
-                    child: Wrap(
-                      children: [
-                        Text(widget.currentSong?.title ?? '', style: widget
-                            .settings.textStyler.textStyleTitle),
-                        Container(
-                          height: 20,
-                        ),
-                        _isEditorMode
-                            ? TextField(
-                          controller: _textEditorController,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: null,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          style: widget.settings.textStyler.textStyleSongText,
-                        )
-                            : Text(
-                          widget.currentSong?.text ?? '',
-                          style: widget.settings.textStyler.textStyleSongText,
-                        ),
-                        Container(
-                          height: 80,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                width: width,
-                height: buttonSize,
-                color: widget.settings.theme.colorBg,
-                child: _ButtonRow(
-                    widget.settings.listenToMusicPreference,
-                    widget.currentSong,
-                    _isEditorMode,
-                    buttonSize,
-                    _editText,
-                    _saveText,
-                    widget.onPerformAction),
-              ),
-            ],
+            children: bodyContent
           ) : Row(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  padding: EdgeInsets.zero,
-                  child: Container(
-                    constraints: BoxConstraints(
-                        minHeight: height, minWidth: width),
-                    color: widget.settings.theme.colorBg,
-                    padding: const EdgeInsets.all(8),
-                    child: Wrap(
-                      children: [
-                        Text(widget.currentSong?.title ?? '', style: widget
-                            .settings.textStyler.textStyleTitle),
-                        Container(
-                          height: 20,
-                        ),
-                        _isEditorMode
-                            ? TextField(
-                          controller: _textEditorController,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: null,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          style: widget.settings.textStyler.textStyleSongText,
-                        )
-                            : Text(
-                          widget.currentSong?.text ?? '',
-                          style: widget.settings.textStyler.textStyleSongText,
-                        ),
-                        Container(
-                          height: 80,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                width: buttonSize,
-                height: height,
-                color: widget.settings.theme.colorBg,
-                child: _ButtonColumn(
-                    widget.settings.listenToMusicPreference,
-                    widget.currentSong,
-                    _isEditorMode,
-                    buttonSize,
-                    _editText,
-                    _saveText,
-                    widget.onPerformAction),
-              ),
-            ],
+            children: bodyContent
           );
         },
       ),
@@ -274,7 +224,8 @@ class _SongTextBodyState extends State<_SongTextBody> {
   }
 }
 
-class _ButtonRow extends StatelessWidget {
+class _ButtonPanel extends StatelessWidget {
+  final bool isPortrait;
   final ListenToMusicVariant listenToMusicVariant;
   final Song? currentSong;
   final bool isEditorMode;
@@ -283,7 +234,8 @@ class _ButtonRow extends StatelessWidget {
   final void Function() onSaveText;
   final void Function(AppUIAction action) onPerformAction;
 
-  const _ButtonRow(
+  const _ButtonPanel(
+      this.isPortrait,
       this.listenToMusicVariant,
       this.currentSong,
       this.isEditorMode,
@@ -293,9 +245,8 @@ class _ButtonRow extends StatelessWidget {
       this.onPerformAction);
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
+  Widget build(BuildContext context) {
+    final buttons = [
       MusicButton(listenToMusicVariant.supportedVariants[0], currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
       MusicButton(listenToMusicVariant.supportedVariants[1], currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
       BottomButton(AppIcons.icUpload, buttonSize, () {
@@ -317,88 +268,16 @@ class _ButtonRow extends StatelessWidget {
           onEditText(currentSong);
         }
       }),
-    ],
-  );
+    ];
 
-  Future<void> _showDeleteToTrashConfirmDialog(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(AppStrings.strAreYouSure),
-          content: const Text(AppStrings.strWillBeRemoved),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text(AppStrings.strYes),
-              onPressed: () {
-                onPerformAction(DeleteCurrentToTrash());
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text(AppStrings.strNo),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+    return isPortrait ? Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: buttons,
+    ) : Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: buttons,
     );
   }
-}
-
-class _ButtonColumn extends StatelessWidget {
-  final ListenToMusicVariant listenToMusicVariant;
-  final Song? currentSong;
-  final bool isEditorMode;
-  final double buttonSize;
-  final void Function(Song? currentSong) onEditText;
-  final void Function() onSaveText;
-  final void Function(AppUIAction action) onPerformAction;
-
-  const _ButtonColumn(
-      this.listenToMusicVariant,
-      this.currentSong,
-      this.isEditorMode,
-      this.buttonSize,
-      this.onEditText,
-      this.onSaveText,
-      this.onPerformAction);
-
-  @override
-  Widget build(BuildContext context) => Column(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      MusicButton(listenToMusicVariant.supportedVariants[0], currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
-      MusicButton(listenToMusicVariant.supportedVariants[1], currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
-      BottomButton(AppIcons.icUpload, buttonSize, () {
-        onPerformAction(UploadCurrentToCloud());
-      }),
-      BottomButton(AppIcons.icWarning, buttonSize, () {
-        WarningDialog.showWarningDialog(context, (comment) {
-          final warning = Warning.fromSongWithComment(currentSong!, comment);
-          onPerformAction(SendWarning(warning));
-        });
-      }),
-      BottomButton(AppIcons.icTrash, buttonSize, () {
-        _showDeleteToTrashConfirmDialog(context);
-      }),
-      BottomButton(isEditorMode ? AppIcons.icSave : AppIcons.icEdit, buttonSize, () {
-        if (isEditorMode) {
-          onSaveText();
-        } else {
-          onEditText(currentSong);
-        }
-      }),
-    ],
-  );
 
   Future<void> _showDeleteToTrashConfirmDialog(BuildContext context) {
     return showDialog<void>(
