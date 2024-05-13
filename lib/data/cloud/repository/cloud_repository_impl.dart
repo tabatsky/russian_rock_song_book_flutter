@@ -6,29 +6,21 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
 import 'package:russian_rock_song_book/domain/models/common/warning.dart';
+import 'package:russian_rock_song_book/domain/repository/cloud/cloud_repository.dart';
 
-part 'cloud_repository.g.dart';
+part 'cloud_repository_impl.g.dart';
 
-typedef Success = void Function();
-typedef VoteSuccess = void Function(int voteValue);
-typedef ServerError = void Function(String message);
-typedef InAppError = void Function();
-
-class CloudRepository {
-  static final CloudRepository _instance = CloudRepository._privateConstructor();
+class CloudRepositoryImpl implements CloudRepository {
 
   Dio? dio;
   RestClient? client;
 
-  factory CloudRepository() {
-    return _instance;
-  }
-
-  CloudRepository._privateConstructor() {
+  CloudRepositoryImpl() {
     dio = Dio();
     client = RestClient(dio!);
   }
 
+  @override
   Future<List<CloudSong>> cloudSearch(String searchFor, String orderBy) async {
     final patchedSearchFor = searchFor.isEmpty ? 'empty_search_query' : searchFor;
     final searchResult = await client?.searchSongs(patchedSearchFor, orderBy);
@@ -42,6 +34,7 @@ class CloudRepository {
     }
   }
 
+  @override
   Future<List<CloudSong>> pagedSearch(String searchFor, String orderBy, int page) async {
     final patchedSearchFor = searchFor.isEmpty ? 'empty_search_query' : searchFor;
     log("$patchedSearchFor $orderBy $page");
@@ -56,6 +49,7 @@ class CloudRepository {
     }
   }
 
+  @override
   Future<void> addWarning(Warning warning, Success success, ServerError serverError, InAppError inAppError) async {
     try {
       final warningApiModel = WarningApiModel.fromWarning(warning);
@@ -72,6 +66,7 @@ class CloudRepository {
     }
   }
 
+  @override
   Future<void> addCloudSong(CloudSong cloudSong, Success success, ServerError serverError, InAppError inAppError) async {
     try {
       final cloudSongApiModel = CloudSongApiModel.fromCloudSong(cloudSong);
@@ -87,6 +82,7 @@ class CloudRepository {
     }
   }
 
+  @override
   Future<void> vote(CloudSong cloudSong, int voteValue, VoteSuccess voteSuccess, ServerError serverError, InAppError inAppError) async {
     try {
       final result = await client?.vote(

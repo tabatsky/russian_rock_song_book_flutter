@@ -1,9 +1,10 @@
 import 'dart:collection';
 import 'dart:developer';
 
-import 'package:russian_rock_song_book/data/cloud/repository/cloud_repository.dart';
+import 'package:get_it/get_it.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/order_by.dart';
+import 'package:russian_rock_song_book/domain/repository/cloud/cloud_repository.dart';
 
 enum SearchState { empty, error, loading, loadingNextPage, idle, done }
 
@@ -82,7 +83,7 @@ class CloudSearchPager {
 
     try {
       final pageNumber = pageIndex + 1;
-      final pageList = await CloudRepository().pagedSearch(
+      final pageList = await GetIt.I<CloudRepository>().pagedSearch(
           searchFor, orderBy.orderByStr, pageNumber);
       log(pageList.toString());
       if (pageList.length < pageSize) {

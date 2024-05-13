@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'cloud_repository.dart';
+part of 'cloud_repository_impl.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

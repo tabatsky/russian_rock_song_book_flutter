@@ -7,9 +7,9 @@ import 'package:get_it/get_it.dart';
 import 'package:russian_rock_song_book/data/cloud/cloud_search_pager/cloud_search_pager.dart';
 import 'package:russian_rock_song_book/data/settings/font_scale_variant.dart';
 import 'package:russian_rock_song_book/data/settings/theme_variant.dart';
+import 'package:russian_rock_song_book/domain/repository/cloud/cloud_repository.dart';
 import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
 import 'package:russian_rock_song_book/ui/font/app_font.dart';
-import 'package:russian_rock_song_book/data/cloud/repository/cloud_repository.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
 import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
@@ -356,7 +356,7 @@ class AppStateMachine {
       _showToast(appState, AppStrings.strToastUploadDuplicate);
     } else {
       final cloudSong = CloudSong.fromSong(appState.localState.currentSong!);
-      CloudRepository().addCloudSong(cloudSong, () {
+      GetIt.I<CloudRepository>().addCloudSong(cloudSong, () {
         _showToast(appState, AppStrings.strToastUploadSuccess);
       }, (message) {
         _showToast(appState, message);
@@ -427,7 +427,7 @@ class AppStateMachine {
   }
 
   Future<void> _sendWarning(AppState appState, Warning warning) async {
-    await CloudRepository().addWarning(warning, () {
+    await GetIt.I<CloudRepository>().addWarning(warning, () {
       _showToast(appState, AppStrings.strToastWarningSendSuccess);
     }, (message) {
       _showToast(appState, AppStrings.strToastWarningSendError);
@@ -519,7 +519,7 @@ class AppStateMachine {
 
   void _likeCurrent(AppStateChanger changeState, AppState appState) {
     final cloudSong = appState.cloudState.currentCloudSong!;
-    CloudRepository().vote(cloudSong, 1, (voteValue) {
+    GetIt.I<CloudRepository>().vote(cloudSong, 1, (voteValue) {
       final newState = appState;
       final oldCount = newState.cloudState.allLikes[cloudSong] ?? 0;
       newState.cloudState.allLikes[cloudSong] = oldCount + 1;
@@ -534,7 +534,7 @@ class AppStateMachine {
 
   void _dislikeCurrent(AppStateChanger changeState, AppState appState) {
     final cloudSong = appState.cloudState.currentCloudSong!;
-    CloudRepository().vote(cloudSong, -1, (voteValue) {
+    GetIt.I<CloudRepository>().vote(cloudSong, -1, (voteValue) {
       final newState = appState;
       final oldCount = newState.cloudState.allDislikes[cloudSong] ?? 0;
       newState.cloudState.allDislikes[cloudSong] = oldCount + 1;
