@@ -115,53 +115,61 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
         builder: (BuildContext context, BoxConstraints constraints) {
           double width = constraints.maxWidth;
           double height = constraints.maxHeight;
-          double buttonSize = width / 7.0;
+
+          final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
+          double buttonSize = isPortrait ? width / 7.0 : height / 7.0;
 
           final extraLikes = widget.cloudState.extraLikesForCurrent;
           final extraDislikes =widget.cloudState.extraDislikesForCurrent;
 
-          return Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  padding: EdgeInsets.zero,
-                  child: Container(
-                    constraints: BoxConstraints(minHeight: height, minWidth: width),
-                    color: widget.settings.theme.colorBg,
-                    padding: const EdgeInsets.all(8),
-                    child: Wrap(
-                      children: [
-                        Text(widget.cloudState.currentCloudSong
-                            ?.visibleTitleWithArtistAndRating(extraLikes, extraDislikes) ?? '',
-                          style: widget.settings.textStyler.textStyleTitle,
-                        ),
-                        Container(
-                          height: 20,
-                        ),
-                        Text(
-                          widget.cloudState.currentCloudSong?.text ?? '',
-                          style: widget.settings.textStyler.textStyleSongText,
-                        ),
-                        Container(
-                          height: 80,
-                        ),
-                      ],
-                    ),
+          final bodyContent = [
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                child: Container(
+                  constraints: BoxConstraints(minHeight: height, minWidth: width),
+                  color: widget.settings.theme.colorBg,
+                  padding: const EdgeInsets.all(8),
+                  child: Wrap(
+                    children: [
+                      Text(widget.cloudState.currentCloudSong
+                          ?.visibleTitleWithArtistAndRating(extraLikes, extraDislikes) ?? '',
+                        style: widget.settings.textStyler.textStyleTitle,
+                      ),
+                      Container(
+                        height: 20,
+                      ),
+                      Text(
+                        widget.cloudState.currentCloudSong?.text ?? '',
+                        style: widget.settings.textStyler.textStyleSongText,
+                      ),
+                      Container(
+                        height: 80,
+                      ),
+                    ],
                   ),
                 ),
               ),
-              Container(
-                width: width,
-                height: buttonSize,
-                color: widget.settings.theme.colorBg,
-                child: _ButtonRow(
-                    widget.settings.listenToMusicPreference,
-                    widget.cloudState.currentCloudSong,
-                    buttonSize,
-                    widget.onPerformAction),
-              ),
-            ],
+            ),
+            Container(
+              width: isPortrait ? width : buttonSize,
+              height: isPortrait ? buttonSize : height,
+              color: widget.settings.theme.colorBg,
+              child: _ButtonPanel(
+                  isPortrait,
+                  widget.settings.listenToMusicPreference,
+                  widget.cloudState.currentCloudSong,
+                  buttonSize,
+                  widget.onPerformAction),
+            ),
+          ];
+
+          return isPortrait ? Column(
+              children: bodyContent
+          ) : Row(
+              children: bodyContent
           );
         },
       ),
@@ -181,21 +189,23 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
   }
 }
 
-class _ButtonRow extends StatelessWidget {
+class _ButtonPanel extends StatelessWidget {
+  final bool isPortrait;
   final ListenToMusicVariant listenToMusicVariant;
   final CloudSong? currentCloudSong;
   final double buttonSize;
   final void Function(AppUIAction action) onPerformAction;
 
-  const _ButtonRow(this.listenToMusicVariant,
+  const _ButtonPanel(
+      this.isPortrait,
+      this.listenToMusicVariant,
       this.currentCloudSong,
       this.buttonSize,
       this.onPerformAction);
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
+  Widget build(BuildContext context) {
+    final buttons = [
       MusicButton(listenToMusicVariant.supportedVariants[0], currentCloudSong?.searchFor ?? 'null', buttonSize, onPerformAction),
       MusicButton(listenToMusicVariant.supportedVariants[1], currentCloudSong?.searchFor ?? 'null', buttonSize, onPerformAction),
       BottomButton(AppIcons.icDownload, buttonSize, () {
@@ -213,6 +223,14 @@ class _ButtonRow extends StatelessWidget {
       BottomButton(AppIcons.icDislike, buttonSize, () {
         onPerformAction(DislikeCurrent());
       }),
-    ],
-  );
+    ];
+
+    return isPortrait ? Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: buttons,
+    ) : Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: buttons,
+    );
+  }
 }

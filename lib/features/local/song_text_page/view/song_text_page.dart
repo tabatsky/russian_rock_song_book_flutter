@@ -126,7 +126,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
           double width = constraints.maxWidth;
           double height = constraints.maxHeight;
 
-          var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+          final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
           double buttonSize = isPortrait ? width / 7.0 : height / 7.0;
 
