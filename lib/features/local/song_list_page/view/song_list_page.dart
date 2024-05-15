@@ -1,33 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
+import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/ui/widgets/app_divider.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
-import 'package:rxdart/rxdart.dart';
 
 class SongListPage extends StatelessWidget{
-  final ValueStream<AppState> appStateStream;
+  final AppBloc appBloc;
   final void Function(AppUIAction action) onPerformAction;
 
   const SongListPage(
-      this.appStateStream,
+      this.appBloc,
       this.onPerformAction,
       {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AppState>(
-        stream: appStateStream,
-        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
-          final appState = snapshot.data;
-          if (appState == null) {
-            return Container();
-          }
-          return _SongListPageContent(appState.settings, appState.localState, onPerformAction);
+    return BlocBuilder<AppBloc, AppState>(
+        bloc: appBloc, // provide the local bloc instance
+        builder: (context, state) {
+          return _SongListPageContent(state.settings, state.localState, onPerformAction);
         }
     );
   }

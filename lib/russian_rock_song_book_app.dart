@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/features/start_page/view/start_page.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
+import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/features/cloud/cloud_search_page/view/cloud_search_page.dart';
 import 'package:russian_rock_song_book/features/cloud/cloud_song_text_page/view/cloud_song_text_page.dart';
 import 'package:russian_rock_song_book/features/local/song_list_page/view/song_list_page.dart';
 import 'package:russian_rock_song_book/features/local/song_text_page/view/song_text_page.dart';
 import 'package:russian_rock_song_book/features/settings_page/view/settings_page.dart';
-import 'dart:developer';
 
 import 'package:rxdart/rxdart.dart';
 
 typedef ActionPerformer = void Function(AppUIAction action);
 
 class RussianRockSongBookApp extends StatelessWidget {
-  final _navigatorKey = GlobalKey<NavigatorState>();
   final _appStateSubject = BehaviorSubject<AppState>.seeded(AppState());
+  final _navigatorKey = GlobalKey<NavigatorState>();
   late final AppStateMachine _appStateMachine = AppStateMachine(() => _navigatorKey.currentState);
+  late final AppBloc _appBloc = AppBloc(_appStateMachine);
 
   RussianRockSongBookApp({super.key});
 
@@ -34,13 +35,13 @@ class RussianRockSongBookApp extends StatelessWidget {
             _performAction(ShowSongList());
           }),
           PageVariant.songList.route: (context) => SongListPage(
-              _appStateSubject.stream, _performAction
+              _appBloc, _performAction
           ),
           PageVariant.songText.route: (context) => PopScope(
             canPop: true,
             onPopInvoked: (didPop) { _performAction(Back(systemBack: true)); },
             child: SongTextPage(
-                _appStateSubject.stream, _performAction
+                _appBloc, _performAction
             ),
           ),
           PageVariant.cloudSearch.route: (context) =>
@@ -69,14 +70,16 @@ class RussianRockSongBookApp extends StatelessWidget {
     );
   }
 
-  void _performAction(AppUIAction action) {
-    final machineAcceptedAction = _appStateMachine.performAction((newState) {
-      _appStateSubject.add(newState);
-    }, _appStateSubject.value, action);
+  Future<void> _performAction(AppUIAction action) async {
+    // final machineAcceptedAction = await _appStateMachine.performAction((newState) async {
+    //   _appStateSubject.add(newState);
+    // }, _appStateSubject.value, action);
+    //
+    // if (machineAcceptedAction) {
+    //   log('app state machine accepted action');
+    // }
 
-    if (machineAcceptedAction) {
-      log('app state machine accepted action');
-    }
+    _appBloc.add(action);
   }
 }
 

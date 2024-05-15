@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:russian_rock_song_book/features/common/widgets/bottom_button.dart';
 import 'package:russian_rock_song_book/features/common/widgets/music_button.dart';
 import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
-
+import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
@@ -11,30 +12,25 @@ import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/domain/models/local/song.dart';
 import 'package:russian_rock_song_book/domain/models/common/warning.dart';
 import 'package:russian_rock_song_book/features/warning_dialog/view/warning_dialog.dart';
-import 'package:rxdart/rxdart.dart';
 
 class SongTextPage extends StatelessWidget {
 
-  final ValueStream<AppState> appStateStream;
+  final AppBloc appBloc;
   final void Function(AppUIAction action) onPerformAction;
 
   const SongTextPage(
-      this.appStateStream,
+      this.appBloc,
       this.onPerformAction,
       {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AppState>(
-        stream: appStateStream,
-        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
-          final appState = snapshot.data;
-          if (appState == null) {
-            return Container();
-          }
+    return BlocBuilder<AppBloc, AppState>(
+        bloc: appBloc, // provide the local bloc instance
+        builder: (context, state) {
           return _SongTextPageContent(
-              appState.settings,
-              appState.localState.currentSong,
+              state.settings,
+              state.localState.currentSong,
               onPerformAction);
         }
     );

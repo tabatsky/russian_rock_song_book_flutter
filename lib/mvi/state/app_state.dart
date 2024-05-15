@@ -26,6 +26,22 @@ class AppState {
   AppSettings settings = AppSettings();
   LocalState localState = LocalState();
   CloudState cloudState = CloudState();
+
+  AppState();
+
+  AppState._newInstance(
+      this.currentPageVariant,
+      this.settings,
+      this.localState,
+      this.cloudState
+      );
+
+  AppState copy() => AppState._newInstance(
+      currentPageVariant,
+      settings,
+      localState.copy(),
+      cloudState
+  );
 }
 
 class AppSettings {
@@ -35,7 +51,7 @@ class AppSettings {
   ListenToMusicVariant listenToMusicPreference = ListenToMusicVariant.yandexAndYoutube;
 }
 
-class LocalState {
+class LocalState{
   String currentArtist = 'Кино';
   List<Song> currentSongs = <Song>[];
   int currentCount = 0;
@@ -43,6 +59,28 @@ class LocalState {
   Song? currentSong;
   int currentSongPosition = -1;
   int scrollPosition = 0;
+
+  LocalState();
+
+  LocalState._newInstance(
+      this.currentArtist,
+      this.currentSongs,
+      this.currentCount,
+      this.allArtists,
+      this.currentSong,
+      this.currentSongPosition,
+      this.scrollPosition
+      );
+
+  LocalState copy() => LocalState._newInstance(
+      currentArtist,
+      currentSongs,
+      currentCount,
+      allArtists,
+      currentSong,
+      currentSongPosition,
+      scrollPosition
+  );
 }
 
 class CloudState {
@@ -84,7 +122,7 @@ enum PageVariant {
   }
 }
 
-typedef AppStateChanger = void Function(AppState newState);
+typedef AppStateChanger = Future<void> Function(AppState newState);
 typedef NavigatorStateGetter = NavigatorState? Function();
 
 class AppStateMachine {
@@ -92,27 +130,27 @@ class AppStateMachine {
 
   AppStateMachine(this.getNavigatorState);
 
-  bool performAction(AppStateChanger changeState, AppState appState, AppUIAction action) {
+  Future<bool> performAction(AppStateChanger changeState, AppState appState, AppUIAction action) async {
     if (action is ShowSongList) {
-      _showSongList(changeState, appState);
+      await _showSongList(changeState, appState);
     } else if (action is ArtistClick) {
-      _selectArtist(changeState, appState, action.artist);
+      await _selectArtist(changeState, appState, action.artist);
     } else if (action is SongClick) {
-      _selectSong(changeState, appState, action.position);
+      await _selectSong(changeState, appState, action.position);
     } else if (action is PrevSong) {
-      _prevSong(changeState, appState);
+      await _prevSong(changeState, appState);
     } else if (action is NextSong) {
-      _nextSong(changeState, appState);
+      await _nextSong(changeState, appState);
     } else if (action is Back) {
-      _back(changeState, appState, systemBack: action.systemBack);
+      await _back(changeState, appState, systemBack: action.systemBack);
     } else if (action is ToggleFavorite) {
-      _toggleFavorite(changeState, appState);
+      await _toggleFavorite(changeState, appState);
     } else if (action is SaveSongText) {
-      _saveSongText(changeState, appState, action.updatedText);
+      await _saveSongText(changeState, appState, action.updatedText);
     } else if (action is UploadCurrentToCloud) {
       _uploadCurrentToCloud(appState);
     } else if (action is DeleteCurrentToTrash) {
-      _deleteCurrentToTrash(changeState, appState);
+      await _deleteCurrentToTrash(changeState, appState);
     } else if (action is OpenVkMusic) {
       _openVkMusic(appState, action.searchFor);
     } else if (action is OpenYandexMusic) {
@@ -120,31 +158,31 @@ class AppStateMachine {
     } else if (action is OpenYoutubeMusic) {
       _openYoutubeMusic(appState, action.searchFor);
     } else if (action is SendWarning) {
-      _sendWarning(appState, action.warning);
+      await _sendWarning(appState, action.warning);
     } else if (action is CloudSearch) {
-      _performCloudSearch(changeState, appState, action.searchFor, action.orderBy);
+      await _performCloudSearch(changeState, appState, action.searchFor, action.orderBy);
     } else if (action is BackupSearchState) {
-      _backupSearchState(changeState, appState, action.searchFor, action.orderBy);
+      await  _backupSearchState(changeState, appState, action.searchFor, action.orderBy);
     } else if (action is CloudSongClick) {
-      _selectCloudSong(changeState, appState, action.position);
+      await _selectCloudSong(changeState, appState, action.position);
     } else if (action is PrevCloudSong) {
-      _prevCloudSong(changeState, appState);
+      await _prevCloudSong(changeState, appState);
     } else if (action is NextCLoudSong) {
-      _nextCloudSong(changeState, appState);
+      await _nextCloudSong(changeState, appState);
     } else if (action is DownloadCurrent) {
-      _downloadCurrent(changeState, appState);
+      await _downloadCurrent(changeState, appState);
     } else if (action is LikeCurrent) {
       _likeCurrent(changeState, appState);
     } else if (action is DislikeCurrent) {
       _dislikeCurrent(changeState, appState);
     } else if (action is UpdateCloudSongListNeedScroll) {
-      _updateCloudSongListNeedScroll(changeState, appState, action.needScroll);
+      await _updateCloudSongListNeedScroll(changeState, appState, action.needScroll);
     } else if (action is OpenSettings) {
-      _openSettings(changeState, appState);
+      await _openSettings(changeState, appState);
     } else if (action is SaveSettings) {
-      _saveSettings(changeState, appState, action.settings);
+      await _saveSettings(changeState, appState, action.settings);
     } else if (action is ReloadSettings) {
-      _reloadSettings(changeState, appState);
+      await _reloadSettings(changeState, appState);
     } else {
       return false;
     }
@@ -178,11 +216,11 @@ class AppStateMachine {
     appState.currentPageVariant = newPageVariant;
   }
 
-  void _showSongList(AppStateChanger changeState, AppState appState) {
-    _initSongs(changeState, appState);
+  Future<void> _showSongList(AppStateChanger changeState, AppState appState) async {
+    await _initSongs(changeState, appState);
     final newAppState = appState;
     _selectPageVariant(newAppState, PageVariant.songList);
-    changeState(newAppState);
+    await changeState(newAppState);
   }
 
   Future<void> _initSongs(AppStateChanger changeState, AppState appState) async {
@@ -197,7 +235,7 @@ class AppStateMachine {
     final newLocalState = appState.localState;
     newLocalState.allArtists = artists;
     newAppState.localState = newLocalState;
-    changeState(newAppState);
+    await changeState(newAppState);
   }
 
   Future<void> _selectArtist(AppStateChanger changeState, AppState appState, String artist) async {
@@ -206,7 +244,7 @@ class AppStateMachine {
       _backupSearchState(changeState, appState, '', OrderBy.byIdDesc);
       final newAppState = appState;
       _selectPageVariant(newAppState, PageVariant.cloudSearch);
-      changeState(newAppState);
+      await changeState(newAppState);
       _performCloudSearch(changeState, appState, '', OrderBy.byIdDesc);
     } else {
       final songs = await GetIt.I<SongRepository>().getSongsByArtist(artist);
@@ -217,11 +255,11 @@ class AppStateMachine {
       newLocalState.currentCount = songs.length;
       newLocalState.scrollPosition = 0;
       newAppState.localState = newLocalState;
-      changeState(newAppState);
+      await changeState(newAppState);
     }
   }
 
-  void _selectSong(AppStateChanger changeState, AppState appState, int position) {
+  Future<void> _selectSong(AppStateChanger changeState, AppState appState, int position) async {
     final newAppState = appState;
     final newLocalState = appState.localState;
     newLocalState.currentSongPosition = position;
@@ -229,10 +267,10 @@ class AppStateMachine {
     newLocalState.currentSong = newLocalState.currentSongs[position];
     newAppState.localState = newLocalState;
     _selectPageVariant(newAppState, PageVariant.songText);
-    changeState(newAppState);
+    await changeState(newAppState);
   }
 
-  void _prevSong(AppStateChanger changeState, AppState appState) {
+  Future<void> _prevSong(AppStateChanger changeState, AppState appState) async {
     if (appState.localState.currentSongPosition > 0) {
       final newAppState = appState;
       final newLocalState = appState.localState;
@@ -240,11 +278,11 @@ class AppStateMachine {
       newLocalState.scrollPosition = newLocalState.currentSongPosition;
       newLocalState.currentSong = newLocalState.currentSongs[newLocalState.currentSongPosition];
       newAppState.localState = newLocalState;
-      changeState(newAppState);
+      await changeState(newAppState);
     }
   }
 
-  void _nextSong(AppStateChanger changeState, AppState appState) {
+  Future<void> _nextSong(AppStateChanger changeState, AppState appState) async {
     if (appState.localState.currentSongPosition < appState.localState.currentSongs.length - 1) {
       final newAppState = appState;
       final newLocalState = appState.localState;
@@ -252,11 +290,11 @@ class AppStateMachine {
       newLocalState.scrollPosition = newLocalState.currentSongPosition;
       newLocalState.currentSong = newLocalState.currentSongs[newLocalState.currentSongPosition];
       newAppState.localState = newLocalState;
-      changeState(newAppState);
+      await changeState(newAppState);
     }
   }
 
-  void _back(AppStateChanger changeState, AppState appState, {bool systemBack = false}) {
+  Future<void> _back(AppStateChanger changeState, AppState appState, {bool systemBack = false}) async {
     log("back, system: $systemBack");
     if (appState.currentPageVariant == PageVariant.songText) {
       final newAppState = appState;
@@ -265,11 +303,11 @@ class AppStateMachine {
       newLocalState.currentSong = null;
       newLocalState.currentSongPosition = -1;
       newAppState.localState = newLocalState;
-      changeState(newAppState);
+      await changeState(newAppState);
     } else if (appState.currentPageVariant == PageVariant.cloudSearch) {
       final newAppState = appState;
       _selectPageVariant(newAppState, PageVariant.songList, systemBack: systemBack);
-      changeState(newAppState);
+      await changeState(newAppState);
     } else if (appState.currentPageVariant == PageVariant.cloudSongText) {
       final newAppState = appState;
       final newCloudState = appState.cloudState;
@@ -278,11 +316,11 @@ class AppStateMachine {
       newCloudState.currentCloudSongPosition = -1;
       newCloudState.needScroll = true;
       newAppState.cloudState = newCloudState;
-      changeState(newAppState);
+      await changeState(newAppState);
     } else if (appState.currentPageVariant == PageVariant.settings) {
       final newAppState = appState;
       _selectPageVariant(newAppState, PageVariant.songList, systemBack: systemBack);
-      changeState(newAppState);
+      await changeState(newAppState);
     }
   }
 
@@ -308,11 +346,11 @@ class AppStateMachine {
           newLocalState.currentCount = count;
           newLocalState.currentSongPosition = newSongPosition;
           newAppState.localState = newLocalState;
-          changeState(newAppState);
+          await changeState(newAppState);
         } else {
           newLocalState.currentCount = count;
           newAppState.localState = newLocalState;
-          changeState(newAppState);
+          await changeState(newAppState);
           _back(changeState, newAppState);
         }
       }
@@ -347,7 +385,7 @@ class AppStateMachine {
     log(newLocalState.currentSong.toString());
     newLocalState.currentSongs = songs;
     newAppState.localState = newLocalState;
-    changeState(newAppState);
+    await changeState(newAppState);
   }
 
   void _uploadCurrentToCloud(AppState appState) {
@@ -384,7 +422,7 @@ class AppStateMachine {
     }
     newState.localState.currentSongs = await GetIt.I<SongRepository>()
         .getSongsByArtist(appState.localState.currentArtist);
-    changeState(newState);
+    await changeState(newState);
     _showToast(newState, AppStrings.strToastDeleted);
   }
 
@@ -439,17 +477,17 @@ class AppStateMachine {
   Future<void> _performCloudSearch(AppStateChanger changeState, AppState appState, String searchFor, OrderBy orderBy) async {
     _resetCloudSearch(changeState, appState);
     final newState = appState;
-    newState.cloudState.currentSearchPager = CloudSearchPager(searchFor, orderBy, (searchState, count, lastPage) {
+    newState.cloudState.currentSearchPager = CloudSearchPager(searchFor, orderBy, (searchState, count, lastPage) async {
       newState.cloudState.currentSearchState = searchState;
       newState.cloudState.currentCloudSongCount = count;
       newState.cloudState.lastPage = lastPage;
       log("$searchState $count $lastPage");
-      changeState(newState);
+      await changeState(newState);
     });
-    changeState(newState);
+    await changeState(newState);
   }
 
-  void _resetCloudSearch(AppStateChanger changeState, AppState appState) {
+  Future<void> _resetCloudSearch(AppStateChanger changeState, AppState appState) async {
     final newAppState = appState;
     final newCloudState = appState.cloudState;
     newCloudState.currentSearchState = SearchState.loading;
@@ -459,16 +497,16 @@ class AppStateMachine {
     newCloudState.allLikes = HashMap();
     newCloudState.allDislikes = HashMap();
     newAppState.cloudState = newCloudState;
-    changeState(newAppState);
+    await changeState(newAppState);
   }
 
-  void _backupSearchState(AppStateChanger changeState, AppState appState, String searchFor, OrderBy orderBy) {
+  Future<void> _backupSearchState(AppStateChanger changeState, AppState appState, String searchFor, OrderBy orderBy) async {
     final newAppState = appState;
     final newCloudState = appState.cloudState;
     newCloudState.searchForBackup = searchFor;
     newCloudState.orderByBackup = orderBy;
     newAppState.cloudState = newCloudState;
-    changeState(newAppState);
+    await changeState(newAppState);
   }
 
   Future<void> _selectCloudSong(AppStateChanger changeState, AppState appState, int position) async {
@@ -478,7 +516,7 @@ class AppStateMachine {
     newCloudState.cloudScrollPosition = position;
     newCloudState.currentCloudSong = await newCloudState.currentSearchPager?.getCloudSong(position);
     _selectPageVariant(newAppState, PageVariant.cloudSongText);
-    changeState(newAppState);
+    await changeState(newAppState);
   }
 
   Future<void> _prevCloudSong(AppStateChanger changeState, AppState appState) async {
@@ -489,7 +527,7 @@ class AppStateMachine {
       newCloudState.cloudScrollPosition = newCloudState.currentCloudSongPosition;
       newCloudState.currentCloudSong = await newCloudState.currentSearchPager?.getCloudSong(
           newCloudState.currentCloudSongPosition);
-      changeState(newAppState);
+      await changeState(newAppState);
     }
   }
 
@@ -501,7 +539,7 @@ class AppStateMachine {
       newCloudState.cloudScrollPosition = newCloudState.currentCloudSongPosition;
       newCloudState.currentCloudSong = await newCloudState.currentSearchPager?.getCloudSong(
           newCloudState.currentCloudSongPosition);
-      changeState(newAppState);
+      await changeState(newAppState);
     }
   }
 
@@ -513,17 +551,17 @@ class AppStateMachine {
     newState.localState.currentCount = count;
     newState.localState.currentSongs = await GetIt.I<SongRepository>()
         .getSongsByArtist(appState.localState.currentArtist);
-    changeState(newState);
+    await changeState(newState);
     _showToast(newState, AppStrings.strToastDownloadSuccess);
   }
 
   void _likeCurrent(AppStateChanger changeState, AppState appState) {
     final cloudSong = appState.cloudState.currentCloudSong!;
-    GetIt.I<CloudRepository>().vote(cloudSong, 1, (voteValue) {
+    GetIt.I<CloudRepository>().vote(cloudSong, 1, (voteValue) async {
       final newState = appState;
       final oldCount = newState.cloudState.allLikes[cloudSong] ?? 0;
       newState.cloudState.allLikes[cloudSong] = oldCount + 1;
-      changeState(newState);
+      await changeState(newState);
       _showToast(appState, AppStrings.strToastVoteSuccess);
     }, (message) {
       _showToast(appState, message);
@@ -534,11 +572,11 @@ class AppStateMachine {
 
   void _dislikeCurrent(AppStateChanger changeState, AppState appState) {
     final cloudSong = appState.cloudState.currentCloudSong!;
-    GetIt.I<CloudRepository>().vote(cloudSong, -1, (voteValue) {
+    GetIt.I<CloudRepository>().vote(cloudSong, -1, (voteValue) async {
       final newState = appState;
       final oldCount = newState.cloudState.allDislikes[cloudSong] ?? 0;
       newState.cloudState.allDislikes[cloudSong] = oldCount + 1;
-      changeState(newState);
+      await changeState(newState);
       _showToast(appState, AppStrings.strToastVoteSuccess);
     }, (message) {
       _showToast(appState, message);
@@ -547,10 +585,10 @@ class AppStateMachine {
     });
   }
 
-  void _updateCloudSongListNeedScroll(AppStateChanger changeState, AppState appState, bool needScroll) {
+  Future<void> _updateCloudSongListNeedScroll(AppStateChanger changeState, AppState appState, bool needScroll) async {
     final newState = appState;
     newState.cloudState.needScroll = needScroll;
-    changeState(newState);
+    await changeState(newState);
   }
 
   Future<void> _saveSettings(AppStateChanger changeState, AppState appState, AppSettings settings) async {
@@ -576,12 +614,12 @@ class AppStateMachine {
     newState.settings.fontScaleVariant = fontScaleVariant;
     newState.settings.textStyler = AppTextStyler(theme, fontScaleVariant.fontScale);
     newState.settings.listenToMusicPreference = listenToMusicPreference;
-    changeState(newState);
+    await changeState(newState);
   }
 
   Future<void> _openSettings(AppStateChanger changeState, AppState appState) async {
     final newAppState = appState;
     _selectPageVariant(newAppState, PageVariant.settings);
-    changeState(newAppState);
+    await changeState(newAppState);
   }
 }
