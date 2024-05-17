@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:russian_rock_song_book/data/settings/font_scale_variant.dart';
-import 'package:russian_rock_song_book/mvi/actions/app_events.dart';
+import 'package:russian_rock_song_book/mvi/events/app_events.dart';
+import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
+import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
-import 'package:rxdart/rxdart.dart';
 
 class SettingsPage extends StatelessWidget {
-  final ValueStream<AppState> appStateStream;
+  final AppBloc appBloc;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const SettingsPage(this.appStateStream, this.onPerformAction, {super.key});
+  const SettingsPage(this.appBloc, this.onPerformAction, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AppState>(
-        stream: appStateStream,
-        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
-          final appState = snapshot.data;
-          if (appState == null) {
-            return Container();
-          }
-          return _SettingsPageContent(appState.settings, appState, onPerformAction);
+    return BlocBuilder<AppBloc, AppState>(
+        bloc: appBloc, // provide the local bloc instance
+        builder: (context, state) {
+          return _SettingsPageContent(state.settings, state, onPerformAction);
         }
     );
   }

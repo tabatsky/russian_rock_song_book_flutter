@@ -1,6 +1,6 @@
 import 'package:russian_rock_song_book/data/cloud/cloud_search_pager/cloud_search_pager.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
-import 'package:russian_rock_song_book/mvi/state/app_state.dart';
+import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/order_by.dart';
 import 'package:russian_rock_song_book/domain/models/common/warning.dart';
 

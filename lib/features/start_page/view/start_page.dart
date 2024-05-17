@@ -1,20 +1,22 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
+import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
+import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 import 'package:russian_rock_song_book/data/settings/version.dart';
-import 'package:rxdart/rxdart.dart';
 
 class StartPage extends StatefulWidget {
 
-  final ValueStream<AppState> appStateStream;
+  final AppBloc appBloc;
   final void Function() onInitSuccess;
 
-  const StartPage(this.appStateStream, this.onInitSuccess, {super.key});
+  const StartPage(this.appBloc, this.onInitSuccess, {super.key});
 
   @override
   State<StatefulWidget> createState() => StartPageState();
@@ -35,14 +37,10 @@ class StartPageState extends State<StartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AppState>(
-        stream: widget.appStateStream,
-        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
-          final appState = snapshot.data;
-          if (appState == null) {
-            return Container();
-          }
-          return _makePage(context, appState.settings);
+    return BlocBuilder<AppBloc, AppState>(
+        bloc: widget.appBloc, // provide the local bloc instance
+        builder: (context, state) {
+          return _makePage(context, state.settings);
         }
     );
   }

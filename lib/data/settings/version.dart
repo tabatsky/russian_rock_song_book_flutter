@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Version {
 
   static const versionKey = 'version';
-  static const actualVersion = 21;
+  static const actualVersion = 22;
 
   static Future<bool> appWasUpdated() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

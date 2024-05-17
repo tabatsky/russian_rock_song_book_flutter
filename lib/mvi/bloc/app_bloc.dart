@@ -1,8 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:russian_rock_song_book/mvi/actions/app_events.dart';
+import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
+import 'package:russian_rock_song_book/mvi/state/app_state_machine.dart';
 
 class AppBloc extends Bloc<AppUIEvent, AppState> {
   final AppStateMachine appStateMachine;

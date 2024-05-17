@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
-import 'package:russian_rock_song_book/mvi/actions/app_events.dart';
+import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 
