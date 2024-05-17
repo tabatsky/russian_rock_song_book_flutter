@@ -1,10 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
+import 'package:russian_rock_song_book/mvi/actions/app_events.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 
-class AppBloc extends Bloc<AppUIAction, AppState> {
+class AppBloc extends Bloc<AppUIEvent, AppState> {
   final AppStateMachine appStateMachine;
 
   /// The initial state of the `CounterBloc` is 0.
@@ -12,11 +12,10 @@ class AppBloc extends Bloc<AppUIAction, AppState> {
     /// When a `CounterIncrementPressed` event is added,
     /// the current `state` of the bloc is accessed via the `state` property
     /// and a new state is emitted via `emit`.
-    on<AppUIAction>((event, emit) async {
+    on<AppUIEvent>((event, emit) async {
       final machineAcceptedAction = await appStateMachine.performAction((newState) async {
         log('emit');
-        final newStateCopy = newState.copy();
-        emit(newStateCopy);
+        emit(newState);
       }, state, event);
 
       if (machineAcceptedAction) {

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:russian_rock_song_book/data/cloud/cloud_search_pager/cloud_search_pager.dart';
 import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
-import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
+import 'package:russian_rock_song_book/mvi/actions/app_events.dart';
+import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/ui/widgets/app_divider.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
@@ -9,28 +11,23 @@ import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/order_by.dart';
-import 'package:rxdart/rxdart.dart';
 
 class CloudSearchPage extends StatelessWidget {
 
-  final ValueStream<AppState> appStateStream;
-  final void Function(AppUIAction action) onPerformAction;
+  final AppBloc appBloc;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const CloudSearchPage(
-      this.appStateStream,
+      this.appBloc,
       this.onPerformAction,
       {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AppState>(
-        stream: appStateStream,
-        builder: (BuildContext context, AsyncSnapshot<AppState> snapshot) {
-          final appState = snapshot.data;
-          if (appState == null) {
-            return Container();
-          }
-          return _CloudSearchPageContent(appState.settings, appState.cloudState, onPerformAction);
+    return BlocBuilder<AppBloc, AppState>(
+        bloc: appBloc, // provide the local bloc instance
+        builder: (context, state) {
+          return _CloudSearchPageContent(state.settings, state.cloudState, onPerformAction);
         }
     );
   }
@@ -39,7 +36,7 @@ class CloudSearchPage extends StatelessWidget {
 class _CloudSearchPageContent extends StatefulWidget {
   final AppSettings settings;
   final CloudState cloudState;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const _CloudSearchPageContent(this.settings, this.cloudState, this.onPerformAction);
 
@@ -293,7 +290,7 @@ class _CloudTitleListView extends StatelessWidget {
   final CloudState cloudState;
   final double itemHeight;
   final double dividerHeight;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
   final void Function() onBackupSearchState;
 
   _CloudTitleListView(

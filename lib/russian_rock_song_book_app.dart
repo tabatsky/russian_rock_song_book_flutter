@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/features/start_page/view/start_page.dart';
-import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
+import 'package:russian_rock_song_book/mvi/actions/app_events.dart';
 import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/features/cloud/cloud_search_page/view/cloud_search_page.dart';
@@ -11,12 +11,16 @@ import 'package:russian_rock_song_book/features/settings_page/view/settings_page
 
 import 'package:rxdart/rxdart.dart';
 
-typedef ActionPerformer = void Function(AppUIAction action);
+typedef ActionPerformer = void Function(AppUIEvent action);
 
 class RussianRockSongBookApp extends StatelessWidget {
   final _appStateSubject = BehaviorSubject<AppState>.seeded(AppState());
   final _navigatorKey = GlobalKey<NavigatorState>();
-  late final AppStateMachine _appStateMachine = AppStateMachine(() => _navigatorKey.currentState);
+  late final AppStateMachine _appStateMachine = AppStateMachine(
+          () => _navigatorKey.currentState,
+          (event) {
+            _appBloc.add(event);
+          });
   late final AppBloc _appBloc = AppBloc(_appStateMachine);
 
   RussianRockSongBookApp({super.key});
@@ -49,14 +53,14 @@ class RussianRockSongBookApp extends StatelessWidget {
                 canPop: true,
                 onPopInvoked: (didPop) { _performAction(Back(systemBack: true)); },
                 child: CloudSearchPage(
-                    _appStateSubject.stream, _performAction
+                    _appBloc, _performAction
                 ),
               ),
           PageVariant.cloudSongText.route: (context) => PopScope(
             canPop: true,
             onPopInvoked: (didPop) { _performAction(Back(systemBack: true)); },
             child: CloudSongTextPage(
-                _appStateSubject.stream, _performAction
+                _appBloc, _performAction
             ),
           ),
           PageVariant.settings.route: (context) => PopScope(
@@ -70,7 +74,7 @@ class RussianRockSongBookApp extends StatelessWidget {
     );
   }
 
-  Future<void> _performAction(AppUIAction action) async {
+  Future<void> _performAction(AppUIEvent action) async {
     // final machineAcceptedAction = await _appStateMachine.performAction((newState) async {
     //   _appStateSubject.add(newState);
     // }, _appStateSubject.value, action);

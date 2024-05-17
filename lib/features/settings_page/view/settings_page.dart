@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/data/settings/font_scale_variant.dart';
-import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
+import 'package:russian_rock_song_book/mvi/actions/app_events.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
@@ -10,7 +10,7 @@ import 'package:rxdart/rxdart.dart';
 
 class SettingsPage extends StatelessWidget {
   final ValueStream<AppState> appStateStream;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const SettingsPage(this.appStateStream, this.onPerformAction, {super.key});
 
@@ -32,7 +32,7 @@ class SettingsPage extends StatelessWidget {
 class _SettingsPageContent extends StatelessWidget {
   final AppSettings settings;
   final AppState appState;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const _SettingsPageContent(this.settings, this.appState, this.onPerformAction);
 
@@ -64,7 +64,7 @@ class _SettingsBody extends StatefulWidget {
   final AppSettings settings;
   final AppState appState;
   final double width;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const _SettingsBody(this.settings, this.appState, this.width, this.onPerformAction);
 

@@ -12,7 +12,7 @@ import 'package:russian_rock_song_book/domain/repository/local/song_repository.d
 import 'package:russian_rock_song_book/ui/font/app_font.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
 import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
-import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
+import 'package:russian_rock_song_book/mvi/actions/app_events.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/order_by.dart';
 import 'package:russian_rock_song_book/domain/models/local/song.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
@@ -40,7 +40,7 @@ class AppState {
       currentPageVariant,
       settings,
       localState.copy(),
-      cloudState
+      cloudState.copy()
   );
 }
 
@@ -99,6 +99,38 @@ class CloudState {
 
   int get extraLikesForCurrent => allLikes[currentCloudSong] ?? 0;
   int get extraDislikesForCurrent => allDislikes[currentCloudSong] ?? 0;
+
+  CloudState();
+
+  CloudState._newInstance(
+      this.currentSearchPager,
+      this.currentSearchState,
+      this.currentCloudSongCount,
+      this.lastPage,
+      this.currentCloudSong,
+      this.currentCloudSongPosition,
+      this.cloudScrollPosition,
+      this.needScroll,
+      this.searchForBackup,
+      this.orderByBackup,
+      this.allLikes,
+      this.allDislikes
+      );
+
+  CloudState copy() => CloudState._newInstance(
+      currentSearchPager,
+      currentSearchState,
+      currentCloudSongCount,
+      lastPage,
+      currentCloudSong,
+      currentCloudSongPosition,
+      cloudScrollPosition,
+      needScroll,
+      searchForBackup,
+      orderByBackup,
+      allLikes,
+      allDislikes
+  );
 }
 
 enum PageVariant {
@@ -124,65 +156,76 @@ enum PageVariant {
 
 typedef AppStateChanger = Future<void> Function(AppState newState);
 typedef NavigatorStateGetter = NavigatorState? Function();
+typedef EventSender = void Function(AppUIEvent event);
 
 class AppStateMachine {
   final NavigatorStateGetter getNavigatorState;
+  final EventSender sendEvent;
 
-  AppStateMachine(this.getNavigatorState);
+  AppStateMachine(this.getNavigatorState, this.sendEvent);
 
-  Future<bool> performAction(AppStateChanger changeState, AppState appState, AppUIAction action) async {
-    if (action is ShowSongList) {
-      await _showSongList(changeState, appState);
-    } else if (action is ArtistClick) {
-      await _selectArtist(changeState, appState, action.artist);
-    } else if (action is SongClick) {
-      await _selectSong(changeState, appState, action.position);
-    } else if (action is PrevSong) {
-      await _prevSong(changeState, appState);
-    } else if (action is NextSong) {
-      await _nextSong(changeState, appState);
-    } else if (action is Back) {
-      await _back(changeState, appState, systemBack: action.systemBack);
-    } else if (action is ToggleFavorite) {
-      await _toggleFavorite(changeState, appState);
-    } else if (action is SaveSongText) {
-      await _saveSongText(changeState, appState, action.updatedText);
-    } else if (action is UploadCurrentToCloud) {
-      _uploadCurrentToCloud(appState);
-    } else if (action is DeleteCurrentToTrash) {
-      await _deleteCurrentToTrash(changeState, appState);
-    } else if (action is OpenVkMusic) {
-      _openVkMusic(appState, action.searchFor);
-    } else if (action is OpenYandexMusic) {
-      _openYandexMusic(appState, action.searchFor);
-    } else if (action is OpenYoutubeMusic) {
-      _openYoutubeMusic(appState, action.searchFor);
-    } else if (action is SendWarning) {
-      await _sendWarning(appState, action.warning);
-    } else if (action is CloudSearch) {
-      await _performCloudSearch(changeState, appState, action.searchFor, action.orderBy);
-    } else if (action is BackupSearchState) {
-      await  _backupSearchState(changeState, appState, action.searchFor, action.orderBy);
-    } else if (action is CloudSongClick) {
-      await _selectCloudSong(changeState, appState, action.position);
-    } else if (action is PrevCloudSong) {
-      await _prevCloudSong(changeState, appState);
-    } else if (action is NextCLoudSong) {
-      await _nextCloudSong(changeState, appState);
-    } else if (action is DownloadCurrent) {
-      await _downloadCurrent(changeState, appState);
-    } else if (action is LikeCurrent) {
-      _likeCurrent(changeState, appState);
-    } else if (action is DislikeCurrent) {
-      _dislikeCurrent(changeState, appState);
-    } else if (action is UpdateCloudSongListNeedScroll) {
-      await _updateCloudSongListNeedScroll(changeState, appState, action.needScroll);
-    } else if (action is OpenSettings) {
-      await _openSettings(changeState, appState);
-    } else if (action is SaveSettings) {
-      await _saveSettings(changeState, appState, action.settings);
-    } else if (action is ReloadSettings) {
-      await _reloadSettings(changeState, appState);
+  Future<bool> performAction(AppStateChanger changeState, AppState appState, AppUIEvent event) async {
+    final newState = appState.copy();
+    if (event is ShowSongList) {
+      await _showSongList(changeState, newState);
+    } else if (event is ArtistClick) {
+      await _selectArtist(changeState, newState, event.artist);
+    } else if (event is SongClick) {
+      await _selectSong(changeState, newState, event.position);
+    } else if (event is PrevSong) {
+      await _prevSong(changeState, newState);
+    } else if (event is NextSong) {
+      await _nextSong(changeState, newState);
+    } else if (event is Back) {
+      await _back(changeState, newState, systemBack: event.systemBack);
+    } else if (event is ToggleFavorite) {
+      await _toggleFavorite(changeState, newState);
+    } else if (event is SaveSongText) {
+      await _saveSongText(changeState, newState, event.updatedText);
+    } else if (event is UploadCurrentToCloud) {
+      _uploadCurrentToCloud(newState);
+    } else if (event is DeleteCurrentToTrash) {
+      await _deleteCurrentToTrash(changeState, newState);
+    } else if (event is OpenVkMusic) {
+      _openVkMusic(newState, event.searchFor);
+    } else if (event is OpenYandexMusic) {
+      _openYandexMusic(newState, event.searchFor);
+    } else if (event is OpenYoutubeMusic) {
+      _openYoutubeMusic(newState, event.searchFor);
+    } else if (event is SendWarning) {
+      await _sendWarning(newState, event.warning);
+    } else if (event is CloudSearch) {
+      await _performCloudSearch(
+          changeState, newState, event.searchFor, event.orderBy);
+    } else if (event is NewCloudPageLoaded) {
+      await _newCloudPageLoaded(changeState, newState,
+          event.searchState, event.count, event.lastPage);
+    } else if (event is BackupSearchState) {
+      await  _backupSearchState(changeState, newState, event.searchFor, event.orderBy);
+    } else if (event is CloudSongClick) {
+      await _selectCloudSong(changeState, newState, event.position);
+    } else if (event is PrevCloudSong) {
+      await _prevCloudSong(changeState, newState);
+    } else if (event is NextCLoudSong) {
+      await _nextCloudSong(changeState, newState);
+    } else if (event is DownloadCurrent) {
+      await _downloadCurrent(changeState, newState);
+    } else if (event is LikeCurrent) {
+      _likeCurrent(changeState, newState);
+    } else if (event is DislikeCurrent) {
+      _dislikeCurrent(changeState, newState);
+    } else if (event is LikeSuccess) {
+      _likeSuccess(changeState, newState, event.cloudSong);
+    } else if (event is DislikeSuccess) {
+      _dislikeSuccess(changeState, newState, event.cloudSong);
+    } else if (event is UpdateCloudSongListNeedScroll) {
+      await _updateCloudSongListNeedScroll(changeState, newState, event.needScroll);
+    } else if (event is OpenSettings) {
+      await _openSettings(changeState, newState);
+    } else if (event is SaveSettings) {
+      await _saveSettings(changeState, newState, event.settings);
+    } else if (event is ReloadSettings) {
+      await _reloadSettings(changeState, newState);
     } else {
       return false;
     }
@@ -191,29 +234,38 @@ class AppStateMachine {
 
   void _selectPageVariant(AppState appState, PageVariant newPageVariant, {bool systemBack = false}) {
     final oldPageVariant = appState.currentPageVariant;
+    log(oldPageVariant.toString());
+    log(newPageVariant.toString());
 
     if (oldPageVariant == PageVariant.start && newPageVariant == PageVariant.songList) {
       getNavigatorState()?.pop();
       getNavigatorState()?.pushNamed(PageVariant.songList.route);
+      appState.currentPageVariant = newPageVariant;
     } else if (oldPageVariant == PageVariant.songList && newPageVariant == PageVariant.songText) {
       getNavigatorState()?.pushNamed(PageVariant.songText.route);
+      appState.currentPageVariant = newPageVariant;
     } else if (oldPageVariant == PageVariant.songText && newPageVariant == PageVariant.songList && !systemBack) {
       getNavigatorState()?.pop();
+      appState.currentPageVariant = newPageVariant;
     } else if (oldPageVariant == PageVariant.songList && newPageVariant == PageVariant.cloudSearch) {
       getNavigatorState()?.pushNamed(PageVariant.cloudSearch.route);
+      appState.currentPageVariant = newPageVariant;
     } else if (oldPageVariant == PageVariant.cloudSearch && newPageVariant == PageVariant.songList && !systemBack) {
       getNavigatorState()?.pop();
+      appState.currentPageVariant = newPageVariant;
     } else if (oldPageVariant == PageVariant.cloudSearch && newPageVariant == PageVariant.cloudSongText) {
       getNavigatorState()?.pushNamed(PageVariant.cloudSongText.route);
+      appState.currentPageVariant = newPageVariant;
     } else if (oldPageVariant == PageVariant.cloudSongText && newPageVariant == PageVariant.cloudSearch && !systemBack) {
       getNavigatorState()?.pop();
+      appState.currentPageVariant = newPageVariant;
     } else if (oldPageVariant == PageVariant.songList && newPageVariant == PageVariant.settings) {
       getNavigatorState()?.pushNamed(PageVariant.settings.route);
+      appState.currentPageVariant = newPageVariant;
     } else if (oldPageVariant == PageVariant.settings && newPageVariant == PageVariant.songList && !systemBack) {
       getNavigatorState()?.pop();
+      appState.currentPageVariant = newPageVariant;
     }
-
-    appState.currentPageVariant = newPageVariant;
   }
 
   Future<void> _showSongList(AppStateChanger changeState, AppState appState) async {
@@ -326,7 +378,7 @@ class AppStateMachine {
 
   Future<void> _toggleFavorite(AppStateChanger changeState, AppState appState) async {
     final newAppState = appState;
-    final newLocalState = appState.localState;
+    final newLocalState = appState.localState.copy();
 
     if (newLocalState.currentSong != null) {
       final song = newLocalState.currentSong!;
@@ -355,12 +407,12 @@ class AppStateMachine {
         }
       }
 
-      await _refreshCurrentSong(changeState, appState);
+      await _refreshCurrentSong(changeState, newAppState);
 
       if (becomeFavorite) {
-        _showToast(appState, AppStrings.strToastAddedToFavorite);
+        _showToast(newAppState, AppStrings.strToastAddedToFavorite);
       } else {
-        _showToast(appState, AppStrings.strToastDeletedFromFavorite);
+        _showToast(newAppState, AppStrings.strToastDeletedFromFavorite);
       }
     }
   }
@@ -377,7 +429,7 @@ class AppStateMachine {
   Future<void> _refreshCurrentSong(AppStateChanger changeState, AppState appState) async {
     log('refresh current song');
     final songs = await GetIt.I<SongRepository>().getSongsByArtist(appState.localState.currentArtist);
-    final newAppState = appState;
+    final newAppState = appState.copy();
     final newLocalState = appState.localState;
     newLocalState.currentSong = newLocalState.currentSongPosition >= 0
         ? songs.elementAtOrNull(newLocalState.currentSongPosition)
@@ -476,15 +528,18 @@ class AppStateMachine {
 
   Future<void> _performCloudSearch(AppStateChanger changeState, AppState appState, String searchFor, OrderBy orderBy) async {
     _resetCloudSearch(changeState, appState);
-    final newState = appState;
-    newState.cloudState.currentSearchPager = CloudSearchPager(searchFor, orderBy, (searchState, count, lastPage) async {
-      newState.cloudState.currentSearchState = searchState;
-      newState.cloudState.currentCloudSongCount = count;
-      newState.cloudState.lastPage = lastPage;
-      log("$searchState $count $lastPage");
-      await changeState(newState);
+    await changeState(appState);
+    appState.cloudState.currentSearchPager = CloudSearchPager(searchFor, orderBy, (searchState, count, lastPage) async {
+      sendEvent(NewCloudPageLoaded(searchState, count, lastPage));
     });
-    await changeState(newState);
+  }
+
+  Future<void> _newCloudPageLoaded(AppStateChanger changeState, AppState appState, SearchState searchState, int count, int? lastPage) async {
+    appState.cloudState.currentSearchState = searchState;
+    appState.cloudState.currentCloudSongCount = count;
+    appState.cloudState.lastPage = lastPage;
+    log("$searchState $count $lastPage");
+    await changeState(appState);
   }
 
   Future<void> _resetCloudSearch(AppStateChanger changeState, AppState appState) async {
@@ -511,10 +566,11 @@ class AppStateMachine {
 
   Future<void> _selectCloudSong(AppStateChanger changeState, AppState appState, int position) async {
     final newAppState = appState;
-    final newCloudState = appState.cloudState;
+    final newCloudState = appState.cloudState.copy();
     newCloudState.currentCloudSongPosition = position;
     newCloudState.cloudScrollPosition = position;
     newCloudState.currentCloudSong = await newCloudState.currentSearchPager?.getCloudSong(position);
+    newAppState.cloudState = newCloudState;
     _selectPageVariant(newAppState, PageVariant.cloudSongText);
     await changeState(newAppState);
   }
@@ -558,11 +614,8 @@ class AppStateMachine {
   void _likeCurrent(AppStateChanger changeState, AppState appState) {
     final cloudSong = appState.cloudState.currentCloudSong!;
     GetIt.I<CloudRepository>().vote(cloudSong, 1, (voteValue) async {
-      final newState = appState;
-      final oldCount = newState.cloudState.allLikes[cloudSong] ?? 0;
-      newState.cloudState.allLikes[cloudSong] = oldCount + 1;
-      await changeState(newState);
-      _showToast(appState, AppStrings.strToastVoteSuccess);
+      log('vote: $voteValue');
+      sendEvent(LikeSuccess(cloudSong));
     }, (message) {
       _showToast(appState, message);
     }, () {
@@ -573,16 +626,29 @@ class AppStateMachine {
   void _dislikeCurrent(AppStateChanger changeState, AppState appState) {
     final cloudSong = appState.cloudState.currentCloudSong!;
     GetIt.I<CloudRepository>().vote(cloudSong, -1, (voteValue) async {
-      final newState = appState;
-      final oldCount = newState.cloudState.allDislikes[cloudSong] ?? 0;
-      newState.cloudState.allDislikes[cloudSong] = oldCount + 1;
-      await changeState(newState);
-      _showToast(appState, AppStrings.strToastVoteSuccess);
+      log('vote: $voteValue');
+      sendEvent(DislikeSuccess(cloudSong));
     }, (message) {
       _showToast(appState, message);
     }, () {
       _showToast(appState, AppStrings.strToastInAppError);
     });
+  }
+
+  Future<void> _likeSuccess(AppStateChanger changeState, AppState appState, CloudSong cloudSong) async {
+    final newState = appState;
+    final oldCount = newState.cloudState.allLikes[cloudSong] ?? 0;
+    newState.cloudState.allLikes[cloudSong] = oldCount + 1;
+    await changeState(newState);
+    _showToast(appState, AppStrings.strToastVoteSuccess);
+  }
+
+  Future<void> _dislikeSuccess(AppStateChanger changeState, AppState appState, CloudSong cloudSong) async {
+    final newState = appState;
+    final oldCount = newState.cloudState.allDislikes[cloudSong] ?? 0;
+    newState.cloudState.allDislikes[cloudSong] = oldCount + 1;
+    await changeState(newState);
+    _showToast(appState, AppStrings.strToastVoteSuccess);
   }
 
   Future<void> _updateCloudSongListNeedScroll(AppStateChanger changeState, AppState appState, bool needScroll) async {

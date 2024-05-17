@@ -17,7 +17,7 @@ const pageSize = 15;
 class CloudSearchPager {
   String searchFor;
   OrderBy orderBy;
-  void Function(SearchState searchState, int count, int? lastPage) updateSearchPagerState;
+  Future<void> Function(SearchState searchState, int count, int? lastPage) updateSearchPagerState;
 
   CloudSearchPager(this.searchFor, this.orderBy, this.updateSearchPagerState);
 
@@ -111,7 +111,7 @@ class CloudSearchPager {
       searchState = SearchState.error;
     }
 
-    updateSearchPagerState(searchState, count, lastPage);
+    await updateSearchPagerState(searchState, count, lastPage);
 
     log(readyPages.keys.toString());
 

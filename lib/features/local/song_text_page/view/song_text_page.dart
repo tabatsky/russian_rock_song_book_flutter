@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:russian_rock_song_book/features/common/widgets/bottom_button.dart';
 import 'package:russian_rock_song_book/features/common/widgets/music_button.dart';
-import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
+import 'package:russian_rock_song_book/mvi/actions/app_events.dart';
 import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
@@ -16,7 +16,7 @@ import 'package:russian_rock_song_book/features/warning_dialog/view/warning_dial
 class SongTextPage extends StatelessWidget {
 
   final AppBloc appBloc;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const SongTextPage(
       this.appBloc,
@@ -40,7 +40,7 @@ class SongTextPage extends StatelessWidget {
 class _SongTextPageContent extends StatelessWidget {
   final AppSettings settings;
   final Song? currentSong;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const _SongTextPageContent(this.settings, this.currentSong, this.onPerformAction);
 
@@ -93,7 +93,7 @@ class _SongTextPageContent extends StatelessWidget {
 class _SongTextBody extends StatefulWidget {
   final AppSettings settings;
   final Song? currentSong;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const _SongTextBody(this.settings, this.currentSong, this.onPerformAction);
 
@@ -228,7 +228,7 @@ class _ButtonPanel extends StatelessWidget {
   final double buttonSize;
   final void Function(Song? currentSong) onEditText;
   final void Function() onSaveText;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const _ButtonPanel(
       this.isPortrait,

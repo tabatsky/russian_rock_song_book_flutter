@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
-import 'package:russian_rock_song_book/mvi/actions/app_actions.dart';
+import 'package:russian_rock_song_book/mvi/actions/app_events.dart';
 import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/ui/widgets/app_divider.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
@@ -12,7 +12,7 @@ import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 
 class SongListPage extends StatelessWidget{
   final AppBloc appBloc;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const SongListPage(
       this.appBloc,
@@ -33,7 +33,7 @@ class SongListPage extends StatelessWidget{
 class _SongListPageContent extends StatefulWidget {
   final AppSettings settings;
   final LocalState localState;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const _SongListPageContent(this.settings, this.localState, this.onPerformAction);
 
@@ -108,7 +108,7 @@ class _MenuListView extends StatelessWidget {
   final ScrollController menuScrollController;
   final double titleHeight;
   final double dividerHeight;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const _MenuListView(this.settings, this.localState, this.menuScrollController, this.titleHeight, this.dividerHeight, this.onPerformAction);
 
@@ -176,7 +176,7 @@ class _SongListBody extends StatelessWidget {
   final double titleHeight;
   final double dividerHeight;
   final double itemHeight;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   final _titleScrollController = ScrollController(
     initialScrollOffset: 0.0,
@@ -215,7 +215,7 @@ class _TitleListView extends StatelessWidget {
   final ScrollController titleScrollController;
   final double titleHeight;
   final double dividerHeight;
-  final void Function(AppUIAction action) onPerformAction;
+  final void Function(AppUIEvent action) onPerformAction;
 
   const _TitleListView(this.settings, this.localState, this.titleScrollController, this.titleHeight, this.dividerHeight, this.onPerformAction);
 
