@@ -62,7 +62,11 @@ class _SongListPageContentState extends State<_SongListPageContent> {
       backgroundColor: widget.settings.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
-        title: Text(widget.localState.currentArtist, style: widget.settings.textStyler.textStyleFixedBlackBold),
+        title: Text(
+          widget.localState.currentArtist,
+          style: widget.settings.textStyler.textStyleFixedBlackBold,
+          key: const Key('song_list_title'),
+        ),
         actions: [
           IconButton(
             icon: Image.asset(AppIcons.icSettings),
