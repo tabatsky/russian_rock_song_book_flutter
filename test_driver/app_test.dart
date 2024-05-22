@@ -1,7 +1,6 @@
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
-// Тесты можно сгруппировать с помощью функции group ()
 void main() {
   group('My App', () {
     late FlutterDriver driver;
@@ -14,22 +13,18 @@ void main() {
       driver.close();
     });
 
-    // Описываем тест, в данном случае тест ищет текст, содержащий "0"
-
-    test('starting ok', () async {
+    test('app is starting correctly', () async {
       final songListTitle = find.byValueKey('song_list_title');
-      driver.waitForText(songListTitle, "Кино");
-      await Future.delayed(const Duration(seconds: 10), (){});
-      // Описываем действия с элементами интерфейса
-      // expect(await driver.getText(counterTextFinder), "0");
+      driver.waitForText(songListTitle, 'Кино');
+      await Future.delayed(const Duration(seconds: 3), (){});
     });
 
-    test('drawer ok', () async {
-      final drawerOpenButton = find.byTooltip('Open navigation menu');
-      await driver.tap(drawerOpenButton);
-      await Future.delayed(const Duration(seconds: 10), (){});
-      // Описываем действия с элементами интерфейса
-      // expect(await driver.getText(counterTextFinder), "0");
+    test('menu is opening and closing with drawer button correctly', () async {
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await driver.tap(locateDrawer);
+      await driver.waitFor(find.text('Меню'), timeout: const Duration(seconds: 3));
+      await driver.scroll(locateDrawer, -300, 0, const Duration(milliseconds: 500));
+      await driver.waitFor(find.text('Кино'), timeout: const Duration(seconds: 3));
     });
   });
 }
@@ -43,7 +38,7 @@ extension WaitForText on FlutterDriver {
       if (retries == 0) {
         rethrow;
       }
-      await Future.delayed(const Duration(milliseconds: 17), () {});
+      await Future.delayed(const Duration(milliseconds: 100), () {});
       await waitForText(finder, text, retries: retries - 1);
     }
   }
