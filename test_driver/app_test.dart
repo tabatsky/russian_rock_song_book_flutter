@@ -1,4 +1,5 @@
 import 'package:flutter_driver/flutter_driver.dart';
+import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -26,12 +27,20 @@ void main() {
       await driver.scroll(locateDrawer, -300, 0, const Duration(milliseconds: 500));
       await driver.waitFor(find.text('Кино'), timeout: const Duration(seconds: 3));
     });
+
+    test('menu predefined artists are displaying correctly', () async {
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await driver.tap(locateDrawer);
+      for (final artist in SongRepository.predefinedArtists) {
+        await driver.waitFor(find.text(artist), timeout: const Duration(seconds: 3));
+      }
+    });
   });
 }
 
 extension WaitForText on FlutterDriver {
   Future<void> waitForText(SerializableFinder finder, String text,
-      {int retries = 10}) async {
+      {int retries = 30}) async {
     try {
       expect(await getText(finder), equals(text));
     } catch (_) {
