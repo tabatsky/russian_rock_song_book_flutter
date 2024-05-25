@@ -120,6 +120,7 @@ class _MenuListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListView.builder(
+      key: const Key('menu_list_view'),
       controller: menuScrollController,
       padding: EdgeInsets.zero,
       itemCount: localState.allArtists.length + 1,
@@ -227,6 +228,7 @@ class _TitleListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListView.builder(
+      key: const Key('title_list_view'),
       controller: titleScrollController,
       padding: EdgeInsets.zero,
       itemCount: localState.currentSongs.length,
