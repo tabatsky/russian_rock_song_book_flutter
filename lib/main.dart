@@ -7,8 +7,12 @@ import 'package:russian_rock_song_book/domain/repository/local/song_repository.d
 import 'package:russian_rock_song_book/russian_rock_song_book_app.dart';
 
 void main() {
-  GetIt.I.registerLazySingleton<SongRepository>(() => SongRepositoryImpl());
-  GetIt.I.registerLazySingleton<CloudRepository>(() => CloudRepositoryImpl());
+  try {
+    GetIt.I.registerLazySingleton<SongRepository>(() => SongRepositoryImpl());
+    GetIt.I.registerLazySingleton<CloudRepository>(() => CloudRepositoryImpl());
+  } catch (e) {
+    print('failed to init dependencies');
+  }
 
   runApp(RussianRockSongBookApp());
 }

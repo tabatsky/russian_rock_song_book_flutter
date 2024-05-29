@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -87,14 +85,19 @@ class StartPageState extends State<StartPage> {
       wasUpdated = appWasUpdated;
     });
     if (appWasUpdated) {
+      print('was updated');
       await GetIt.I<SongRepository>().fillDB((done, total) {
-        log("done: $done of $total");
-        setState(() {
-          indicatorValue = 1.0 * done / total;
-          indicatorText = AppStrings.strFrom(done, total);
-        });
+        print("done: $done of $total");
+        if (mounted) {
+          setState(() {
+            indicatorValue = 1.0 * done / total;
+            indicatorText = AppStrings.strFrom(done, total);
+          });
+        }
       });
       await Version.confirmAppUpdate();
+    } else {
+      print('was not updated');
     }
     widget.onInitSuccess();
   }
