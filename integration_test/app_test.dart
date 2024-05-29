@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
 import 'package:russian_rock_song_book/main.dart' as app;
 
 const ARTIST_1 = "Немного Нервно";
@@ -50,98 +52,76 @@ void main() {
     });
   });
 
-  // group('0', () {
-  //
-  // });
+  testWidgets('menu predefined artists are displaying correctly', (tester) async {
+    IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+    app.main();
 
-  // group('0', () {
-  //   late FlutterDriver driver;
-  //
-  //   setUpAll(() async {
-  //     driver = await FlutterDriver.connect();
-  //   });
-  //
-  //   tearDownAll(() {
-  //     driver.close();
-  //   });
-  //
-  //   test('app is starting correctly', () async {
-  //     final songListTitle = find.byValueKey('song_list_title');
-  //     driver.waitForText(songListTitle, 'Кино');
-  //     await Future.delayed(const Duration(seconds: 3), (){});
-  //   });
-  //
-  //   test('menu is opening and closing with drawer button correctly', () async {
-  //     final locateDrawer = find.byTooltip('Open navigation menu');
-  //     await driver.tap(locateDrawer);
-  //     await driver.waitFor(find.text('Меню'), timeout: const Duration(seconds: 3));
-  //     await driver.scroll(locateDrawer, -300, 0, const Duration(milliseconds: 500));
-  //     await driver.waitFor(find.text('Кино'), timeout: const Duration(seconds: 3));
-  //   });
-  //
-  //   test('menu predefined artists are displaying correctly', () async {
-  //     final locateDrawer = find.byTooltip('Open navigation menu');
-  //     await driver.tap(locateDrawer);
-  //     for (final artist in SongRepository.predefinedArtists) {
-  //       await driver.waitFor(find.text(artist), timeout: const Duration(seconds: 3));
-  //     }
-  //     await driver.scroll(locateDrawer, -300, 0, const Duration(milliseconds: 500));
-  //   });
-  //
-  //   test('menu is scrolling correctly', () async {
-  //     final locateDrawer = find.byTooltip('Open navigation menu');
-  //     await driver.tap(locateDrawer);
-  //     final menuListView = find.byValueKey('menu_list_view');
-  //     driver.waitFor(menuListView, timeout: const Duration(seconds: 3));
-  //     final artist1Text = find.text(ARTIST_1);
-  //     await driver.scrollUntilVisible(menuListView, artist1Text, dyScroll: -500);
-  //     await Future.delayed(const Duration(seconds: 3), (){});
-  //     await driver.scroll(locateDrawer, -300, 0, const Duration(milliseconds: 500));
-  //   });
-  // });
-  //
-  // group('1', () {
-  //   late FlutterDriver driver;
-  //
-  //   setUpAll(() async {
-  //     driver = await FlutterDriver.connect();
-  //   });
-  //
-  //   tearDownAll(() {
-  //     driver.close();
-  //   });
-  //
-  //   test('song list for artist is opening from menu correctly', () async {
-  //     final locateDrawer = find.byTooltip('Open navigation menu');
-  //     await driver.tap(locateDrawer);
-  //     final menuListView = find.byValueKey('menu_list_view');
-  //     driver.waitFor(menuListView, timeout: const Duration(seconds: 3));
-  //     final artist1Text = find.text(ARTIST_1);
-  //     await driver.scrollUntilVisible(menuListView, artist1Text, dyScroll: -500);
-  //     driver.tap(artist1Text);
-  //     await Future.delayed(const Duration(seconds: 3), (){});
-  //     // final songs = await songRepo.getSongsByArtist(ARTIST_1);
-  //     // await driver.waitFor(find.text(songs[0].title));
-  //     // await driver.waitFor(find.text(songs[1].title));
-  //     // await driver.waitFor(find.text(songs[2].title));
-  //   });
-  // });
+    await tester.pumpAndSettle();
+
+    final locateDrawer = find.byTooltip('Open navigation menu');
+    await tester.tap(locateDrawer);
+    await tester.pumpAndSettle();
+    for (final artist in SongRepository.predefinedArtists) {
+      await tester.waitFor((tester) {
+        expect(find.text(artist), findsOneWidget);
+      });
+    }
+  });
+
+  testWidgets('menu is scrolling correctly', (tester) async {
+    IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+    app.main();
+
+    await tester.pumpAndSettle();
+
+    final locateDrawer = find.byTooltip('Open navigation menu');
+    await tester.tap(locateDrawer);
+    await tester.pumpAndSettle();
+
+    final menuListView = find.byKey(const Key('menu_list_view'));
+    await tester.waitFor((tester) {
+      expect(menuListView, findsOneWidget);
+    });
+    final scrollable = find.byWidgetPredicate((w) => w is Scrollable);
+    final menuListScrollable = find.descendant(of: menuListView, matching: scrollable);
+    final artist1Text = find.text(ARTIST_1);
+    await tester.scrollUntilVisible(artist1Text, 500, scrollable: menuListScrollable);
+    await tester.waitFor((tester) {
+      expect(artist1Text, findsOneWidget);
+    });
+  });
+
+  testWidgets('song list for artist is opening from menu correctly', (tester) async {
+    IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+    app.main();
+
+    await tester.pumpAndSettle();
+
+    final locateDrawer = find.byTooltip('Open navigation menu');
+    await tester.tap(locateDrawer);
+    await tester.pumpAndSettle();
+
+    final menuListView = find.byKey(const Key('menu_list_view'));
+    await tester.waitFor((tester) {
+      expect(menuListView, findsOneWidget);
+    });
+    final scrollable = find.byWidgetPredicate((w) => w is Scrollable);
+    final menuListScrollable = find.descendant(of: menuListView, matching: scrollable);
+    final artist1Text = find.text(ARTIST_1);
+    await tester.scrollUntilVisible(artist1Text, 500, scrollable: menuListScrollable);
+    await tester.waitFor((tester) {
+      expect(artist1Text, findsOneWidget);
+    });
+    await tester.tap(artist1Text);
+    await tester.pumpAndSettle();
+    final songs = await GetIt.I<SongRepository>().getSongsByArtist(ARTIST_1);
+    await tester.waitFor((tester) {
+      expect(find.text(songs[0].title), findsOneWidget);
+      expect(find.text(songs[1].title), findsOneWidget);
+      expect(find.text(songs[2].title), findsOneWidget);
+    });
+  });
 }
-
-// extension WaitForText on FlutterDriver {
-//   Future<void> waitForText(SerializableFinder finder, String text,
-//       {int retries = 30}) async {
-//     try {
-//       expect(await getText(finder), equals(text));
-//     } catch (_) {
-//       if (retries == 0) {
-//         rethrow;
-//       }
-//       await Future.delayed(const Duration(milliseconds: 100), () {});
-//       await waitForText(finder, text, retries: retries - 1);
-//     }
-//   }
-// }
 
 extension WaitFor on WidgetTester {
   Future<void> waitFor(void Function(WidgetTester tester) toTry) async {
