@@ -139,8 +139,11 @@ class _SongTextBodyState extends State<_SongTextBody> {
                   padding: const EdgeInsets.all(8),
                   child: Wrap(
                     children: [
-                      Text(widget.currentSong?.title ?? '', style: widget
-                          .settings.textStyler.textStyleTitle),
+                      Text(
+                        widget.currentSong?.title ?? '',
+                        style: widget.settings.textStyler.textStyleTitle,
+                        key: const Key('song_text_title'),
+                      ),
                       Container(
                         height: 20,
                       ),
@@ -158,6 +161,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
                           : Text(
                         widget.currentSong?.text ?? '',
                         style: widget.settings.textStyler.textStyleSongText,
+                        key: const Key('song_text_text'),
                       ),
                       Container(
                         height: 80,

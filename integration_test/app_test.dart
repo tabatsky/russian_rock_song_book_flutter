@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -18,25 +20,26 @@ const TITLE_2_2 = "Поплачь о нем";
 const TITLE_3_1 = "Белая ночь";
 
 void main() {
+  Future<void> launchApp(WidgetTester tester) async {
+    IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+    app.main();
+
+    await tester.pumpAndSettle();
+
+    await tester.waitFor((tester) {
+      final songListTitle = find.byKey(const Key('song_list_title'));
+      expect(songListTitle, findsOneWidget);
+      expect(tester.widget<Text>(songListTitle).data, 'Кино');
+    });
+  }
+
   group('menu and song list', () {
     testWidgets('app is starting correctly', (tester) async {
-      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-      app.main();
-
-      await tester.pumpAndSettle();
-
-      await tester.waitFor((tester) {
-        final songListTitle = find.byKey(const Key('song_list_title'));
-        expect(songListTitle, findsOneWidget);
-        expect(tester.widget<Text>(songListTitle).data, 'Кино');
-      });
+      await launchApp(tester);
     });
 
     testWidgets('menu is opening and closing with drawer button correctly', (tester) async {
-      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-      app.main();
-
-      await tester.pumpAndSettle();
+      await launchApp(tester);
 
       final locateDrawer = find.byTooltip('Open navigation menu');
       await tester.tap(locateDrawer);
@@ -54,10 +57,7 @@ void main() {
     });
 
     testWidgets('menu predefined artists are displaying correctly', (tester) async {
-      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-      app.main();
-
-      await tester.pumpAndSettle();
+      await launchApp(tester);
 
       final locateDrawer = find.byTooltip('Open navigation menu');
       await tester.tap(locateDrawer);
@@ -70,10 +70,7 @@ void main() {
     });
 
     testWidgets('menu is scrolling correctly', (tester) async {
-      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-      app.main();
-
-      await tester.pumpAndSettle();
+      await launchApp(tester);
 
       final locateDrawer = find.byTooltip('Open navigation menu');
       await tester.tap(locateDrawer);
@@ -93,10 +90,7 @@ void main() {
     });
 
     testWidgets('song list for artist is opening from menu correctly', (tester) async {
-      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-      app.main();
-
-      await tester.pumpAndSettle();
+      await launchApp(tester);
 
       final locateDrawer = find.byTooltip('Open navigation menu');
       await tester.tap(locateDrawer);
@@ -124,10 +118,7 @@ void main() {
     });
 
     testWidgets('song list is scrolling correctly', (tester) async {
-      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-      app.main();
-
-      await tester.pumpAndSettle();
+      await launchApp(tester);
 
       final locateDrawer = find.byTooltip('Open navigation menu');
       await tester.tap(locateDrawer);
@@ -179,6 +170,56 @@ void main() {
       await tester.scrollUntilVisible(title4Text, -300, scrollable: titleListScrollable);
       await tester.waitFor((tester) {
         expect(title4Text, findsOneWidget);
+      });
+    });
+  });
+
+  group('song text', () {
+    testWidgets('song text is opening from song list correctly', (tester) async {
+      await launchApp(tester);
+
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await tester.tap(locateDrawer);
+      await tester.pumpAndSettle();
+
+      final menuListView = find.byKey(const Key('menu_list_view'));
+      await tester.waitFor((tester) {
+        expect(menuListView, findsOneWidget);
+      });
+      final scrollable = find.byWidgetPredicate((w) => w is Scrollable);
+      final menuListScrollable = find.descendant(of: menuListView, matching: scrollable);
+      final artist1Text = find.text(ARTIST_1);
+      await tester.scrollUntilVisible(artist1Text, 300, scrollable: menuListScrollable);
+      await tester.waitFor((tester) {
+        expect(artist1Text, findsOneWidget);
+      });
+      await tester.tap(artist1Text);
+      await tester.pumpAndSettle();
+
+      final titleListView = find.byKey(const Key('title_list_view'));
+      await tester.waitFor((tester) {
+        expect(titleListView, findsOneWidget);
+      });
+      final titleListScrollable = find.descendant(of: titleListView, matching: scrollable);
+      final titleText = find.text(TITLE_1_3);
+      await tester.scrollUntilVisible(titleText, 300, scrollable: titleListScrollable);
+      await tester.waitFor((tester) {
+        expect(titleText, findsOneWidget);
+      });
+      await tester.waitFor((tester) {
+        expect(titleText, findsOneWidget);
+      });
+      await tester.tap(titleText);
+      await tester.pumpAndSettle();
+      final songs = await GetIt.I<SongRepository>().getSongsByArtist(ARTIST_1);
+      final song = songs.where((element) => element.title == TITLE_1_3).first;
+      await tester.waitFor((tester) {
+        final songTextTitle = find.byKey(const Key('song_text_title'));
+        expect(songTextTitle, findsOneWidget);
+        expect(tester.widget<Text>(songTextTitle).data, song.title);
+        final songTextText = find.byKey(const Key('song_text_text'));
+        expect(songTextText, findsOneWidget);
+        expect(tester.widget<Text>(songTextText).data, song.text);
       });
     });
   });
