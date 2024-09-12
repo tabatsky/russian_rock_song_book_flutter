@@ -220,6 +220,10 @@ class _SongTextBodyState extends State<_SongTextBody> {
   void _updateSong(Song? newSong) {
     if (_lastSong != newSong) {
       _lastSong = newSong;
+      setState(() {
+        _isEditorMode = false;
+      });
+      _textEditorController.text = newSong?.text ?? '';
       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToTop());
     }
   }
