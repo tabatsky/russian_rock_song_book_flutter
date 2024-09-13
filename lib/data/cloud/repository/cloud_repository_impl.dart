@@ -78,6 +78,7 @@ class CloudRepositoryImpl implements CloudRepository {
         serverError(result?.message ?? 'null');
       }
     } catch (e) {
+      print(e);
       inAppError();
     }
   }
