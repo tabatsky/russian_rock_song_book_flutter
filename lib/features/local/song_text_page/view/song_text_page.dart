@@ -31,6 +31,7 @@ class SongTextPage extends StatelessWidget {
         builder: (context, state) {
           return _SongTextPageContent(
               state.settings,
+              state.localState.isEditorMode,
               state.localState.currentSong,
               onPerformAction);
         }
@@ -40,10 +41,11 @@ class SongTextPage extends StatelessWidget {
 
 class _SongTextPageContent extends StatelessWidget {
   final AppSettings settings;
+  final bool isEditorMode;
   final Song? currentSong;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _SongTextPageContent(this.settings, this.currentSong, this.onPerformAction);
+  const _SongTextPageContent(this.settings, this.isEditorMode, this.currentSong, this.onPerformAction);
 
   @override
   Widget build(BuildContext context) =>  Scaffold(
@@ -84,7 +86,7 @@ class _SongTextPageContent extends StatelessWidget {
     body: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        _SongTextBody(settings, currentSong, onPerformAction),
+        _SongTextBody(settings, isEditorMode, currentSong, onPerformAction),
       ],
     ),
   );
@@ -93,10 +95,11 @@ class _SongTextPageContent extends StatelessWidget {
 
 class _SongTextBody extends StatefulWidget {
   final AppSettings settings;
+  final bool isEditorMode;
   final Song? currentSong;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _SongTextBody(this.settings, this.currentSong, this.onPerformAction);
+  const _SongTextBody(this.settings, this.isEditorMode, this.currentSong, this.onPerformAction);
 
   @override
   State<StatefulWidget> createState() => _SongTextBodyState();
@@ -104,7 +107,6 @@ class _SongTextBody extends StatefulWidget {
 }
 
 class _SongTextBodyState extends State<_SongTextBody> {
-  bool _isEditorMode = false;
   final _textEditorController = TextEditingController();
 
   final ScrollController _scrollController = ScrollController(
@@ -147,7 +149,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
                       Container(
                         height: 20,
                       ),
-                      _isEditorMode
+                      widget.isEditorMode
                           ? TextField(
                         controller: _textEditorController,
                         keyboardType: TextInputType.multiline,
@@ -179,7 +181,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
                   isPortrait,
                   widget.settings.listenToMusicPreference,
                   widget.currentSong,
-                  _isEditorMode,
+                  widget.isEditorMode,
                   buttonSize,
                   _editText,
                   _saveText,
@@ -199,17 +201,13 @@ class _SongTextBodyState extends State<_SongTextBody> {
 
   Future<void> _editText(Song? currentSong) async {
     _textEditorController.text = currentSong?.text ?? '';
-    setState(() {
-      _isEditorMode = true;
-    });
+    widget.onPerformAction(UpdateEditorMode(true));
   }
 
   Future<void> _saveText() async {
     final updatedText = _textEditorController.text;
+    widget.onPerformAction(UpdateEditorMode(false));
     widget.onPerformAction(SaveSongText(updatedText));
-    setState(() {
-      _isEditorMode = false;
-    });
   }
 
   void _scrollToTop() {
@@ -220,9 +218,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
   void _updateSong(Song? newSong) {
     if (_lastSong != newSong) {
       _lastSong = newSong;
-      setState(() {
-        _isEditorMode = false;
-      });
+      widget.onPerformAction(UpdateEditorMode(false));
       _textEditorController.text = newSong?.text ?? '';
       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToTop());
     }

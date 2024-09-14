@@ -8,6 +8,7 @@ class LocalState{
   Song? currentSong;
   int currentSongPosition = -1;
   int scrollPosition = 0;
+  bool isEditorMode = false;
 
   LocalState();
 
@@ -18,7 +19,8 @@ class LocalState{
       this.allArtists,
       this.currentSong,
       this.currentSongPosition,
-      this.scrollPosition
+      this.scrollPosition,
+      this.isEditorMode
       );
 
   LocalState copy() => LocalState._newInstance(
@@ -28,6 +30,7 @@ class LocalState{
       allArtists,
       currentSong,
       currentSongPosition,
-      scrollPosition
+      scrollPosition,
+      isEditorMode
   );
 }

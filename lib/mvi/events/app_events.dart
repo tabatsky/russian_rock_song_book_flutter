@@ -29,6 +29,12 @@ class PrevSong extends AppUIEvent {}
 class NextSong extends AppUIEvent {}
 class ToggleFavorite extends AppUIEvent {}
 
+class UpdateEditorMode extends AppUIEvent {
+  bool isEditorMode;
+  
+  UpdateEditorMode(this.isEditorMode);
+}
+
 class SaveSongText extends AppUIEvent {
   String updatedText;
 

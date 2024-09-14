@@ -48,6 +48,8 @@ class AppStateMachine {
       await _back(changeState, newState, systemBack: event.systemBack);
     } else if (event is ToggleFavorite) {
       await _toggleFavorite(changeState, newState);
+    } else if (event is UpdateEditorMode) {
+      await _updateEditorMode(changeState, appState, event.isEditorMode);
     } else if (event is SaveSongText) {
       await _saveSongText(changeState, newState, event.updatedText);
     } else if (event is UploadCurrentToCloud) {
@@ -301,6 +303,13 @@ class AppStateMachine {
         sendEvent(Back());
       }
     }
+  }
+
+  Future<void> _updateEditorMode(AppStateChanger changeState, AppState appState, bool isEditorMode) async {
+    log("editor mode: $isEditorMode");
+    final newState = appState.copy();
+    newState.localState.isEditorMode = isEditorMode;
+    await changeState(newState);
   }
 
   Future<void> _saveSongText(AppStateChanger changeState, AppState appState, String updatedText) async {
