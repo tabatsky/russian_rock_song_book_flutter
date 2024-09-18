@@ -119,62 +119,89 @@ class _MenuListView extends StatelessWidget {
   const _MenuListView(this.settings, this.localState, this.menuScrollController, this.titleHeight, this.dividerHeight, this.onPerformAction);
 
   @override
-  Widget build(BuildContext context) => ListView.builder(
-      key: const Key('menu_list_view'),
-      controller: menuScrollController,
-      padding: EdgeInsets.zero,
-      itemCount: localState.allArtists.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == 0) {
-          return SizedBox(
-            height: 120,
-            child: DrawerHeader(
-              decoration: const BoxDecoration(
-                color: AppTheme.colorDarkYellow,
+  Widget build(BuildContext context) {
+    final predefinedWithGroups = localState.allArtists.predefinedArtistsWithGroups();
+    return ListView.builder(
+        key: const Key('menu_list_view'),
+        controller: menuScrollController,
+        padding: EdgeInsets.zero,
+        itemCount: predefinedWithGroups.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == 0) {
+            return SizedBox(
+              height: 120,
+              child: DrawerHeader(
+                decoration: const BoxDecoration(
+                  color: AppTheme.colorDarkYellow,
+                ),
+                margin: EdgeInsets.zero,
+                child: Text(AppStrings.strMenu, style: settings.textStyler.textStyleFixedBlackBold),
               ),
-              margin: EdgeInsets.zero,
-              child: Text(AppStrings.strMenu, style: settings.textStyler.textStyleFixedBlackBold),
-            ),
-          );
-        } else {
-          final artist = localState.allArtists[index - 1];
-          final textStyle =
-          SongRepository.predefinedArtists.contains(artist)
-              ? settings.textStyler.textStyleCommonInvertedBold
-              : settings.textStyler.textStyleCommonInverted;
-          return Column(
-            children: [
-              GestureDetector(
+            );
+          } else {
+            final artist = predefinedWithGroups[index - 1];
+            final textStyle =
+            SongRepository.predefinedArtists.contains(artist)
+                ? settings.textStyler.textStyleCommonInvertedBold
+                : settings.textStyler.textStyleCommonInverted;
+            return _ArtistItem(
+                artist: artist,
+                theme: settings.theme,
+                textStyle: textStyle,
+                titleHeight: titleHeight,
+                dividerHeight: dividerHeight,
                 onTap: () {
                   Navigator.pop(context);
                   onPerformAction(ArtistClick(artist));
-                },
-                child: Container(
-                  height: titleHeight,
-                  color: settings.theme.colorMain,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        artist,
-                        style: textStyle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
+                }
+            );
+          }
+        }
+    );
+  }
+}
+
+class _ArtistItem extends StatelessWidget {
+  final String artist;
+  final AppTheme theme;
+  final TextStyle textStyle;
+  final double titleHeight;
+  final double dividerHeight;
+  final void Function() onTap;
+
+  const _ArtistItem({super.key, required this.artist, required this.theme, required this.textStyle, required this.titleHeight, required this.dividerHeight, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            height: titleHeight,
+            color: theme.colorMain,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  artist,
+                  style: textStyle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              AppDivider(
-                height: dividerHeight,
-                color: settings.theme.colorBg,
-              ),
-            ],
-          );
-        }
-      }
-  );
+            ),
+          ),
+        ),
+        AppDivider(
+          height: dividerHeight,
+          color: theme.colorBg,
+        ),
+      ],
+    );
+  }
+
 }
 
 class _SongListBody extends StatelessWidget {

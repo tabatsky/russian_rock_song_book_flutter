@@ -1,4 +1,22 @@
+import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/domain/models/local/song.dart';
+
+extension ArtistGroup on String {
+  String artistGroup() => characters.first.toUpperCase();
+}
+
+extension ArtistGroups on List<String> {
+  List<String> artistGroups() {
+    var result = map((e) => e.artistGroup())
+        .toSet()
+        .toList();
+    result.sort();
+    return result;
+  }
+
+  List<String> predefinedArtistsWithGroups() =>
+      SongRepository.predefinedArtists + artistGroups();
+}
 
 abstract class SongRepository {
 
