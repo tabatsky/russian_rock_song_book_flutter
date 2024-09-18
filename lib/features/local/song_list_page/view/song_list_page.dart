@@ -6,6 +6,7 @@ import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
 import 'package:russian_rock_song_book/mvi/state/local_state.dart';
+import 'package:russian_rock_song_book/ui/font/app_font.dart';
 import 'package:russian_rock_song_book/ui/widgets/app_divider.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
@@ -139,18 +140,19 @@ class _MenuListView extends StatelessWidget {
               ),
             );
           } else {
-            final artist = predefinedWithGroups[index - 1];
-            final textStyle =
-            SongRepository.predefinedArtists.contains(artist)
-                ? settings.textStyler.textStyleCommonInvertedBold
-                : settings.textStyler.textStyleCommonInverted;
-            return _ArtistItem(
-                artist: artist,
+            final artistOrGroup = predefinedWithGroups[index - 1];
+            return _MenuItem(
+                artistOrGroup: artistOrGroup,
+                artistList: SongRepository.predefinedArtists + localState.allArtists,
+                menuExpandedArtistGroup: localState.menuExpandedArtistGroup,
                 theme: settings.theme,
-                textStyle: textStyle,
+                textStyler: settings.textStyler,
                 titleHeight: titleHeight,
                 dividerHeight: dividerHeight,
-                onTap: () {
+                onGroupTap: () {
+                  onPerformAction(UpdateMenuExpandedArtistGroup(artistOrGroup));
+                },
+                onArtistTap: (artist) {
                   Navigator.pop(context);
                   onPerformAction(ArtistClick(artist));
                 }
@@ -161,18 +163,120 @@ class _MenuListView extends StatelessWidget {
   }
 }
 
+class _MenuItem extends StatelessWidget {
+  final String artistOrGroup;
+  final List<String> artistList;
+  final String menuExpandedArtistGroup;
+  final AppTheme theme;
+  final AppTextStyler textStyler;
+  final double titleHeight;
+  final double dividerHeight;
+  final void Function() onGroupTap;
+  final void Function(String artist) onArtistTap;
+
+  const _MenuItem({super.key, required this.artistOrGroup, required this.artistList, required this.menuExpandedArtistGroup, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onGroupTap, required this.onArtistTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SongRepository.predefinedArtists.contains(artistOrGroup) ?
+        _ArtistItem(
+            artist: artistOrGroup,
+            theme: theme,
+            textStyler: textStyler,
+            titleHeight: titleHeight,
+            dividerHeight: dividerHeight,
+            onTap: () => onArtistTap(artistOrGroup)
+        ) :
+        _ArtistGroupItem(
+            artistGroup: artistOrGroup,
+            expandedList: _getExpandedList(artistOrGroup),
+            theme: theme,
+            textStyler: textStyler,
+            titleHeight: titleHeight,
+            dividerHeight: dividerHeight,
+            onGroupTap: onGroupTap,
+            onArtistTap: onArtistTap
+        );
+  }
+
+  List<String> _getExpandedList(String group) => group == menuExpandedArtistGroup ?
+      artistList.where((element) =>
+        !SongRepository.predefinedArtists.contains(element) &&
+        element.toUpperCase().startsWith(group)
+      ).toList() : [];
+
+}
+
+class _ArtistGroupItem extends StatelessWidget {
+  final String artistGroup;
+  final List<String> expandedList;
+  final AppTheme theme;
+  final AppTextStyler textStyler;
+  final double titleHeight;
+  final double dividerHeight;
+  final void Function() onGroupTap;
+  final void Function(String artist) onArtistTap;
+
+  const _ArtistGroupItem({super.key, required this.artistGroup, required this.expandedList, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onGroupTap, required this.onArtistTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final children1 = [
+      GestureDetector(
+        onTap: onGroupTap,
+        child: Container(
+          height: titleHeight,
+          color: theme.colorMain,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                artistGroup,
+                style: textStyler.textStyleCommonInvertedBold,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ),
+      ),
+      AppDivider(
+        height: dividerHeight,
+        color: theme.colorBg,
+      ),
+    ];
+    final children2 = expandedList.map((artist) =>
+      _ArtistItem(
+          artist: artist,
+          theme: theme,
+          textStyler: textStyler,
+          titleHeight: titleHeight,
+          dividerHeight: dividerHeight,
+          onTap: () => onArtistTap(artist)
+      )
+    ).toList();
+    final children = children1 + children2;
+    return Column(children: children);
+  }
+}
+
 class _ArtistItem extends StatelessWidget {
   final String artist;
   final AppTheme theme;
-  final TextStyle textStyle;
+  final AppTextStyler textStyler;
   final double titleHeight;
   final double dividerHeight;
   final void Function() onTap;
 
-  const _ArtistItem({super.key, required this.artist, required this.theme, required this.textStyle, required this.titleHeight, required this.dividerHeight, required this.onTap});
+  const _ArtistItem({super.key, required this.artist, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    final textStyle =
+    SongRepository.predefinedArtists.contains(artist)
+        ? textStyler.textStyleCommonInvertedBold
+        : textStyler.textStyleCommonInverted;
     return Column(
       children: [
         GestureDetector(

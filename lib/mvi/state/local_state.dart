@@ -9,6 +9,7 @@ class LocalState{
   int currentSongPosition = -1;
   int scrollPosition = 0;
   bool isEditorMode = false;
+  String menuExpandedArtistGroup = '';
 
   LocalState();
 
@@ -20,7 +21,8 @@ class LocalState{
       this.currentSong,
       this.currentSongPosition,
       this.scrollPosition,
-      this.isEditorMode
+      this.isEditorMode,
+      this.menuExpandedArtistGroup
       );
 
   LocalState copy() => LocalState._newInstance(
@@ -31,6 +33,7 @@ class LocalState{
       currentSong,
       currentSongPosition,
       scrollPosition,
-      isEditorMode
+      isEditorMode,
+      menuExpandedArtistGroup
   );
 }

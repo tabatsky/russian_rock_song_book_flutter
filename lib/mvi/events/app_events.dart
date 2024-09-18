@@ -41,6 +41,12 @@ class SaveSongText extends AppUIEvent {
   SaveSongText(this.updatedText);
 }
 
+class UpdateMenuExpandedArtistGroup extends AppUIEvent {
+  String artistGroup;
+
+  UpdateMenuExpandedArtistGroup(this.artistGroup);
+}
+
 class UploadCurrentToCloud extends AppUIEvent {}
 class DeleteCurrentToTrash extends AppUIEvent {}
 

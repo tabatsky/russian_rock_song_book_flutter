@@ -52,6 +52,8 @@ class AppStateMachine {
       await _updateEditorMode(changeState, appState, event.isEditorMode);
     } else if (event is SaveSongText) {
       await _saveSongText(changeState, newState, event.updatedText);
+    } else if (event is UpdateMenuExpandedArtistGroup) {
+      await _updateMenuExpandedArtistGroup(changeState, appState, event.artistGroup);
     } else if (event is UploadCurrentToCloud) {
       _uploadCurrentToCloud(newState);
     } else if (event is DeleteCurrentToTrash) {
@@ -333,6 +335,12 @@ class AppStateMachine {
     newLocalState.currentSongs = songs;
     newAppState.localState = newLocalState;
     await changeState(newAppState);
+  }
+
+  Future<void> _updateMenuExpandedArtistGroup(AppStateChanger changeState, AppState appState, String artistGroup) async {
+    final newState = appState.copy();
+    newState.localState.menuExpandedArtistGroup = artistGroup;
+    await changeState(newState);
   }
 
   void _uploadCurrentToCloud(AppState appState) {
