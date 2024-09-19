@@ -174,7 +174,7 @@ class _MenuItem extends StatelessWidget {
   final void Function() onGroupTap;
   final void Function(String artist) onArtistTap;
 
-  const _MenuItem({super.key, required this.artistOrGroup, required this.artistList, required this.menuExpandedArtistGroup, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onGroupTap, required this.onArtistTap});
+  const _MenuItem({required this.artistOrGroup, required this.artistList, required this.menuExpandedArtistGroup, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onGroupTap, required this.onArtistTap});
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +217,7 @@ class _ArtistGroupItem extends StatelessWidget {
   final void Function() onGroupTap;
   final void Function(String artist) onArtistTap;
 
-  const _ArtistGroupItem({super.key, required this.artistGroup, required this.expandedList, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onGroupTap, required this.onArtistTap});
+  const _ArtistGroupItem({required this.artistGroup, required this.expandedList, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onGroupTap, required this.onArtistTap});
 
   @override
   Widget build(BuildContext context) {
@@ -269,7 +269,7 @@ class _ArtistItem extends StatelessWidget {
   final double dividerHeight;
   final void Function() onTap;
 
-  const _ArtistItem({super.key, required this.artist, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onTap});
+  const _ArtistItem({required this.artist, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
