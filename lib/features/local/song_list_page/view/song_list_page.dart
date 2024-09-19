@@ -233,7 +233,7 @@ class _ArtistGroupItem extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 artistGroup,
-                style: textStyler.textStyleCommonInvertedBold,
+                style: textStyler.textStyleCommonInvertedW500,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

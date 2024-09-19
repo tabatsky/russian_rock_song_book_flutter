@@ -19,6 +19,8 @@ class AppTextStyler {
       color: theme.colorBg, fontSize: fontSizeCommon);
   TextStyle get textStyleCommonInvertedBold => TextStyle(
       color: theme.colorBg, fontSize: fontSizeCommon, fontWeight: FontWeight.bold);
+  TextStyle get textStyleCommonInvertedW500 => TextStyle(
+      color: theme.colorBg, fontSize: fontSizeCommon, fontWeight: FontWeight.w500);
   TextStyle get textStyleFixedBlackBold => const TextStyle(
       color: AppTheme.materialBlack, fontSize: fontSizeFixed, fontWeight: FontWeight.bold);
   TextStyle get textStyleTitle => TextStyle(
