@@ -257,7 +257,10 @@ class _ArtistGroupItem extends StatelessWidget {
       )
     ).toList();
     final children = children1 + children2;
-    return Column(children: children);
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      child: Column(children: children),
+    );
   }
 }
 
