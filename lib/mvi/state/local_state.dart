@@ -9,6 +9,7 @@ class LocalState{
   int currentSongPosition = -1;
   int scrollPosition = 0;
   bool isEditorMode = false;
+  bool isAutoPlayMode = false;
   String menuExpandedArtistGroup = '';
 
   LocalState();
@@ -22,6 +23,7 @@ class LocalState{
       this.currentSongPosition,
       this.scrollPosition,
       this.isEditorMode,
+      this.isAutoPlayMode,
       this.menuExpandedArtistGroup
       );
 
@@ -34,6 +36,7 @@ class LocalState{
       currentSongPosition,
       scrollPosition,
       isEditorMode,
+      isAutoPlayMode,
       menuExpandedArtistGroup
   );
 }

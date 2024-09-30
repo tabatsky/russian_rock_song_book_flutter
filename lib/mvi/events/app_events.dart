@@ -35,6 +35,12 @@ class UpdateEditorMode extends AppUIEvent {
   UpdateEditorMode(this.isEditorMode);
 }
 
+class UpdateAutoPlayMode extends AppUIEvent {
+  bool isAutoPlayMode;
+
+  UpdateAutoPlayMode(this.isAutoPlayMode);
+}
+
 class SaveSongText extends AppUIEvent {
   String updatedText;
 

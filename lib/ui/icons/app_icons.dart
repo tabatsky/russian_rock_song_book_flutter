@@ -5,6 +5,8 @@ class AppIcons {
   static const icRight = 'assets/icons/ic_right.png';
   static const icStar = 'assets/icons/ic_star.png';
   static const icDelete = 'assets/icons/ic_delete.png';
+  static const icPlay = 'assets/icons/ic_play.png';
+  static const icPause = 'assets/icons/ic_pause.png';
   static const icVk = 'assets/icons/ic_vk.png';
   static const icYandex = 'assets/icons/ic_yandex.png';
   static const icYoutube = 'assets/icons/ic_youtube.png';

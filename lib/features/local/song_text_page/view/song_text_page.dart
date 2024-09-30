@@ -32,6 +32,7 @@ class SongTextPage extends StatelessWidget {
           return _SongTextPageContent(
               state.settings,
               state.localState.isEditorMode,
+              state.localState.isAutoPlayMode,
               state.localState.currentSong,
               onPerformAction);
         }
@@ -42,10 +43,11 @@ class SongTextPage extends StatelessWidget {
 class _SongTextPageContent extends StatelessWidget {
   final AppSettings settings;
   final bool isEditorMode;
+  final bool isAutoPlayMode;
   final Song? currentSong;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _SongTextPageContent(this.settings, this.isEditorMode, this.currentSong, this.onPerformAction);
+  const _SongTextPageContent(this.settings, this.isEditorMode, this.isAutoPlayMode, this.currentSong, this.onPerformAction);
 
   @override
   Widget build(BuildContext context) =>  Scaffold(
@@ -60,6 +62,13 @@ class _SongTextPageContent extends StatelessWidget {
         },
       ),
       actions: [
+        IconButton(
+          icon: Image.asset(isAutoPlayMode ? AppIcons.icPause : AppIcons.icPlay),
+          iconSize: 50,
+          onPressed: () {
+            onPerformAction(UpdateAutoPlayMode(!isAutoPlayMode));
+          },
+        ),
         IconButton(
           icon: Image.asset(AppIcons.icLeft),
           iconSize: 50,
@@ -219,6 +228,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
     if (_lastSong != newSong) {
       _lastSong = newSong;
       widget.onPerformAction(UpdateEditorMode(false));
+      widget.onPerformAction(UpdateAutoPlayMode(false));
       _textEditorController.text = newSong?.text ?? '';
       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToTop());
     }

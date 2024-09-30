@@ -50,6 +50,8 @@ class AppStateMachine {
       await _toggleFavorite(changeState, newState);
     } else if (event is UpdateEditorMode) {
       await _updateEditorMode(changeState, appState, event.isEditorMode);
+    } else if (event is UpdateAutoPlayMode) {
+      await _updateAutoPlayMode(changeState, appState, event.isAutoPlayMode);
     } else if (event is SaveSongText) {
       await _saveSongText(changeState, newState, event.updatedText);
     } else if (event is UpdateMenuExpandedArtistGroup) {
@@ -308,9 +310,14 @@ class AppStateMachine {
   }
 
   Future<void> _updateEditorMode(AppStateChanger changeState, AppState appState, bool isEditorMode) async {
-    log("editor mode: $isEditorMode");
     final newState = appState.copy();
     newState.localState.isEditorMode = isEditorMode;
+    await changeState(newState);
+  }
+
+  Future<void> _updateAutoPlayMode(AppStateChanger changeState, AppState appState, bool isAutoPlayMode) async {
+    final newState = appState.copy();
+    newState.localState.isAutoPlayMode = isAutoPlayMode;
     await changeState(newState);
   }
 
