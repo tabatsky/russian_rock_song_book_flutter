@@ -95,7 +95,7 @@ class _SongTextPageContent extends StatelessWidget {
     body: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        _SongTextBody(settings, isEditorMode, currentSong, onPerformAction),
+        _SongTextBody(settings, isEditorMode, isAutoPlayMode, currentSong, onPerformAction),
       ],
     ),
   );
@@ -105,10 +105,11 @@ class _SongTextPageContent extends StatelessWidget {
 class _SongTextBody extends StatefulWidget {
   final AppSettings settings;
   final bool isEditorMode;
+  final bool isAutoPlayMode;
   final Song? currentSong;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _SongTextBody(this.settings, this.isEditorMode, this.currentSong, this.onPerformAction);
+  const _SongTextBody(this.settings, this.isEditorMode, this.isAutoPlayMode, this.currentSong, this.onPerformAction);
 
   @override
   State<StatefulWidget> createState() => _SongTextBodyState();
@@ -116,6 +117,8 @@ class _SongTextBody extends StatefulWidget {
 }
 
 class _SongTextBodyState extends State<_SongTextBody> {
+  static const deltaY = 10.0;
+
   final _textEditorController = TextEditingController();
 
   final ScrollController _scrollController = ScrollController(
@@ -124,10 +127,14 @@ class _SongTextBodyState extends State<_SongTextBody> {
   );
 
   Song? _lastSong;
+  bool _isAutoPlayMode = false;
+  bool _justScrolledToTop = false;
+  double _scrollY = 0.0;
 
   @override
   Widget build(BuildContext context) {
     _updateSong(widget.currentSong);
+    _updateAutoPlayMode(widget.isAutoPlayMode);
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -220,18 +227,44 @@ class _SongTextBodyState extends State<_SongTextBody> {
   }
 
   void _scrollToTop() {
+    _justScrolledToTop = true;
+    _scrollY = 0.0;
     _scrollController.animateTo(0.0,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
   }
 
   void _updateSong(Song? newSong) {
-    if (_lastSong != newSong) {
+    if (_lastSong?.title != newSong?.title || _lastSong?.artist != newSong?.artist) {
       _lastSong = newSong;
       widget.onPerformAction(UpdateEditorMode(false));
       widget.onPerformAction(UpdateAutoPlayMode(false));
       _textEditorController.text = newSong?.text ?? '';
       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToTop());
     }
+  }
+  
+  void _updateAutoPlayMode(bool isAutoPlayMode) {
+    if (!_isAutoPlayMode && isAutoPlayMode) {
+      _startAutoPlay();
+    }
+    _isAutoPlayMode = isAutoPlayMode;
+  }
+  
+  Future<void> _startAutoPlay() async {
+    _justScrolledToTop = false;
+    do {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (_justScrolledToTop) break;
+      _scrollY += deltaY;
+      if (_scrollY > _scrollController.position.maxScrollExtent) {
+        _scrollY = _scrollController.position.maxScrollExtent;
+      }
+      _scrollController.animateTo(
+          _scrollY,
+          duration: const Duration(milliseconds: 1),
+          curve: Curves.linear
+      );
+    } while (_isAutoPlayMode);
   }
 }
 
