@@ -130,6 +130,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
   bool _isAutoPlayMode = false;
   bool _justScrolledToTop = false;
   double _scrollY = 0.0;
+  bool _isTappedNow = false;
 
   @override
   Widget build(BuildContext context) {
@@ -147,44 +148,52 @@ class _SongTextBodyState extends State<_SongTextBody> {
 
           final bodyContent = [
             Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                padding: EdgeInsets.zero,
-                child: Container(
-                  constraints: BoxConstraints(
-                      minHeight: height, minWidth: width),
-                  color: widget.settings.theme.colorBg,
-                  padding: const EdgeInsets.all(8),
-                  child: Wrap(
-                    children: [
-                      Text(
-                        widget.currentSong?.title ?? '',
-                        style: widget.settings.textStyler.textStyleTitle,
-                        key: const Key('song_text_title'),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: _handleScrollNotification,
+                child: GestureDetector(
+                  onTapDown: (details) { _isTappedNow = true; },
+                  onTapUp: (details) { _isTappedNow = false; },
+                  onVerticalDragStart: (details) { _isTappedNow = true; },
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: EdgeInsets.zero,
+                    child: Container(
+                      constraints: BoxConstraints(
+                          minHeight: height, minWidth: width),
+                      color: widget.settings.theme.colorBg,
+                      padding: const EdgeInsets.all(8),
+                      child: Wrap(
+                        children: [
+                          Text(
+                            widget.currentSong?.title ?? '',
+                            style: widget.settings.textStyler.textStyleTitle,
+                            key: const Key('song_text_title'),
+                          ),
+                          Container(
+                            height: 20,
+                          ),
+                          widget.isEditorMode
+                              ? TextField(
+                            controller: _textEditorController,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            style: widget.settings.textStyler.textStyleSongText,
+                          )
+                              : Text(
+                            widget.currentSong?.text ?? '',
+                            style: widget.settings.textStyler.textStyleSongText,
+                            key: const Key('song_text_text'),
+                          ),
+                          Container(
+                            height: 80,
+                          ),
+                        ],
                       ),
-                      Container(
-                        height: 20,
-                      ),
-                      widget.isEditorMode
-                          ? TextField(
-                        controller: _textEditorController,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        style: widget.settings.textStyler.textStyleSongText,
-                      )
-                          : Text(
-                        widget.currentSong?.text ?? '',
-                        style: widget.settings.textStyler.textStyleSongText,
-                        key: const Key('song_text_text'),
-                      ),
-                      Container(
-                        height: 80,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -226,6 +235,15 @@ class _SongTextBodyState extends State<_SongTextBody> {
     widget.onPerformAction(SaveSongText(updatedText));
   }
 
+  bool _handleScrollNotification(ScrollNotification notification) {
+    final newY = notification.metrics.extentBefore;
+    if ((newY - _scrollY).abs() > 5 * deltaY) {
+      _scrollY = newY;
+      _isTappedNow = false;
+    }
+    return false;
+  }
+
   void _scrollToTop() {
     _justScrolledToTop = true;
     _scrollY = 0.0;
@@ -252,18 +270,21 @@ class _SongTextBodyState extends State<_SongTextBody> {
   
   Future<void> _startAutoPlay() async {
     _justScrolledToTop = false;
+    _isTappedNow = false;
     do {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 250));
       if (_justScrolledToTop) break;
-      _scrollY += deltaY;
-      if (_scrollY > _scrollController.position.maxScrollExtent) {
-        _scrollY = _scrollController.position.maxScrollExtent;
+      if (!_isTappedNow) {
+        _scrollY += deltaY;
+        if (_scrollY > _scrollController.position.maxScrollExtent) {
+          _scrollY = _scrollController.position.maxScrollExtent;
+        }
+        _scrollController.animateTo(
+            _scrollY,
+            duration: const Duration(milliseconds: 1),
+            curve: Curves.linear
+        );
       }
-      _scrollController.animateTo(
-          _scrollY,
-          duration: const Duration(milliseconds: 1),
-          curve: Curves.linear
-      );
     } while (_isAutoPlayMode);
   }
 }
