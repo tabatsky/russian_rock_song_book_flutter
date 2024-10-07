@@ -37,4 +37,13 @@ class AppTextStyler {
     fontWeight: FontWeight.w400,
     height: 1.5,
   );
+  TextStyle get textStyleChord => TextStyle(
+    color: theme.colorBg,
+    backgroundColor: theme.colorMain,
+    fontFamily: 'monospace',
+    fontFamilyFallback: const <String>["Courier"],
+    fontSize: fontSizeCommon,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+  );
 }
