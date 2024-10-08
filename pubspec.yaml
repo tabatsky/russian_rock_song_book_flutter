@@ -48,6 +48,8 @@ dependencies:
   get_it: ^7.7.0
   flutter_bloc: ^8.1.5
   equatable: ^2.0.5
+  flutter_guitar_chord: ^0.0.2
+  guitar_chord_library: ^0.0.4
 
 dev_dependencies:
   flutter_test:

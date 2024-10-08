@@ -4,15 +4,26 @@ import 'package:russian_rock_song_book/ui/widgets/clickable_word_text/word_scann
 
 class ClickableWordText extends StatelessWidget {
   final String text;
+  final List<String> actualWords;
+  final Map<String, String> actualMappings;
   final TextStyle style1;
   final TextStyle style2;
   final Key key;
 
-  const ClickableWordText({required this.text, required this.style1, required this.style2, required this.key});
+  const ClickableWordText({required this.text, required this.actualWords, required this.actualMappings, required this.style1, required this.style2, required this.key});
 
   @override
   Widget build(BuildContext context) {
-    final words = WordScanner(text).getWordList();
+    final words = WordScanner(text)
+        .getWordList()
+        .where((element) {
+          var text = element.text;
+          actualMappings.forEach((key, value) {
+            text = text.replaceAll(key, value);
+          });
+          return actualWords.contains(text);
+        })
+        .toList();
     final list = List<TextSpan>.empty(growable: true);
     int index = 0;
     int position = 0;
@@ -30,7 +41,11 @@ class ClickableWordText extends StatelessWidget {
           style: style2,
           recognizer: TapGestureRecognizer()
             ..onTap = () {
-              print(text2);
+              var text = text2;
+              actualMappings.forEach((key, value) {
+                text = text.replaceAll(key, value);
+              });
+              print(text);
             },
       );
       list.add(textSpan1);

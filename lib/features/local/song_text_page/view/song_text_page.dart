@@ -13,6 +13,7 @@ import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/domain/models/local/song.dart';
 import 'package:russian_rock_song_book/domain/models/common/warning.dart';
 import 'package:russian_rock_song_book/features/warning_dialog/view/warning_dialog.dart';
+import 'package:russian_rock_song_book/features/chord_dialog/all_chords.dart';
 import 'package:russian_rock_song_book/ui/widgets/clickable_word_text/clickable_word_text.dart';
 
 class SongTextPage extends StatelessWidget {
@@ -147,6 +148,8 @@ class _SongTextBodyState extends State<_SongTextBody> {
 
           double buttonSize = isPortrait ? width / 7.0 : height / 7.0;
 
+          print(AllChords.keys);
+
           final bodyContent = [
             Expanded(
               child: NotificationListener<ScrollNotification>(
@@ -186,6 +189,8 @@ class _SongTextBodyState extends State<_SongTextBody> {
                           )
                               : ClickableWordText(
                             text: widget.currentSong?.text ?? '',
+                            actualWords: AllChords.chordsNames,
+                            actualMappings: AllChords.chordMappings,
                             style1: widget.settings.textStyler.textStyleSongText,
                             style2: widget.settings.textStyler.textStyleChord,
                             key: const Key('song_text_text'),
