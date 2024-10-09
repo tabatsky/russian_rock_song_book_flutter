@@ -100,6 +100,8 @@ class AppStateMachine {
       await _saveSettings(changeState, newState, event.settings);
     } else if (event is ReloadSettings) {
       await _reloadSettings(changeState, newState);
+    } else if (event is ShowToast) {
+      _showToast(newState, event.text);
     } else {
       return false;
     }

@@ -5,24 +5,14 @@ class AllChords {
 
   static final keys = instrument.getKeys();
 
-  static final chordsNames = keys
+  static final chords = keys
       .expand((element) => instrument.getChordsByKey(element) ?? [])
-      .map((e) {
-    if (e is Chord) {
-      final suffix = e.suffix;
-      String actualSuffix;
-      if (suffix == "major") {
-        actualSuffix = '';
-      } else if (suffix == "minor") {
-        actualSuffix = 'm';
-      } else {
-        actualSuffix = suffix;
-      }
-      return e.chordKey + actualSuffix;
-    } else {
-      return '';
-    }
-  }).toList();
+      .map((e) => e as Chord)
+      .toList();
+
+  static final chordsNames = chords
+      .map((e) => e.actualName)
+      .toList();
 
   static final chordMappings = {
     'H': 'A',
@@ -30,4 +20,18 @@ class AllChords {
     'Bb': 'A#',
     'Ab': 'G#'
   };
+}
+
+extension ActualName on Chord {
+  String get actualName {
+    String actualSuffix;
+    if (suffix == "major") {
+      actualSuffix = '';
+    } else if (suffix == "minor") {
+      actualSuffix = 'm';
+    } else {
+      actualSuffix = suffix;
+    }
+    return chordKey + actualSuffix;
+  }
 }

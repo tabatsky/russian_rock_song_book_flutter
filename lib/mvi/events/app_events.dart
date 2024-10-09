@@ -139,3 +139,9 @@ class SaveSettings extends AppUIEvent {
   SaveSettings(this.settings);
 }
 class ReloadSettings extends AppUIEvent {}
+
+class ShowToast extends AppUIEvent {
+  String text;
+
+  ShowToast(this.text);
+}

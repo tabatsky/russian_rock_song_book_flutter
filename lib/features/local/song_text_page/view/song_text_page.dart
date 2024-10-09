@@ -191,6 +191,9 @@ class _SongTextBodyState extends State<_SongTextBody> {
                             text: widget.currentSong?.text ?? '',
                             actualWords: AllChords.chordsNames,
                             actualMappings: AllChords.chordMappings,
+                            onWordTap: (word) {
+                              widget.onPerformAction(ShowToast(word));
+                            },
                             style1: widget.settings.textStyler.textStyleSongText,
                             style2: widget.settings.textStyler.textStyleChord,
                             key: const Key('song_text_text'),

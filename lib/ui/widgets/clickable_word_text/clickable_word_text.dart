@@ -6,11 +6,12 @@ class ClickableWordText extends StatelessWidget {
   final String text;
   final List<String> actualWords;
   final Map<String, String> actualMappings;
+  final void Function(String word) onWordTap;
   final TextStyle style1;
   final TextStyle style2;
   final Key key;
 
-  const ClickableWordText({required this.text, required this.actualWords, required this.actualMappings, required this.style1, required this.style2, required this.key});
+  const ClickableWordText({required this.text, required this.actualWords, required this.actualMappings, required this.onWordTap, required this.style1, required this.style2, required this.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +46,7 @@ class ClickableWordText extends StatelessWidget {
               actualMappings.forEach((key, value) {
                 text = text.replaceAll(key, value);
               });
-              print(text);
+              onWordTap(text);
             },
       );
       list.add(textSpan1);
