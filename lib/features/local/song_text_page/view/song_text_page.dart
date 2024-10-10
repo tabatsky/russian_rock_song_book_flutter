@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:russian_rock_song_book/features/chord_dialog/chord_dialog.dart';
 import 'package:russian_rock_song_book/features/common/widgets/bottom_button.dart';
 import 'package:russian_rock_song_book/features/common/widgets/music_button.dart';
 import 'package:russian_rock_song_book/mvi/events/app_events.dart';
@@ -192,7 +193,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
                             actualWords: AllChords.chordsNames,
                             actualMappings: AllChords.chordMappings,
                             onWordTap: (word) {
-                              widget.onPerformAction(ShowToast(word));
+                              ChordDialog.showChordDialog(context, word);
                             },
                             style1: widget.settings.textStyler.textStyleSongText,
                             style2: widget.settings.textStyler.textStyleChord,
