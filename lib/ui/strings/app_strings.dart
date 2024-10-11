@@ -7,6 +7,7 @@ class AppStrings {
   static const strWarningDialogTitle = 'Отправить уведомление';
   static const strToastWarningSendSuccess = 'Уведомление отправлено';
   static const strToastWarningSendError = 'Ошибка отправки уведомления';
+  static const strClose = 'Закрыть';
   static const strSend = 'Отправить';
   static const strCancel = 'Отмена';
   static const strAreYouSure = 'Вы уверены?';

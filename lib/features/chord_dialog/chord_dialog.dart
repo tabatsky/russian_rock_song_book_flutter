@@ -42,7 +42,7 @@ class ChordDialog {
                     .textTheme
                     .labelLarge,
               ),
-              child: const Text(AppStrings.strCancel),
+              child: const Text(AppStrings.strClose),
               onPressed: () {
                 Navigator.of(context).pop();
               },
