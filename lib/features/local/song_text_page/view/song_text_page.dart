@@ -193,7 +193,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
                             actualWords: AllChords.chordsNames,
                             actualMappings: AllChords.chordMappings,
                             onWordTap: (word) {
-                              ChordDialog.showChordDialog(context, word);
+                              ChordDialog.showChordDialog(context, widget.settings, word);
                             },
                             style1: widget.settings.textStyler.textStyleSongText,
                             style2: widget.settings.textStyler.textStyleChord,
