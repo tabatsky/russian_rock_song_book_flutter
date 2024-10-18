@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
+import 'package:russian_rock_song_book/features/chord_dialog/all_chords.dart';
+import 'package:russian_rock_song_book/features/chord_dialog/chord_dialog.dart';
 import 'package:russian_rock_song_book/features/common/widgets/bottom_button.dart';
 import 'package:russian_rock_song_book/features/common/widgets/music_button.dart';
 import 'package:russian_rock_song_book/mvi/events/app_events.dart';
@@ -13,6 +15,7 @@ import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 import 'package:russian_rock_song_book/domain/models/common/warning.dart';
 import 'package:russian_rock_song_book/features/warning_dialog/view/warning_dialog.dart';
+import 'package:russian_rock_song_book/ui/widgets/clickable_word_text/clickable_word_text.dart';
 
 class CloudSongTextPage extends StatelessWidget {
 
@@ -140,9 +143,16 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
                       Container(
                         height: 20,
                       ),
-                      Text(
-                        widget.cloudState.currentCloudSong?.text ?? '',
-                        style: widget.settings.textStyler.textStyleSongText,
+                      ClickableWordText(
+                        text: widget.cloudState.currentCloudSong?.text ?? '',
+                        actualWords: AllChords.chordsNames,
+                        actualMappings: AllChords.chordMappings,
+                        onWordTap: (word) {
+                          ChordDialog.showChordDialog(context, widget.settings, word);
+                        },
+                        style1: widget.settings.textStyler.textStyleSongText,
+                        style2: widget.settings.textStyler.textStyleChord,
+                        key: const Key('song_text_text'),
                       ),
                       Container(
                         height: 80,
