@@ -17,7 +17,8 @@ class ChordDialog {
       builder: (BuildContext context) {
         return AlertDialog(
           title: null,
-          backgroundColor: color1,
+          backgroundColor: settings.theme.colorCommon,
+          surfaceTintColor: Colors.black,
           content: Container(
             color: color1,
             constraints: const BoxConstraints(
@@ -41,7 +42,7 @@ class ChordDialog {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(AppStrings.strClose, style: settings.textStyler.textStyleCommonInverted),
+              child: Text(AppStrings.strClose, style: settings.textStyler.textStyleCommon),
               onPressed: () {
                 Navigator.of(context).pop();
               },
