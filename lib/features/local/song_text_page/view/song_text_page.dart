@@ -149,8 +149,6 @@ class _SongTextBodyState extends State<_SongTextBody> {
 
           double buttonSize = isPortrait ? width / 7.0 : height / 7.0;
 
-          print(AllChords.keys);
-
           final bodyContent = [
             Expanded(
               child: NotificationListener<ScrollNotification>(
@@ -338,7 +336,7 @@ class _ButtonPanel extends StatelessWidget {
         });
       }),
       BottomButton(AppIcons.icTrash, buttonSize, () {
-        _showDeleteToTrashConfirmDialog(context);
+        _showDeleteToTrashConfirmDialog(context, settings);
       }),
       BottomButton(isEditorMode ? AppIcons.icSave : AppIcons.icEdit, buttonSize, () {
         if (isEditorMode) {
@@ -358,29 +356,25 @@ class _ButtonPanel extends StatelessWidget {
     );
   }
 
-  Future<void> _showDeleteToTrashConfirmDialog(BuildContext context) {
+  Future<void> _showDeleteToTrashConfirmDialog(BuildContext context, AppSettings settings) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(AppStrings.strAreYouSure),
-          content: const Text(AppStrings.strWillBeRemoved),
+          title: Text(AppStrings.strAreYouSure, style: settings.textStyler.textStyleSmallTitle),
+          backgroundColor: settings.theme.colorCommon,
+          surfaceTintColor: Colors.black,
+          content: Text(AppStrings.strWillBeRemoved, style: settings.textStyler.textStyleCommon),
           actions: <Widget>[
             TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text(AppStrings.strYes),
+              child: Text(AppStrings.strYes, style: settings.textStyler.textStyleCommon),
               onPressed: () {
                 onPerformAction(DeleteCurrentToTrash());
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text(AppStrings.strNo),
+              child: Text(AppStrings.strNo, style: settings.textStyler.textStyleCommon),
               onPressed: () {
                 Navigator.of(context).pop();
               },
