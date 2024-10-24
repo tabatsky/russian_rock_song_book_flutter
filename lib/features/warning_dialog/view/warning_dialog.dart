@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 
 typedef WarningSender = void Function(String comment);
 
 class WarningDialog {
-  static Future<void> showWarningDialog(BuildContext context, WarningSender warningSender) {
+  static Future<void> showWarningDialog(BuildContext context, AppSettings settings, WarningSender warningSender) {
     final commentEditorController = TextEditingController();
     const editorHeight = 200.0;
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(AppStrings.strWarningDialogTitle),
+          title: Text(AppStrings.strWarningDialogTitle, style: settings.textStyler.textStyleSmallTitle),
+          backgroundColor: settings.theme.colorCommon,
+          surfaceTintColor: Colors.black,
           content: Container(
             constraints: const BoxConstraints(
               minHeight: editorHeight,
@@ -25,18 +28,18 @@ class WarningDialog {
                 maxLines: null,
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                style: settings.textStyler.textStyleCommonInverted,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
                   contentPadding: EdgeInsets.zero,
+                  filled: true,
+                  fillColor: settings.theme.colorMain,
                 ),
             ),
           ),
           actions: <Widget>[
             TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text(AppStrings.strSend),
+              child: Text(AppStrings.strSend, style: settings.textStyler.textStyleCommon),
               onPressed: () {
                 final comment = commentEditorController.text;
                 _sendWarning(warningSender, comment);
@@ -44,10 +47,7 @@ class WarningDialog {
               },
             ),
             TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text(AppStrings.strCancel),
+              child: Text(AppStrings.strCancel, style: settings.textStyler.textStyleCommon),
               onPressed: () {
                 Navigator.of(context).pop();
               },

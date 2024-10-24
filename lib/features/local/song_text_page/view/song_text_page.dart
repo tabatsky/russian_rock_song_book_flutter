@@ -214,6 +214,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
               height: isPortrait ? buttonSize : height,
               color: widget.settings.theme.colorBg,
               child: _ButtonPanel(
+                  widget.settings,
                   isPortrait,
                   widget.settings.listenToMusicPreference,
                   widget.currentSong,
@@ -301,6 +302,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
 }
 
 class _ButtonPanel extends StatelessWidget {
+  final AppSettings settings;
   final bool isPortrait;
   final ListenToMusicVariant listenToMusicVariant;
   final Song? currentSong;
@@ -311,6 +313,7 @@ class _ButtonPanel extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _ButtonPanel(
+      this.settings,
       this.isPortrait,
       this.listenToMusicVariant,
       this.currentSong,
@@ -329,7 +332,7 @@ class _ButtonPanel extends StatelessWidget {
         onPerformAction(UploadCurrentToCloud());
       }),
       BottomButton(AppIcons.icWarning, buttonSize, () {
-        WarningDialog.showWarningDialog(context, (comment) {
+        WarningDialog.showWarningDialog(context, settings, (comment) {
           final warning = Warning.fromSongWithComment(currentSong!, comment);
           onPerformAction(SendWarning(warning));
         });
