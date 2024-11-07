@@ -195,7 +195,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
                             },
                             style1: widget.settings.textStyler.textStyleSongText,
                             style2: widget.settings.textStyler.textStyleChord,
-                            key: const Key('song_text_text'),
+                            textKey: const Key('song_text_text'),
                           ),
                           Container(
                             height: 80,

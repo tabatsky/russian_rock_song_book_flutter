@@ -9,9 +9,9 @@ class ClickableWordText extends StatelessWidget {
   final void Function(String word) onWordTap;
   final TextStyle style1;
   final TextStyle style2;
-  final Key key;
+  final Key textKey;
 
-  const ClickableWordText({required this.text, required this.actualWords, required this.actualMappings, required this.onWordTap, required this.style1, required this.style2, required this.key});
+  const ClickableWordText({super.key, required this.text, required this.actualWords, required this.actualMappings, required this.onWordTap, required this.style1, required this.style2, required this.textKey});
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class ClickableWordText extends StatelessWidget {
     list.add(textSpan1);
 
     return RichText(
-        key: key,
+        key: textKey,
         text: TextSpan(
           children: list,
         )

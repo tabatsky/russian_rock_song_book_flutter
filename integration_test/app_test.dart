@@ -82,8 +82,13 @@ void main() {
       });
       final scrollable = find.byWidgetPredicate((w) => w is Scrollable);
       final menuListScrollable = find.descendant(of: menuListView, matching: scrollable);
+      final artist1GroupText = find.text(ARTIST_1.characters.first);
+      await tester.scrollUntilVisible(artist1GroupText, 500, scrollable: menuListScrollable);
+      await tester.waitFor((tester) {
+        expect(artist1GroupText, findsOneWidget);
+      });
+      await tester.tap(artist1GroupText);
       final artist1Text = find.text(ARTIST_1);
-      await tester.scrollUntilVisible(artist1Text, 500, scrollable: menuListScrollable);
       await tester.waitFor((tester) {
         expect(artist1Text, findsOneWidget);
       });
@@ -102,8 +107,13 @@ void main() {
       });
       final scrollable = find.byWidgetPredicate((w) => w is Scrollable);
       final menuListScrollable = find.descendant(of: menuListView, matching: scrollable);
+      final artist1GroupText = find.text(ARTIST_1.characters.first);
+      await tester.scrollUntilVisible(artist1GroupText, 500, scrollable: menuListScrollable);
+      await tester.waitFor((tester) {
+        expect(artist1GroupText, findsOneWidget);
+      });
+      await tester.tap(artist1GroupText);
       final artist1Text = find.text(ARTIST_1);
-      await tester.scrollUntilVisible(artist1Text, 300, scrollable: menuListScrollable);
       await tester.waitFor((tester) {
         expect(artist1Text, findsOneWidget);
       });
@@ -130,8 +140,13 @@ void main() {
       });
       final scrollable = find.byWidgetPredicate((w) => w is Scrollable);
       final menuListScrollable = find.descendant(of: menuListView, matching: scrollable);
+      final artist1GroupText = find.text(ARTIST_1.characters.first);
+      await tester.scrollUntilVisible(artist1GroupText, 500, scrollable: menuListScrollable);
+      await tester.waitFor((tester) {
+        expect(artist1GroupText, findsOneWidget);
+      });
+      await tester.tap(artist1GroupText);
       final artist1Text = find.text(ARTIST_1);
-      await tester.scrollUntilVisible(artist1Text, 300, scrollable: menuListScrollable);
       await tester.waitFor((tester) {
         expect(artist1Text, findsOneWidget);
       });
@@ -188,8 +203,13 @@ void main() {
       });
       final scrollable = find.byWidgetPredicate((w) => w is Scrollable);
       final menuListScrollable = find.descendant(of: menuListView, matching: scrollable);
+      final artist1GroupText = find.text(ARTIST_1.characters.first);
+      await tester.scrollUntilVisible(artist1GroupText, 500, scrollable: menuListScrollable);
+      await tester.waitFor((tester) {
+        expect(artist1GroupText, findsOneWidget);
+      });
+      await tester.tap(artist1GroupText);
       final artist1Text = find.text(ARTIST_1);
-      await tester.scrollUntilVisible(artist1Text, 300, scrollable: menuListScrollable);
       await tester.waitFor((tester) {
         expect(artist1Text, findsOneWidget);
       });
@@ -219,7 +239,7 @@ void main() {
         expect(tester.widget<Text>(songTextTitle).data, song.title);
         final songTextText = find.byKey(const Key('song_text_text'));
         expect(songTextText, findsOneWidget);
-        expect(tester.widget<Text>(songTextText).data, song.text);
+        expect(tester.widget<RichText>(songTextText).text.toPlainText(), song.text);
       });
     });
   });
