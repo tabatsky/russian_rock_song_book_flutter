@@ -145,3 +145,5 @@ class ShowToast extends AppUIEvent {
 
   ShowToast(this.text);
 }
+
+class AddArtistList extends AppUIEvent {}

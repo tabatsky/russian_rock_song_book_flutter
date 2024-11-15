@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:russian_rock_song_book/data/cloud/cloud_search_pager/cloud_search_pager.dart';
@@ -11,6 +12,7 @@ import 'package:russian_rock_song_book/data/settings/theme_variant.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/order_by.dart';
 import 'package:russian_rock_song_book/domain/models/common/warning.dart';
+import 'package:russian_rock_song_book/domain/models/local/song.dart';
 import 'package:russian_rock_song_book/domain/repository/cloud/cloud_repository.dart';
 import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
 import 'package:russian_rock_song_book/mvi/events/app_events.dart';
@@ -100,6 +102,8 @@ class AppStateMachine {
       await _saveSettings(changeState, newState, event.settings);
     } else if (event is ReloadSettings) {
       await _reloadSettings(changeState, newState);
+    } else if (event is AddArtistList) {
+      await _addArtistList(changeState, appState);
     } else if (event is ShowToast) {
       _showToast(newState, event.text);
     } else {
@@ -153,6 +157,15 @@ class AppStateMachine {
       } else {
         appState.currentPageVariant = newPageVariant;
       }
+    } else if (oldPageVariant == PageVariant.songList && newPageVariant == PageVariant.addArtist) {
+      getNavigatorState()?.pushNamed(PageVariant.addArtist.route);
+      appState.currentPageVariant = newPageVariant;
+    } else if (oldPageVariant == PageVariant.addArtist && newPageVariant == PageVariant.songList) {
+      if (!systemBack) {
+        getNavigatorState()?.pop();
+      } else {
+        appState.currentPageVariant = newPageVariant;
+      }
     }
   }
 
@@ -186,6 +199,10 @@ class AppStateMachine {
       _selectPageVariant(newAppState, PageVariant.cloudSearch);
       await changeState(newAppState);
       _performCloudSearch(changeState, appState, '', OrderBy.byIdDesc);
+    } else if (artist == SongRepository.artistAddArtist) {
+      final newAppState = appState;
+      _selectPageVariant(newAppState, PageVariant.addArtist);
+      await changeState(newAppState);
     } else {
       final songs = await GetIt.I<SongRepository>().getSongsByArtist(artist);
       final newAppState = appState;
@@ -258,6 +275,10 @@ class AppStateMachine {
       _selectPageVariant(newAppState, PageVariant.cloudSearch, systemBack: systemBack);
       await changeState(newAppState);
     } else if (appState.currentPageVariant == PageVariant.settings) {
+      final newAppState = appState;
+      _selectPageVariant(newAppState, PageVariant.songList, systemBack: systemBack);
+      await changeState(newAppState);
+    } else if (appState.currentPageVariant == PageVariant.addArtist) {
       final newAppState = appState;
       _selectPageVariant(newAppState, PageVariant.songList, systemBack: systemBack);
       await changeState(newAppState);
@@ -604,5 +625,34 @@ class AppStateMachine {
     final newAppState = appState;
     _selectPageVariant(newAppState, PageVariant.settings);
     await changeState(newAppState);
+  }
+
+  Future<void> _addArtistList(AppStateChanger changeState, AppState appState) async {
+    const platform = MethodChannel('jatx.flutter.russian_rock_song_book/channel');
+    try {
+      final result = await platform.invokeMethod<List<Object?>>('getDeviceModel') ?? [];
+      final strings = result.map((e) => e as String).toList();
+      if (strings.length < 3) {
+        _showToast(appState, AppStrings.strToastSongsNotFound);
+        return;
+      }
+      final artist = strings[0];
+      final songList = List<Song>.empty(growable: true);
+      for (var i = 0; 2 * i < strings.length - 1; i++) {
+        final title = strings[2 * i + 1];
+        final text = strings[2 * i + 2];
+        final song = Song(artist, title, text);
+        songList.add(song);
+      }
+      await GetIt.I<SongRepository>().insertReplaceSongs(songList);
+      await _selectArtist((newState) async {
+        final newAppState = newState;
+        _selectPageVariant(newAppState, PageVariant.songList);
+        changeState(newAppState);
+      }, appState, artist);
+    } catch (e) {
+      log('add artist error: $e');
+      _showToast(appState, AppStrings.strToastError);
+    }
   }
 }

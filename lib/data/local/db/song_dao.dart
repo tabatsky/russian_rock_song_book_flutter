@@ -55,7 +55,27 @@ class SongDao {
       }
     });
   }
-  
+
+  Future<void> insertReplaceSongs(List<SongEntity> songEntities) async {
+    const query = """
+    REPLACE INTO songEntity
+    (artist, title, text, favorite, deleted, outOfTheBox, origTextMD5)
+    VALUES
+    (?, ?, ?, ?, ?, ?, ?);
+    """;
+    await _db?.transaction((txn) async {
+      for (final songEntity in songEntities) {
+        await txn.rawInsert(
+            query,
+            [
+              songEntity.artist, songEntity.title, songEntity.text,
+              songEntity.favorite, songEntity.deleted, songEntity.outOfTheBox,
+              songEntity.origTextMD5
+            ]);
+      }
+    });
+  }
+
   Future<void> insertReplaceSong(SongEntity songEntity) async {
     const query = """
     INSERT OR REPLACE INTO songEntity

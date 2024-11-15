@@ -22,7 +22,8 @@ abstract class SongRepository {
 
   static const artistFavorite = 'Избранное';
   static const artistCloudSearch = 'Аккорды онлайн';
-  static const predefinedArtists = [artistFavorite, artistCloudSearch];
+  static const artistAddArtist = 'Добавить исполнителя';
+  static const predefinedArtists = [artistFavorite, artistCloudSearch, artistAddArtist];
 
   static final artistMap = {
     '7Б' :  'b7',
@@ -126,6 +127,8 @@ abstract class SongRepository {
   Future<void> fillDB(void Function(int done, int total) onProgressChanged);
 
   Future<void> insertIgnoreSongs(List<Song> songs);
+
+  Future<void> insertReplaceSongs(List<Song> songs);
 
   Future<List<String>> getArtists();
 

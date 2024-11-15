@@ -46,6 +46,12 @@ class SongRepositoryImpl implements SongRepository {
   }
 
   @override
+  Future<void> insertReplaceSongs(List<Song> songs) async {
+    final songEntities = songs.map((e) => SongEntity.fromSong(e)).toList();
+    _songDao?.insertReplaceSongs(songEntities);
+  }
+
+  @override
   Future<List<String>> getArtists() async {
     final result = await _songDao?.getArtists();
     return result ?? [];

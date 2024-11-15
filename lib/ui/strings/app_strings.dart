@@ -28,6 +28,8 @@ class AppStrings {
   static const strTheme = 'Тема:';
   static const strListenToMusic = 'Слушать музыку:';
   static const strFontScale = 'Размер шрифта:';
+  static const strToastSongsNotFound = 'Песен не найдено';
+  static const strToastError = 'Возникла ошибка';
 
   static String strFrom(int done, int total) => "$done из $total";
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:russian_rock_song_book/features/add_artist/add_artist_page.dart';
 import 'package:russian_rock_song_book/features/start_page/view/start_page.dart';
 import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
@@ -65,6 +66,13 @@ class RussianRockSongBookApp extends StatelessWidget {
             canPop: true,
             onPopInvoked: (didPop) { _performAction(Back(systemBack: true)); },
             child: SettingsPage(
+                _appBloc, _performAction
+            ),
+          ),
+          PageVariant.addArtist.route: (context) => PopScope(
+            canPop: true,
+            onPopInvoked: (didPop) { _performAction(Back(systemBack: true)); },
+            child: AddArtistPage(
                 _appBloc, _performAction
             ),
           ),
