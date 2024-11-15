@@ -645,11 +645,13 @@ class AppStateMachine {
         songList.add(song);
       }
       await GetIt.I<SongRepository>().insertReplaceSongs(songList);
+      final newAppState = appState;
+      newAppState.localState.allArtists = await GetIt.I<SongRepository>().getArtists();
       await _selectArtist((newState) async {
         final newAppState = newState;
         _selectPageVariant(newAppState, PageVariant.songList);
         changeState(newAppState);
-      }, appState, artist);
+      }, newAppState, artist);
     } catch (e) {
       log('add artist error: $e');
       _showToast(appState, AppStrings.strToastError);
