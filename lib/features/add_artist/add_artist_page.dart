@@ -6,6 +6,7 @@ import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
+import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 
 class AddArtistPage extends StatelessWidget {
@@ -49,6 +50,9 @@ class _AddArtistPageContent extends StatelessWidget {
       ),
       body: Column(
         children: [
+          Text(AppStrings.strAddArtistManual,
+              style: settings.textStyler.textStyleSmall),
+          const Spacer(),
           TextButton(
             onPressed: () { onPerformAction(AddArtistList()); },
             child: Container(
@@ -57,8 +61,8 @@ class _AddArtistPageContent extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Padding(
                   padding: const EdgeInsets.all(20),
-                  child: Text(SongRepository.artistAddArtist,
-                      style: settings.textStyler.textStyleTitle),
+                  child: Text(AppStrings.strChoose,
+                      style: settings.textStyler.textStyleTitleBlack),
                 ),
               ),
             ),

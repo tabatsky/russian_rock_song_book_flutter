@@ -112,7 +112,7 @@ class _SettingsBodyState extends State<_SettingsBody> {
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Text(AppStrings.strSave,
-                    style: widget.settings.textStyler.textStyleTitle),
+                    style: widget.settings.textStyler.textStyleTitleBlack),
               ),
             ),
           ),

@@ -25,6 +25,8 @@ class AppTextStyler {
       color: AppTheme.materialBlack, fontSize: fontSizeFixed, fontWeight: FontWeight.bold);
   TextStyle get textStyleTitle => TextStyle(
       color: theme.colorMain, fontSize: fontSizeTitle);
+  TextStyle get textStyleTitleBlack => TextStyle(
+      color: AppTheme.materialBlack, fontSize: fontSizeTitle);
   TextStyle get textStyleSmallTitle => TextStyle(
       color: theme.colorMain, fontSize: fontSizeSmallTitle);
   TextStyle get textStyleSmall => TextStyle(
