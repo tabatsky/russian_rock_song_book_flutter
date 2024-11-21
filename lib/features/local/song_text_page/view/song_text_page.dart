@@ -177,6 +177,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
                           ),
                           widget.isEditorMode
                               ? TextField(
+                            key: const Key('song_text_editor'),
                             controller: _textEditorController,
                             keyboardType: TextInputType.multiline,
                             maxLines: null,
@@ -344,7 +345,7 @@ class _ButtonPanel extends StatelessWidget {
         } else {
           onEditText(currentSong);
         }
-      }),
+      }, buttonKey: const Key('toggle_editor_button')),
     ];
 
     return isPortrait ? Row(
