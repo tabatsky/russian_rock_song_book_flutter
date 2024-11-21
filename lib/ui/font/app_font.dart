@@ -15,6 +15,8 @@ class AppTextStyler {
 
   TextStyle get textStyleCommon => TextStyle(
       color: theme.colorMain, fontSize: fontSizeCommon);
+  TextStyle get textStyleCommonBlack => TextStyle(
+      color: AppTheme.materialBlack, fontSize: fontSizeCommon);
   TextStyle get textStyleCommonInverted => TextStyle(
       color: theme.colorBg, fontSize: fontSizeCommon);
   TextStyle get textStyleCommonInvertedBold => TextStyle(
@@ -29,8 +31,12 @@ class AppTextStyler {
       color: AppTheme.materialBlack, fontSize: fontSizeTitle);
   TextStyle get textStyleSmallTitle => TextStyle(
       color: theme.colorMain, fontSize: fontSizeSmallTitle);
+  TextStyle get textStyleSmallTitleBlack => TextStyle(
+      color: AppTheme.materialBlack, fontSize: fontSizeSmallTitle);
   TextStyle get textStyleSmall => TextStyle(
       color: theme.colorMain, fontSize: fontSizeSmall);
+  TextStyle get textStyleSmallBlack => TextStyle(
+      color: AppTheme.materialBlack, fontSize: fontSizeSmall);
   TextStyle get textStyleSongText => TextStyle(
     color: theme.colorMain,
     fontFamily: 'monospace',

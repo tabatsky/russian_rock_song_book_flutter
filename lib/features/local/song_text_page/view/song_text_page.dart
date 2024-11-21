@@ -361,20 +361,20 @@ class _ButtonPanel extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppStrings.strAreYouSure, style: settings.textStyler.textStyleSmallTitle),
+          title: Text(AppStrings.strAreYouSure, style: settings.textStyler.textStyleSmallTitleBlack),
           backgroundColor: settings.theme.colorCommon,
           surfaceTintColor: Colors.black,
-          content: Text(AppStrings.strWillBeRemoved, style: settings.textStyler.textStyleSmall),
+          content: Text(AppStrings.strWillBeRemoved, style: settings.textStyler.textStyleSmallBlack),
           actions: <Widget>[
             TextButton(
-              child: Text(AppStrings.strYes, style: settings.textStyler.textStyleSmall),
+              child: Text(AppStrings.strYes, style: settings.textStyler.textStyleSmallBlack),
               onPressed: () {
                 onPerformAction(DeleteCurrentToTrash());
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text(AppStrings.strNo, style: settings.textStyler.textStyleSmall),
+              child: Text(AppStrings.strNo, style: settings.textStyler.textStyleSmallBlack),
               onPressed: () {
                 Navigator.of(context).pop();
               },
