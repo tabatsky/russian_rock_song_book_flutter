@@ -18,14 +18,10 @@ import 'package:russian_rock_song_book/features/chord_dialog/all_chords.dart';
 import 'package:russian_rock_song_book/ui/widgets/clickable_word_text/clickable_word_text.dart';
 
 class SongTextPage extends StatelessWidget {
-
   final AppBloc appBloc;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const SongTextPage(
-      this.appBloc,
-      this.onPerformAction,
-      {super.key});
+  const SongTextPage(this.appBloc, this.onPerformAction, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +34,7 @@ class SongTextPage extends StatelessWidget {
               state.localState.isAutoPlayMode,
               state.localState.currentSong,
               onPerformAction);
-        }
-    );
+        });
   }
 }
 
@@ -50,59 +45,65 @@ class _SongTextPageContent extends StatelessWidget {
   final Song? currentSong;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _SongTextPageContent(this.settings, this.isEditorMode, this.isAutoPlayMode, this.currentSong, this.onPerformAction);
+  const _SongTextPageContent(this.settings, this.isEditorMode,
+      this.isAutoPlayMode, this.currentSong, this.onPerformAction);
 
   @override
-  Widget build(BuildContext context) =>  Scaffold(
-    backgroundColor: settings.theme.colorBg,
-    appBar: AppBar(
-      backgroundColor: AppTheme.colorDarkYellow,
-      leading: IconButton(
-        icon: Image.asset(AppIcons.icBack),
-        iconSize: 50,
-        onPressed: () {
-          onPerformAction(Back());
-        },
-      ),
-      actions: [
-        IconButton(
-          icon: Image.asset(isAutoPlayMode ? AppIcons.icPause : AppIcons.icPlay),
-          iconSize: 50,
-          onPressed: () {
-            onPerformAction(UpdateAutoPlayMode(!isAutoPlayMode));
-          },
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: settings.theme.colorBg,
+        appBar: AppBar(
+          backgroundColor: AppTheme.colorDarkYellow,
+          leading: IconButton(
+            icon: Image.asset(AppIcons.icBack),
+            iconSize: 50,
+            onPressed: () {
+              onPerformAction(Back());
+            },
+          ),
+          actions: [
+            IconButton(
+              icon: Image.asset(
+                  isAutoPlayMode ? AppIcons.icPause : AppIcons.icPlay),
+              iconSize: 50,
+              onPressed: () {
+                onPerformAction(UpdateAutoPlayMode(!isAutoPlayMode));
+              },
+            ),
+            IconButton(
+              key: const Key('left_button'),
+              icon: Image.asset(AppIcons.icLeft),
+              iconSize: 50,
+              onPressed: () {
+                onPerformAction(PrevSong());
+              },
+            ),
+            IconButton(
+              icon: Image.asset(currentSong?.favorite == true
+                  ? AppIcons.icDelete
+                  : AppIcons.icStar),
+              iconSize: 50,
+              onPressed: () {
+                onPerformAction(ToggleFavorite());
+              },
+            ),
+            IconButton(
+              key: const Key('right_button'),
+              icon: Image.asset(AppIcons.icRight),
+              iconSize: 50,
+              onPressed: () {
+                onPerformAction(NextSong());
+              },
+            ),
+          ],
         ),
-        IconButton(
-          icon: Image.asset(AppIcons.icLeft),
-          iconSize: 50,
-          onPressed: () {
-            onPerformAction(PrevSong());
-          },
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _SongTextBody(settings, isEditorMode, isAutoPlayMode, currentSong,
+                onPerformAction),
+          ],
         ),
-        IconButton(
-          icon: Image.asset(currentSong?.favorite == true ? AppIcons.icDelete : AppIcons.icStar),
-          iconSize: 50,
-          onPressed: () {
-            onPerformAction(ToggleFavorite());
-          },
-        ),
-        IconButton(
-          icon: Image.asset(AppIcons.icRight),
-          iconSize: 50,
-          onPressed: () {
-            onPerformAction(NextSong());
-          },
-        ),
-      ],
-    ),
-    body: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        _SongTextBody(settings, isEditorMode, isAutoPlayMode, currentSong, onPerformAction),
-      ],
-    ),
-  );
-
+      );
 }
 
 class _SongTextBody extends StatefulWidget {
@@ -112,11 +113,11 @@ class _SongTextBody extends StatefulWidget {
   final Song? currentSong;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _SongTextBody(this.settings, this.isEditorMode, this.isAutoPlayMode, this.currentSong, this.onPerformAction);
+  const _SongTextBody(this.settings, this.isEditorMode, this.isAutoPlayMode,
+      this.currentSong, this.onPerformAction);
 
   @override
   State<StatefulWidget> createState() => _SongTextBodyState();
-
 }
 
 class _SongTextBodyState extends State<_SongTextBody> {
@@ -145,7 +146,8 @@ class _SongTextBodyState extends State<_SongTextBody> {
           double width = constraints.maxWidth;
           double height = constraints.maxHeight;
 
-          final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+          final isPortrait =
+              MediaQuery.of(context).orientation == Orientation.portrait;
 
           double buttonSize = isPortrait ? width / 7.0 : height / 7.0;
 
@@ -154,15 +156,21 @@ class _SongTextBodyState extends State<_SongTextBody> {
               child: NotificationListener<ScrollNotification>(
                 onNotification: _handleScrollNotification,
                 child: GestureDetector(
-                  onTapDown: (details) { _isTappedNow = true; },
-                  onTapUp: (details) { _isTappedNow = false; },
-                  onVerticalDragStart: (details) { _isTappedNow = true; },
+                  onTapDown: (details) {
+                    _isTappedNow = true;
+                  },
+                  onTapUp: (details) {
+                    _isTappedNow = false;
+                  },
+                  onVerticalDragStart: (details) {
+                    _isTappedNow = true;
+                  },
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     padding: EdgeInsets.zero,
                     child: Container(
-                      constraints: BoxConstraints(
-                          minHeight: height, minWidth: width),
+                      constraints:
+                          BoxConstraints(minHeight: height, minWidth: width),
                       color: widget.settings.theme.colorBg,
                       padding: const EdgeInsets.all(8),
                       child: Wrap(
@@ -177,27 +185,31 @@ class _SongTextBodyState extends State<_SongTextBody> {
                           ),
                           widget.isEditorMode
                               ? TextField(
-                            key: const Key('song_text_editor'),
-                            controller: _textEditorController,
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                            style: widget.settings.textStyler.textStyleSongText,
-                          )
+                                  key: const Key('song_text_editor'),
+                                  controller: _textEditorController,
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  style: widget
+                                      .settings.textStyler.textStyleSongText,
+                                )
                               : ClickableWordText(
-                            text: widget.currentSong?.text ?? '',
-                            actualWords: AllChords.chordsNames,
-                            actualMappings: AllChords.chordMappings,
-                            onWordTap: (word) {
-                              ChordDialog.showChordDialog(context, widget.settings, word);
-                            },
-                            style1: widget.settings.textStyler.textStyleSongText,
-                            style2: widget.settings.textStyler.textStyleChord,
-                            textKey: const Key('song_text_text'),
-                          ),
+                                  text: widget.currentSong?.text ?? '',
+                                  actualWords: AllChords.chordsNames,
+                                  actualMappings: AllChords.chordMappings,
+                                  onWordTap: (word) {
+                                    ChordDialog.showChordDialog(
+                                        context, widget.settings, word);
+                                  },
+                                  style1: widget
+                                      .settings.textStyler.textStyleSongText,
+                                  style2:
+                                      widget.settings.textStyler.textStyleChord,
+                                  textKey: const Key('song_text_text'),
+                                ),
                           Container(
                             height: 80,
                           ),
@@ -225,11 +237,9 @@ class _SongTextBodyState extends State<_SongTextBody> {
             ),
           ];
 
-          return isPortrait ? Column(
-            children: bodyContent
-          ) : Row(
-            children: bodyContent
-          );
+          return isPortrait
+              ? Column(children: bodyContent)
+              : Row(children: bodyContent);
         },
       ),
     );
@@ -263,7 +273,8 @@ class _SongTextBodyState extends State<_SongTextBody> {
   }
 
   void _updateSong(Song? newSong) {
-    if (_lastSong?.title != newSong?.title || _lastSong?.artist != newSong?.artist) {
+    if (_lastSong?.title != newSong?.title ||
+        _lastSong?.artist != newSong?.artist) {
       _lastSong = newSong;
       widget.onPerformAction(UpdateEditorMode(false));
       widget.onPerformAction(UpdateAutoPlayMode(false));
@@ -271,14 +282,14 @@ class _SongTextBodyState extends State<_SongTextBody> {
       WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToTop());
     }
   }
-  
+
   void _updateAutoPlayMode(bool isAutoPlayMode) {
     if (!_isAutoPlayMode && isAutoPlayMode) {
       _startAutoPlay();
     }
     _isAutoPlayMode = isAutoPlayMode;
   }
-  
+
   Future<void> _startAutoPlay() async {
     _justScrolledToTop = false;
     _isTappedNow = false;
@@ -290,11 +301,8 @@ class _SongTextBodyState extends State<_SongTextBody> {
         if (_scrollY > _scrollController.position.maxScrollExtent) {
           _scrollY = _scrollController.position.maxScrollExtent;
         }
-        _scrollController.animateTo(
-            _scrollY,
-            duration: const Duration(milliseconds: 1),
-            curve: Curves.linear
-        );
+        _scrollController.animateTo(_scrollY,
+            duration: const Duration(milliseconds: 1), curve: Curves.linear);
       }
     } while (_isAutoPlayMode);
   }
@@ -325,8 +333,10 @@ class _ButtonPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      MusicButton(listenToMusicVariant.supportedVariants[0], currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
-      MusicButton(listenToMusicVariant.supportedVariants[1], currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
+      MusicButton(listenToMusicVariant.supportedVariants[0],
+          currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
+      MusicButton(listenToMusicVariant.supportedVariants[1],
+          currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
       BottomButton(AppIcons.icUpload, buttonSize, () {
         onPerformAction(UploadCurrentToCloud());
       }),
@@ -339,7 +349,8 @@ class _ButtonPanel extends StatelessWidget {
       BottomButton(AppIcons.icTrash, buttonSize, () {
         _showDeleteToTrashConfirmDialog(context, settings);
       }),
-      BottomButton(isEditorMode ? AppIcons.icSave : AppIcons.icEdit, buttonSize, () {
+      BottomButton(isEditorMode ? AppIcons.icSave : AppIcons.icEdit, buttonSize,
+          () {
         if (isEditorMode) {
           onSaveText();
         } else {
@@ -348,34 +359,41 @@ class _ButtonPanel extends StatelessWidget {
       }, buttonKey: const Key('toggle_editor_button')),
     ];
 
-    return isPortrait ? Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: buttons,
-    ) : Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: buttons,
-    );
+    return isPortrait
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: buttons,
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: buttons,
+          );
   }
 
-  Future<void> _showDeleteToTrashConfirmDialog(BuildContext context, AppSettings settings) {
+  Future<void> _showDeleteToTrashConfirmDialog(
+      BuildContext context, AppSettings settings) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppStrings.strAreYouSure, style: settings.textStyler.textStyleSmallTitleBlack),
+          title: Text(AppStrings.strAreYouSure,
+              style: settings.textStyler.textStyleSmallTitleBlack),
           backgroundColor: settings.theme.colorCommon,
           surfaceTintColor: Colors.black,
-          content: Text(AppStrings.strWillBeRemoved, style: settings.textStyler.textStyleSmallBlack),
+          content: Text(AppStrings.strWillBeRemoved,
+              style: settings.textStyler.textStyleSmallBlack),
           actions: <Widget>[
             TextButton(
-              child: Text(AppStrings.strYes, style: settings.textStyler.textStyleSmallBlack),
+              child: Text(AppStrings.strYes,
+                  style: settings.textStyler.textStyleSmallBlack),
               onPressed: () {
                 onPerformAction(DeleteCurrentToTrash());
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text(AppStrings.strNo, style: settings.textStyler.textStyleSmallBlack),
+              child: Text(AppStrings.strNo,
+                  style: settings.textStyler.textStyleSmallBlack),
               onPressed: () {
                 Navigator.of(context).pop();
               },
