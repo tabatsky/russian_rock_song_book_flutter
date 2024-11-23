@@ -77,15 +77,23 @@ class _SongTextPageContent extends StatelessWidget {
                 onPerformAction(PrevSong());
               },
             ),
-            IconButton(
-              icon: Image.asset(currentSong?.favorite == true
-                  ? AppIcons.icDelete
-                  : AppIcons.icStar),
-              iconSize: 50,
-              onPressed: () {
-                onPerformAction(ToggleFavorite());
-              },
-            ),
+            currentSong?.favorite == true
+                ? IconButton(
+                    key: const Key('delete_from_favorite_button'),
+                    icon: Image.asset(AppIcons.icDelete),
+                    iconSize: 50,
+                    onPressed: () {
+                      onPerformAction(ToggleFavorite());
+                    },
+                  )
+                : IconButton(
+                    key: const Key('add_to_favorite_button'),
+                    icon: Image.asset(AppIcons.icStar),
+                    iconSize: 50,
+                    onPressed: () {
+                      onPerformAction(ToggleFavorite());
+                    },
+                  ),
             IconButton(
               key: const Key('right_button'),
               icon: Image.asset(AppIcons.icRight),
@@ -349,14 +357,13 @@ class _ButtonPanel extends StatelessWidget {
       BottomButton(AppIcons.icTrash, buttonSize, () {
         _showDeleteToTrashConfirmDialog(context, settings);
       }),
-      BottomButton(isEditorMode ? AppIcons.icSave : AppIcons.icEdit, buttonSize,
-          () {
-        if (isEditorMode) {
-          onSaveText();
-        } else {
-          onEditText(currentSong);
-        }
-      }, buttonKey: const Key('toggle_editor_button')),
+      isEditorMode
+          ? BottomButton(AppIcons.icSave, buttonSize, () {
+              onSaveText();
+            }, buttonKey: const Key('save_button'))
+          : BottomButton(AppIcons.icEdit, buttonSize, () {
+              onEditText(currentSong);
+            }, buttonKey: const Key('edit_button')),
     ];
 
     return isPortrait

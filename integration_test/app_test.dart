@@ -244,9 +244,6 @@ void main() {
       await tester.waitFor((tester) {
         expect(titleText, findsOneWidget);
       });
-      await tester.waitFor((tester) {
-        expect(titleText, findsOneWidget);
-      });
       await tester.tap(titleText);
       await tester.pumpAndSettle();
       final songs = await GetIt.I<SongRepository>().getSongsByArtist(ARTIST_1);
@@ -303,9 +300,6 @@ void main() {
       await tester.waitFor((tester) {
         expect(titleText, findsOneWidget);
       });
-      await tester.waitFor((tester) {
-        expect(titleText, findsOneWidget);
-      });
       await tester.tap(titleText);
       await tester.pumpAndSettle();
       final songs = await GetIt.I<SongRepository>().getSongsByArtist(ARTIST_1);
@@ -319,14 +313,17 @@ void main() {
         expect(tester.widget<RichText>(songTextText).text.toPlainText(),
             song.text);
       });
-      final toggleEditorButton = find.byKey(const Key('toggle_editor_button'));
-      await tester.tap(toggleEditorButton);
+      final editButton = find.byKey(const Key('edit_button'));
+      expect(editButton, findsOneWidget);
+      await tester.tap(editButton);
       await tester.waitFor((tester) {
         final songTextEditor = find.byKey(const Key('song_text_editor'));
         expect(songTextEditor, findsOneWidget);
         expect(find.text(song.text), findsOneWidget);
       });
-      await tester.tap(toggleEditorButton);
+      final saveButton = find.byKey(const Key('save_button'));
+      expect(saveButton, findsOneWidget);
+      await tester.tap(saveButton);
       await tester.waitFor((tester) {
         final songTextText = find.byKey(const Key('song_text_text'));
         expect(songTextText, findsOneWidget);
@@ -376,9 +373,6 @@ void main() {
       await tester.waitFor((tester) {
         expect(titleText, findsOneWidget);
       });
-      await tester.waitFor((tester) {
-        expect(titleText, findsOneWidget);
-      });
       await tester.tap(titleText);
       await tester.pumpAndSettle();
 
@@ -420,6 +414,77 @@ void main() {
         expect(songTextText, findsOneWidget);
         expect(tester.widget<RichText>(songTextText).text.toPlainText(),
             song1.text);
+      });
+    });
+
+    testWidgets('adding and removing from favorite is working correctly',
+        (tester) async {
+      await launchApp(tester);
+
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await tester.tap(locateDrawer);
+      await tester.pumpAndSettle();
+
+      final menuListView = find.byKey(const Key('menu_list_view'));
+      await tester.waitFor((tester) {
+        expect(menuListView, findsOneWidget);
+      });
+      final scrollable = find.byWidgetPredicate((w) => w is Scrollable);
+      final menuListScrollable =
+          find.descendant(of: menuListView, matching: scrollable);
+      final artist1GroupText = find.text(ARTIST_1.characters.first);
+      await tester.scrollUntilVisible(artist1GroupText, 500,
+          scrollable: menuListScrollable);
+      await tester.waitFor((tester) {
+        expect(artist1GroupText, findsOneWidget);
+      });
+      await tester.tap(artist1GroupText);
+      final artist1Text = find.text(ARTIST_1);
+      await tester.waitFor((tester) {
+        expect(artist1Text, findsOneWidget);
+      });
+      await tester.tap(artist1Text);
+      await tester.pumpAndSettle();
+
+      final titleListView = find.byKey(const Key('title_list_view'));
+      await tester.waitFor((tester) {
+        expect(titleListView, findsOneWidget);
+      });
+      final titleListScrollable =
+          find.descendant(of: titleListView, matching: scrollable);
+      final titleText = find.text(TITLE_1_3);
+      await tester.scrollUntilVisible(titleText, 300,
+          scrollable: titleListScrollable);
+      await tester.waitFor((tester) {
+        expect(titleText, findsOneWidget);
+      });
+      await tester.tap(titleText);
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        final songTextTitle = find.byKey(const Key('song_text_title'));
+        expect(songTextTitle, findsOneWidget);
+        expect(tester.widget<Text>(songTextTitle).data, TITLE_1_3);
+      });
+
+      final addToFavoriteButton =
+          find.byKey(const Key('add_to_favorite_button'));
+      final deleteFromFavoriteButton =
+          find.byKey(const Key('delete_from_favorite_button'));
+
+      expect(addToFavoriteButton, findsOneWidget);
+      await tester.tap(addToFavoriteButton);
+
+      await tester.waitFor((tester) {
+        expect(addToFavoriteButton, findsNothing);
+        expect(deleteFromFavoriteButton, findsOneWidget);
+      });
+
+      await tester.tap(deleteFromFavoriteButton);
+
+      await tester.waitFor((tester) {
+        expect(deleteFromFavoriteButton, findsNothing);
+        expect(addToFavoriteButton, findsOneWidget);
       });
     });
   });
