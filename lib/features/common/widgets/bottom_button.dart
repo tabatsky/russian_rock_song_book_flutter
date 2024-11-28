@@ -7,7 +7,12 @@ class BottomButton extends StatelessWidget {
   final double buttonSize;
   final void Function() onPressed;
 
-  const BottomButton(this.icon, this.buttonSize, this.onPressed, {this.buttonKey, super.key});
+  const BottomButton(
+      {super.key,
+      this.buttonKey,
+      required this.icon,
+      required this.buttonSize,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +21,11 @@ class BottomButton extends StatelessWidget {
       width: buttonSize,
       height: buttonSize,
       color: AppTheme.colorDarkYellow,
-      child:
-      IconButton(
+      child: IconButton(
         icon: Image.asset(icon),
         padding: const EdgeInsets.all(8),
         onPressed: onPressed,
       ),
     );
   }
-
 }

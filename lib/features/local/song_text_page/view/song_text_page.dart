@@ -21,7 +21,8 @@ class SongTextPage extends StatelessWidget {
   final AppBloc appBloc;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const SongTextPage(this.appBloc, this.onPerformAction, {super.key});
+  const SongTextPage(
+      {super.key, required this.appBloc, required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +30,11 @@ class SongTextPage extends StatelessWidget {
         bloc: appBloc, // provide the local bloc instance
         builder: (context, state) {
           return _SongTextPageContent(
-              state.settings,
-              state.localState.isEditorMode,
-              state.localState.isAutoPlayMode,
-              state.localState.currentSong,
-              onPerformAction);
+              settings: state.settings,
+              isEditorMode: state.localState.isEditorMode,
+              isAutoPlayMode: state.localState.isAutoPlayMode,
+              currentSong: state.localState.currentSong,
+              onPerformAction: onPerformAction);
         });
   }
 }
@@ -45,8 +46,13 @@ class _SongTextPageContent extends StatelessWidget {
   final Song? currentSong;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _SongTextPageContent(this.settings, this.isEditorMode,
-      this.isAutoPlayMode, this.currentSong, this.onPerformAction);
+  const _SongTextPageContent(
+      {super.key,
+      required this.settings,
+      required this.isEditorMode,
+      required this.isAutoPlayMode,
+      required this.currentSong,
+      required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -107,8 +113,12 @@ class _SongTextPageContent extends StatelessWidget {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _SongTextBody(settings, isEditorMode, isAutoPlayMode, currentSong,
-                onPerformAction),
+            _SongTextBody(
+                settings: settings,
+                isEditorMode: isEditorMode,
+                isAutoPlayMode: isAutoPlayMode,
+                currentSong: currentSong,
+                onPerformAction: onPerformAction),
           ],
         ),
       );
@@ -121,8 +131,13 @@ class _SongTextBody extends StatefulWidget {
   final Song? currentSong;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _SongTextBody(this.settings, this.isEditorMode, this.isAutoPlayMode,
-      this.currentSong, this.onPerformAction);
+  const _SongTextBody(
+      {super.key,
+      required this.settings,
+      required this.isEditorMode,
+      required this.isAutoPlayMode,
+      required this.currentSong,
+      required this.onPerformAction});
 
   @override
   State<StatefulWidget> createState() => _SongTextBodyState();
@@ -233,15 +248,15 @@ class _SongTextBodyState extends State<_SongTextBody> {
               height: isPortrait ? buttonSize : height,
               color: widget.settings.theme.colorBg,
               child: _ButtonPanel(
-                  widget.settings,
-                  isPortrait,
-                  widget.settings.listenToMusicPreference,
-                  widget.currentSong,
-                  widget.isEditorMode,
-                  buttonSize,
-                  _editText,
-                  _saveText,
-                  widget.onPerformAction),
+                  settings: widget.settings,
+                  isPortrait: isPortrait,
+                  listenToMusicVariant: widget.settings.listenToMusicPreference,
+                  currentSong: widget.currentSong,
+                  isEditorMode: widget.isEditorMode,
+                  buttonSize: buttonSize,
+                  onEditText: _editText,
+                  onSaveText: _saveText,
+                  onPerformAction: widget.onPerformAction),
             ),
           ];
 
@@ -328,42 +343,67 @@ class _ButtonPanel extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _ButtonPanel(
-      this.settings,
-      this.isPortrait,
-      this.listenToMusicVariant,
-      this.currentSong,
-      this.isEditorMode,
-      this.buttonSize,
-      this.onEditText,
-      this.onSaveText,
-      this.onPerformAction);
+      {super.key,
+      required this.settings,
+      required this.isPortrait,
+      required this.listenToMusicVariant,
+      required this.currentSong,
+      required this.isEditorMode,
+      required this.buttonSize,
+      required this.onEditText,
+      required this.onSaveText,
+      required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      MusicButton(listenToMusicVariant.supportedVariants[0],
-          currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
-      MusicButton(listenToMusicVariant.supportedVariants[1],
-          currentSong?.searchFor ?? 'null', buttonSize, onPerformAction),
-      BottomButton(AppIcons.icUpload, buttonSize, () {
-        onPerformAction(UploadCurrentToCloud());
-      }),
-      BottomButton(AppIcons.icWarning, buttonSize, () {
-        WarningDialog.showWarningDialog(context, settings, (comment) {
-          final warning = Warning.fromSongWithComment(currentSong!, comment);
-          onPerformAction(SendWarning(warning));
-        });
-      }),
-      BottomButton(AppIcons.icTrash, buttonSize, () {
-        _showDeleteToTrashConfirmDialog(context, settings);
-      }),
+      MusicButton(
+          option: listenToMusicVariant.supportedVariants[0],
+          searchFor: currentSong?.searchFor ?? 'null',
+          buttonSize: buttonSize,
+          onPerformAction: onPerformAction),
+      MusicButton(
+          option: listenToMusicVariant.supportedVariants[1],
+          searchFor: currentSong?.searchFor ?? 'null',
+          buttonSize: buttonSize,
+          onPerformAction: onPerformAction),
+      BottomButton(
+          icon: AppIcons.icUpload,
+          buttonSize: buttonSize,
+          onPressed: () {
+            onPerformAction(UploadCurrentToCloud());
+          }),
+      BottomButton(
+          icon: AppIcons.icWarning,
+          buttonSize: buttonSize,
+          onPressed: () {
+            WarningDialog.showWarningDialog(context, settings, (comment) {
+              final warning =
+                  Warning.fromSongWithComment(currentSong!, comment);
+              onPerformAction(SendWarning(warning));
+            });
+          }),
+      BottomButton(
+          icon: AppIcons.icTrash,
+          buttonSize: buttonSize,
+          onPressed: () {
+            _showDeleteToTrashConfirmDialog(context, settings);
+          }),
       isEditorMode
-          ? BottomButton(AppIcons.icSave, buttonSize, () {
-              onSaveText();
-            }, buttonKey: const Key('save_button'))
-          : BottomButton(AppIcons.icEdit, buttonSize, () {
-              onEditText(currentSong);
-            }, buttonKey: const Key('edit_button')),
+          ? BottomButton(
+              icon: AppIcons.icSave,
+              buttonSize: buttonSize,
+              onPressed: () {
+                onSaveText();
+              },
+              buttonKey: const Key('save_button'))
+          : BottomButton(
+              icon: AppIcons.icEdit,
+              buttonSize: buttonSize,
+              onPressed: () {
+                onEditText(currentSong);
+              },
+              buttonKey: const Key('edit_button')),
     ];
 
     return isPortrait

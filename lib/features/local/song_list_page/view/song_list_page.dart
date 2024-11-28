@@ -13,23 +13,23 @@ import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 
-class SongListPage extends StatelessWidget{
+class SongListPage extends StatelessWidget {
   final AppBloc appBloc;
   final void Function(AppUIEvent action) onPerformAction;
 
   const SongListPage(
-      this.appBloc,
-      this.onPerformAction,
-      {super.key});
+      {super.key, required this.appBloc, required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
         bloc: appBloc, // provide the local bloc instance
         builder: (context, state) {
-          return _SongListPageContent(state.settings, state.localState, onPerformAction);
-        }
-    );
+          return _SongListPageContent(
+              settings: state.settings,
+              localState: state.localState,
+              onPerformAction: onPerformAction);
+        });
   }
 }
 
@@ -38,8 +38,11 @@ class _SongListPageContent extends StatefulWidget {
   final LocalState localState;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _SongListPageContent(this.settings, this.localState, this.onPerformAction);
-
+  const _SongListPageContent(
+      {super.key,
+      required this.settings,
+      required this.localState,
+      required this.onPerformAction});
 
   @override
   State<StatefulWidget> createState() => _SongListPageContentState();
@@ -80,12 +83,12 @@ class _SongListPageContentState extends State<_SongListPageContent> {
       ),
       drawer: Drawer(
         child: _MenuListView(
-            widget.settings,
-            widget.localState,
-            _menuScrollController,
-            _titleHeight,
-            _dividerHeight,
-            widget.onPerformAction),
+            settings: widget.settings,
+            localState: widget.localState,
+            menuScrollController: _menuScrollController,
+            titleHeight: _titleHeight,
+            dividerHeight: _dividerHeight,
+            onPerformAction: widget.onPerformAction),
       ),
       onDrawerChanged: (isOpened) {
         if (isOpened) {
@@ -101,7 +104,13 @@ class _SongListPageContentState extends State<_SongListPageContent> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _SongListBody(widget.settings, widget.localState, _titleHeight, _dividerHeight, _itemHeight, widget.onPerformAction),
+            _SongListBody(
+                settings: widget.settings,
+                localState: widget.localState,
+                titleHeight: _titleHeight,
+                dividerHeight: _dividerHeight,
+                itemHeight: _itemHeight,
+                onPerformAction: widget.onPerformAction),
           ],
         ),
       ),
@@ -117,11 +126,19 @@ class _MenuListView extends StatelessWidget {
   final double dividerHeight;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _MenuListView(this.settings, this.localState, this.menuScrollController, this.titleHeight, this.dividerHeight, this.onPerformAction);
+  const _MenuListView(
+      {super.key,
+      required this.settings,
+      required this.localState,
+      required this.menuScrollController,
+      required this.titleHeight,
+      required this.dividerHeight,
+      required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) {
-    final predefinedWithGroups = localState.allArtists.predefinedArtistsWithGroups();
+    final predefinedWithGroups =
+        localState.allArtists.predefinedArtistsWithGroups();
     return ListView.builder(
         key: const Key('menu_list_view'),
         controller: menuScrollController,
@@ -136,14 +153,16 @@ class _MenuListView extends StatelessWidget {
                   color: AppTheme.colorDarkYellow,
                 ),
                 margin: EdgeInsets.zero,
-                child: Text(AppStrings.strMenu, style: settings.textStyler.textStyleFixedBlackBold),
+                child: Text(AppStrings.strMenu,
+                    style: settings.textStyler.textStyleFixedBlackBold),
               ),
             );
           } else {
             final artistOrGroup = predefinedWithGroups[index - 1];
             return _MenuItem(
                 artistOrGroup: artistOrGroup,
-                artistList: SongRepository.predefinedArtists + localState.allArtists,
+                artistList:
+                    SongRepository.predefinedArtists + localState.allArtists,
                 menuExpandedArtistGroup: localState.menuExpandedArtistGroup,
                 theme: settings.theme,
                 textStyler: settings.textStyler,
@@ -155,11 +174,9 @@ class _MenuListView extends StatelessWidget {
                 onArtistTap: (artist) {
                   Navigator.pop(context);
                   onPerformAction(ArtistClick(artist));
-                }
-            );
+                });
           }
-        }
-    );
+        });
   }
 }
 
@@ -174,20 +191,28 @@ class _MenuItem extends StatelessWidget {
   final void Function() onGroupTap;
   final void Function(String artist) onArtistTap;
 
-  const _MenuItem({required this.artistOrGroup, required this.artistList, required this.menuExpandedArtistGroup, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onGroupTap, required this.onArtistTap});
+  const _MenuItem(
+      {required this.artistOrGroup,
+      required this.artistList,
+      required this.menuExpandedArtistGroup,
+      required this.theme,
+      required this.textStyler,
+      required this.titleHeight,
+      required this.dividerHeight,
+      required this.onGroupTap,
+      required this.onArtistTap});
 
   @override
   Widget build(BuildContext context) {
-    return SongRepository.predefinedArtists.contains(artistOrGroup) ?
-        _ArtistItem(
+    return SongRepository.predefinedArtists.contains(artistOrGroup)
+        ? _ArtistItem(
             artist: artistOrGroup,
             theme: theme,
             textStyler: textStyler,
             titleHeight: titleHeight,
             dividerHeight: dividerHeight,
-            onTap: () => onArtistTap(artistOrGroup)
-        ) :
-        _ArtistGroupItem(
+            onTap: () => onArtistTap(artistOrGroup))
+        : _ArtistGroupItem(
             artistGroup: artistOrGroup,
             expandedList: _getExpandedList(artistOrGroup),
             theme: theme,
@@ -195,16 +220,17 @@ class _MenuItem extends StatelessWidget {
             titleHeight: titleHeight,
             dividerHeight: dividerHeight,
             onGroupTap: onGroupTap,
-            onArtistTap: onArtistTap
-        );
+            onArtistTap: onArtistTap);
   }
 
-  List<String> _getExpandedList(String group) => group == menuExpandedArtistGroup ?
-      artistList.where((element) =>
-        !SongRepository.predefinedArtists.contains(element) &&
-        element.toUpperCase().startsWith(group)
-      ).toList() : [];
-
+  List<String> _getExpandedList(String group) =>
+      group == menuExpandedArtistGroup
+          ? artistList
+              .where((element) =>
+                  !SongRepository.predefinedArtists.contains(element) &&
+                  element.toUpperCase().startsWith(group))
+              .toList()
+          : [];
 }
 
 class _ArtistGroupItem extends StatelessWidget {
@@ -217,7 +243,15 @@ class _ArtistGroupItem extends StatelessWidget {
   final void Function() onGroupTap;
   final void Function(String artist) onArtistTap;
 
-  const _ArtistGroupItem({required this.artistGroup, required this.expandedList, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onGroupTap, required this.onArtistTap});
+  const _ArtistGroupItem(
+      {required this.artistGroup,
+      required this.expandedList,
+      required this.theme,
+      required this.textStyler,
+      required this.titleHeight,
+      required this.dividerHeight,
+      required this.onGroupTap,
+      required this.onArtistTap});
 
   @override
   Widget build(BuildContext context) {
@@ -246,16 +280,15 @@ class _ArtistGroupItem extends StatelessWidget {
         color: theme.colorBg,
       ),
     ];
-    final children2 = expandedList.map((artist) =>
-      _ArtistItem(
-          artist: artist,
-          theme: theme,
-          textStyler: textStyler,
-          titleHeight: titleHeight,
-          dividerHeight: dividerHeight,
-          onTap: () => onArtistTap(artist)
-      )
-    ).toList();
+    final children2 = expandedList
+        .map((artist) => _ArtistItem(
+            artist: artist,
+            theme: theme,
+            textStyler: textStyler,
+            titleHeight: titleHeight,
+            dividerHeight: dividerHeight,
+            onTap: () => onArtistTap(artist)))
+        .toList();
     final children = children1 + children2;
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
@@ -272,12 +305,17 @@ class _ArtistItem extends StatelessWidget {
   final double dividerHeight;
   final void Function() onTap;
 
-  const _ArtistItem({required this.artist, required this.theme, required this.textStyler, required this.titleHeight, required this.dividerHeight, required this.onTap});
+  const _ArtistItem(
+      {required this.artist,
+      required this.theme,
+      required this.textStyler,
+      required this.titleHeight,
+      required this.dividerHeight,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final textStyle =
-    SongRepository.predefinedArtists.contains(artist)
+    final textStyle = SongRepository.predefinedArtists.contains(artist)
         ? textStyler.textStyleCommonInvertedBold
         : textStyler.textStyleCommonInverted;
     return Column(
@@ -308,7 +346,6 @@ class _ArtistItem extends StatelessWidget {
       ],
     );
   }
-
 }
 
 class _SongListBody extends StatelessWidget {
@@ -319,27 +356,35 @@ class _SongListBody extends StatelessWidget {
   final double itemHeight;
   final void Function(AppUIEvent action) onPerformAction;
 
+  _SongListBody(
+      {super.key,
+      required this.settings,
+      required this.localState,
+      required this.titleHeight,
+      required this.dividerHeight,
+      required this.itemHeight,
+      required this.onPerformAction});
+
   final _titleScrollController = ScrollController(
     initialScrollOffset: 0.0,
     keepScrollOffset: true,
   );
 
-  _SongListBody(this.settings, this.localState, this.titleHeight, this.dividerHeight, this.itemHeight, this.onPerformAction);
-
   @override
   Widget build(BuildContext context) {
     if (localState.currentSongs.isEmpty) {
-      return _EmptyListIndicator(settings);
+      return _EmptyListIndicator(settings: settings);
     } else {
-      WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual(localState));
-      return Flexible(child: _TitleListView(
-          settings,
-          localState,
-          _titleScrollController,
-          titleHeight,
-          dividerHeight,
-          onPerformAction
-      ));
+      WidgetsBinding.instance
+          .scheduleFrameCallback((_) => _scrollToActual(localState));
+      return Flexible(
+          child: _TitleListView(
+              settings: settings,
+              localState: localState,
+              titleScrollController: _titleScrollController,
+              titleHeight: titleHeight,
+              dividerHeight: dividerHeight,
+              onPerformAction: onPerformAction));
     }
   }
 
@@ -347,7 +392,6 @@ class _SongListBody extends StatelessWidget {
     _titleScrollController.animateTo(localState.scrollPosition * itemHeight,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
   }
-
 }
 
 class _TitleListView extends StatelessWidget {
@@ -358,7 +402,14 @@ class _TitleListView extends StatelessWidget {
   final double dividerHeight;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _TitleListView(this.settings, this.localState, this.titleScrollController, this.titleHeight, this.dividerHeight, this.onPerformAction);
+  const _TitleListView(
+      {super.key,
+      required this.settings,
+      required this.localState,
+      required this.titleScrollController,
+      required this.titleHeight,
+      required this.dividerHeight,
+      required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) => ListView.builder(
@@ -388,8 +439,7 @@ class _TitleListView extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  )
-              ),
+                  )),
             ),
             AppDivider(
               height: dividerHeight,
@@ -397,22 +447,19 @@ class _TitleListView extends StatelessWidget {
             )
           ],
         );
-      }
-  );
+      });
 }
 
 class _EmptyListIndicator extends StatelessWidget {
   final AppSettings settings;
 
-  const _EmptyListIndicator(this.settings);
+  const _EmptyListIndicator({super.key, required this.settings});
 
   @override
   Widget build(BuildContext context) => Expanded(
-      child: Center(
-          child: Text(
-            AppStrings.strListIsEmpty,
-            style: settings.textStyler.textStyleTitle,
-          )
-      )
-  );
+          child: Center(
+              child: Text(
+        AppStrings.strListIsEmpty,
+        style: settings.textStyler.textStyleTitle,
+      )));
 }

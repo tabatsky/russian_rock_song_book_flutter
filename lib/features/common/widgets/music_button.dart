@@ -10,7 +10,12 @@ class MusicButton extends StatelessWidget {
   final double buttonSize;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const MusicButton(this.option, this.searchFor, this.buttonSize, this.onPerformAction, {super.key});
+  const MusicButton(
+      {super.key,
+      required this.option,
+      required this.searchFor,
+      required this.buttonSize,
+      required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +38,7 @@ class MusicButton extends StatelessWidget {
       width: buttonSize,
       height: buttonSize,
       color: AppTheme.colorDarkYellow,
-      child:
-      IconButton(
+      child: IconButton(
         icon: Image.asset(icon),
         padding: const EdgeInsets.all(8),
         onPressed: () {

@@ -15,23 +15,22 @@ import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/order_by.dart';
 
 class CloudSearchPage extends StatelessWidget {
-
   final AppBloc appBloc;
   final void Function(AppUIEvent action) onPerformAction;
 
   const CloudSearchPage(
-      this.appBloc,
-      this.onPerformAction,
-      {super.key});
+      {super.key, required this.appBloc, required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
         bloc: appBloc, // provide the local bloc instance
         builder: (context, state) {
-          return _CloudSearchPageContent(state.settings, state.cloudState, onPerformAction);
-        }
-    );
+          return _CloudSearchPageContent(
+              settings: state.settings,
+              cloudState: state.cloudState,
+              onPerformAction: onPerformAction);
+        });
   }
 }
 
@@ -40,7 +39,11 @@ class _CloudSearchPageContent extends StatefulWidget {
   final CloudState cloudState;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _CloudSearchPageContent(this.settings, this.cloudState, this.onPerformAction);
+  const _CloudSearchPageContent(
+      {super.key,
+      required this.settings,
+      required this.cloudState,
+      required this.onPerformAction});
 
   @override
   State<StatefulWidget> createState() => _CloudSearchPageContentState();
@@ -68,7 +71,8 @@ class _CloudSearchPageContentState extends State<_CloudSearchPageContent> {
       backgroundColor: widget.settings.theme.colorBg,
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
-        title: Text(SongRepository.artistCloudSearch, style: widget.settings.textStyler.textStyleFixedBlackBold),
+        title: Text(SongRepository.artistCloudSearch,
+            style: widget.settings.textStyler.textStyleFixedBlackBold),
         leading: IconButton(
           icon: Image.asset(AppIcons.icBack),
           iconSize: 50,
@@ -78,21 +82,24 @@ class _CloudSearchPageContentState extends State<_CloudSearchPageContent> {
         ),
       ),
       body: Center(
-        child:  LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+        child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
           double maxWidth = constraints.maxWidth;
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               _CloudSearchPanel(
-                  widget.settings,
-                  maxWidth,
-                  _orderBy,
-                  _cloudSearchTextFieldController,
-                      (newOrderBy) {
+                  settings: widget.settings,
+                  maxWidth: maxWidth,
+                  orderBy: _orderBy,
+                  cloudSearchTextFieldController:
+                      _cloudSearchTextFieldController,
+                  onSelectOrderBy: (newOrderBy) {
                     setState(() {
                       _orderBy = newOrderBy;
                     });
-                  }, _performCloudSearch),
+                  },
+                  onPerformCloudSearch: _performCloudSearch),
               _content(widget.settings, widget.cloudState),
             ],
           );
@@ -104,20 +111,20 @@ class _CloudSearchPageContentState extends State<_CloudSearchPageContent> {
   Widget _content(AppSettings settings, CloudState cloudState) {
     if (cloudState.currentSearchState == SearchState.loading) {
       cloudState.currentSearchPager?.getPage(0, false);
-      return _ProgressIndicator(settings.theme);
+      return _ProgressIndicator(theme: settings.theme);
     } else if (cloudState.currentSearchState == SearchState.empty) {
-      return _EmptyListIndicator(settings);
+      return _EmptyListIndicator(settings: settings);
     } else if (cloudState.currentSearchState == SearchState.error) {
-      return _ErrorIndicator(settings);
+      return _ErrorIndicator(settings: settings);
     } else {
-      return Flexible(child: _CloudTitleListView(
-          settings,
-          cloudState,
-          _itemHeight,
-          _dividerHeight,
-          widget.onPerformAction,
-          _backupSearchState
-      ));
+      return Flexible(
+          child: _CloudTitleListView(
+              settings: settings,
+              cloudState: cloudState,
+              itemHeight: _itemHeight,
+              dividerHeight: _dividerHeight,
+              onPerformAction: widget.onPerformAction,
+              onBackupSearchState: _backupSearchState));
     }
   }
 
@@ -143,11 +150,11 @@ class _CloudSearchPageContentState extends State<_CloudSearchPageContent> {
 class _ProgressIndicator extends StatelessWidget {
   final AppTheme theme;
 
-  const _ProgressIndicator(this.theme);
+  const _ProgressIndicator({super.key, required this.theme});
 
   @override
   Widget build(BuildContext context) => Expanded(
-      child: Center(
+          child: Center(
         child: SizedBox(
           width: 100,
           height: 100,
@@ -155,41 +162,35 @@ class _ProgressIndicator extends StatelessWidget {
             color: theme.colorMain,
           ),
         ),
-      )
-  );
+      ));
 }
-
 
 class _EmptyListIndicator extends StatelessWidget {
   final AppSettings settings;
 
-  const _EmptyListIndicator(this.settings);
+  const _EmptyListIndicator({super.key, required this.settings});
 
   @override
   Widget build(BuildContext context) => Expanded(
-      child: Center(
-          child: Text(
-            AppStrings.strListIsEmpty,
-            style: settings.textStyler.textStyleTitle,
-          )
-      )
-  );
+          child: Center(
+              child: Text(
+        AppStrings.strListIsEmpty,
+        style: settings.textStyler.textStyleTitle,
+      )));
 }
 
 class _ErrorIndicator extends StatelessWidget {
   final AppSettings settings;
 
-  const _ErrorIndicator(this.settings);
+  const _ErrorIndicator({super.key, required this.settings});
 
   @override
   Widget build(BuildContext context) => Expanded(
-      child: Center(
-          child: Text(
-            AppStrings.strErrorFetchData,
-            style: settings.textStyler.textStyleTitle,
-          )
-      )
-  );
+          child: Center(
+              child: Text(
+        AppStrings.strErrorFetchData,
+        style: settings.textStyler.textStyleTitle,
+      )));
 }
 
 class _CloudSearchPanel extends StatelessWidget {
@@ -200,7 +201,14 @@ class _CloudSearchPanel extends StatelessWidget {
   final void Function(OrderBy newOrderBy) onSelectOrderBy;
   final void Function() onPerformCloudSearch;
 
-  const _CloudSearchPanel(this.settings, this.maxWidth, this.orderBy, this.cloudSearchTextFieldController, this.onSelectOrderBy, this.onPerformCloudSearch);
+  const _CloudSearchPanel(
+      {super.key,
+      required this.settings,
+      required this.maxWidth,
+      required this.orderBy,
+      required this.cloudSearchTextFieldController,
+      required this.onSelectOrderBy,
+      required this.onPerformCloudSearch});
 
   @override
   Widget build(BuildContext context) {
@@ -210,45 +218,43 @@ class _CloudSearchPanel extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Column(
-                children: [
-                  SizedBox(
-                    width: maxWidth - 100,
-                    height: 48,
-                    child:
-                    TextField(
-                      controller: cloudSearchTextFieldController,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: (32 - settings.textStyler.fontSizeCommon) / 2),
-                        fillColor: settings.theme.colorMain,
-                        filled: true,
-                      ),
-                      style: settings.textStyler.textStyleCommonInverted,
-                    ),
+            child: Column(children: [
+              SizedBox(
+                width: maxWidth - 100,
+                height: 48,
+                child: TextField(
+                  controller: cloudSearchTextFieldController,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                        vertical:
+                            (32 - settings.textStyler.fontSizeCommon) / 2),
+                    fillColor: settings.theme.colorMain,
+                    filled: true,
                   ),
-                  SizedBox(
-                    width: maxWidth - 100,
-                    height: 40,
-                    child: DropdownButton(
-                      value: orderBy.orderByStr,
-                      items: orderByDropdownItems(settings),
-                      isExpanded: true,
-                      onChanged: (String? value) {
-                        final orderByStr = value ??
-                            OrderBy.byIdDesc.orderByStr;
-                        final newOrderBy = OrderByStrings.parseFromString(orderByStr);
-                        if (newOrderBy != orderBy) {
-                          onSelectOrderBy(newOrderBy);
-                          onPerformCloudSearch();
-                        }
-                      },
-                      dropdownColor: settings.theme.colorBg,
-                    ),
-                  ),
-                ]
-            ),
+                  style: settings.textStyler.textStyleCommonInverted,
+                ),
+              ),
+              SizedBox(
+                width: maxWidth - 100,
+                height: 40,
+                child: DropdownButton(
+                  value: orderBy.orderByStr,
+                  items: orderByDropdownItems(settings),
+                  isExpanded: true,
+                  onChanged: (String? value) {
+                    final orderByStr = value ?? OrderBy.byIdDesc.orderByStr;
+                    final newOrderBy =
+                        OrderByStrings.parseFromString(orderByStr);
+                    if (newOrderBy != orderBy) {
+                      onSelectOrderBy(newOrderBy);
+                      onPerformCloudSearch();
+                    }
+                  },
+                  dropdownColor: settings.theme.colorBg,
+                ),
+              ),
+            ]),
           ),
           const SizedBox(
             width: 4,
@@ -257,8 +263,7 @@ class _CloudSearchPanel extends StatelessWidget {
             width: 88,
             height: 88,
             color: AppTheme.colorDarkYellow,
-            child:
-            IconButton(
+            child: IconButton(
               icon: Image.asset(AppIcons.icCloudSearch),
               padding: const EdgeInsets.all(8),
               onPressed: () {
@@ -272,16 +277,16 @@ class _CloudSearchPanel extends StatelessWidget {
   }
 
   List<DropdownMenuItem<String>> orderByDropdownItems(AppSettings settings) {
-    List<DropdownMenuItem<String>> menuItems = OrderBy.values.map((orderBy) =>
-        DropdownMenuItem(
+    List<DropdownMenuItem<String>> menuItems = OrderBy.values
+        .map((orderBy) => DropdownMenuItem(
             value: orderBy.orderByStr,
             child: Text(
               orderBy.orderByRus,
               style: settings.textStyler.textStyleCommon,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-            ))
-    ).toList();
+            )))
+        .toList();
 
     return menuItems;
   }
@@ -296,13 +301,13 @@ class _CloudTitleListView extends StatelessWidget {
   final void Function() onBackupSearchState;
 
   _CloudTitleListView(
-      this.settings,
-      this.cloudState,
-      this.itemHeight,
-      this.dividerHeight,
-      this.onPerformAction,
-      this.onBackupSearchState,
-      );
+      {super.key,
+      required this.settings,
+      required this.cloudState,
+      required this.itemHeight,
+      required this.dividerHeight,
+      required this.onPerformAction,
+      required this.onBackupSearchState});
 
   final _cloudTitleScrollController = ScrollController(
     initialScrollOffset: 0.0,
@@ -310,15 +315,18 @@ class _CloudTitleListView extends StatelessWidget {
   );
 
   void _scrollToActual(CloudState cloudState) {
-    _cloudTitleScrollController.animateTo(cloudState.cloudScrollPosition * itemHeight,
-        duration: const Duration(milliseconds: 1), curve: Curves.ease);
+    _cloudTitleScrollController.animateTo(
+        cloudState.cloudScrollPosition * itemHeight,
+        duration: const Duration(milliseconds: 1),
+        curve: Curves.ease);
     onPerformAction(UpdateCloudSongListNeedScroll(false));
   }
 
   @override
   Widget build(BuildContext context) {
     if (cloudState.needScroll) {
-      WidgetsBinding.instance.scheduleFrameCallback((_) => _scrollToActual(cloudState));
+      WidgetsBinding.instance
+          .scheduleFrameCallback((_) => _scrollToActual(cloudState));
     }
     return CustomScrollView(
       controller: _cloudTitleScrollController,
@@ -332,18 +340,19 @@ class _CloudTitleListView extends StatelessWidget {
               builder: (context, snapshot) {
                 final List<Widget> titleViews;
                 if (snapshot.data != null) {
-                  titleViews = Iterable<int>.generate(
-                      snapshot.data?.length ?? 0).map((listIndex) {
+                  titleViews =
+                      Iterable<int>.generate(snapshot.data?.length ?? 0)
+                          .map((listIndex) {
                     final cloudSong = snapshot.data!.elementAt(listIndex);
                     final cloudSongIndex = pageIndex * pageSize + listIndex;
                     return _TitleItem(
-                        settings,
-                        cloudState,
-                        cloudSong,
-                        cloudSongIndex,
-                        itemHeight,
-                        dividerHeight,
-                            (cloudSongIndex) {
+                        settings: settings,
+                        cloudState: cloudState,
+                        cloudSong: cloudSong,
+                        cloudSongIndex: cloudSongIndex,
+                        itemHeight: itemHeight,
+                        dividerHeight: dividerHeight,
+                        onItemTap: (cloudSongIndex) {
                           onBackupSearchState();
                           onPerformAction(CloudSongClick(cloudSongIndex));
                         });
@@ -355,16 +364,17 @@ class _CloudTitleListView extends StatelessWidget {
                     ),
                   );
                 } else {
-                  titleViews = Iterable<int>.generate(pageSize).map((listIndex) {
+                  titleViews =
+                      Iterable<int>.generate(pageSize).map((listIndex) {
                     final cloudSongIndex = pageIndex * pageSize + listIndex;
                     return _TitleItem(
-                        settings,
-                        cloudState,
-                        null,
-                        cloudSongIndex,
-                        itemHeight,
-                        dividerHeight,
-                            (cloudSongIndex) {
+                        settings: settings,
+                        cloudState: cloudState,
+                        cloudSong: null,
+                        cloudSongIndex: cloudSongIndex,
+                        itemHeight: itemHeight,
+                        dividerHeight: dividerHeight,
+                        onItemTap: (cloudSongIndex) {
                           onBackupSearchState();
                           onPerformAction(CloudSongClick(cloudSongIndex));
                         });
@@ -378,8 +388,7 @@ class _CloudTitleListView extends StatelessWidget {
                 );
               },
             );
-          }
-          ),
+          }),
         ),
       ],
     );
@@ -396,14 +405,14 @@ class _TitleItem extends StatelessWidget {
   final void Function(int cloudSongIndex) onItemTap;
 
   const _TitleItem(
-      this.settings,
-      this.cloudState,
-      this.cloudSong,
-      this.cloudSongIndex,
-      this.itemHeight,
-      this.dividerHeight,
-      this.onItemTap
-      );
+      {super.key,
+      required this.settings,
+      required this.cloudState,
+      required this.cloudSong,
+      required this.cloudSongIndex,
+      required this.itemHeight,
+      required this.dividerHeight,
+      required this.onItemTap});
 
   @override
   Widget build(BuildContext context) {
@@ -417,45 +426,41 @@ class _TitleItem extends StatelessWidget {
       child: Container(
           height: itemHeight,
           color: settings.theme.colorBg,
-          child: Column(
-              children: [
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      cloudSong?.artist ?? '',
-                      style: settings.textStyler.textStyleCommon,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+          child: Column(children: [
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  cloudSong?.artist ?? '',
+                  style: settings.textStyler.textStyleCommon,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      cloudSong?.visibleTitleWithRating(
-                          extraLikes, extraDislikes) ?? '',
-                      style: settings.textStyler.textStyleCommon,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+              ),
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  cloudSong?.visibleTitleWithRating(
+                          extraLikes, extraDislikes) ??
+                      '',
+                  style: settings.textStyler.textStyleCommon,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const Spacer(),
-                AppDivider(
-                  height: dividerHeight,
-                  color: settings.theme.colorMain,
-                )
-              ]
-          )
-      ),
+              ),
+            ),
+            const Spacer(),
+            AppDivider(
+              height: dividerHeight,
+              color: settings.theme.colorMain,
+            )
+          ])),
     );
   }
 }
