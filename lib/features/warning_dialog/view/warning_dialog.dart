@@ -12,7 +12,7 @@ class WarningDialog {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppStrings.strWarningDialogTitle, style: settings.textStyler.textStyleCommon),
+          title: Text(AppStrings.strWarningDialogTitle, style: settings.textStyler.textStyleCommonBlack),
           backgroundColor: settings.theme.colorCommon,
           surfaceTintColor: Colors.black,
           content: Container(
@@ -39,7 +39,7 @@ class WarningDialog {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(AppStrings.strSend, style: settings.textStyler.textStyleSmall),
+              child: Text(AppStrings.strSend, style: settings.textStyler.textStyleSmallBlack),
               onPressed: () {
                 final comment = commentEditorController.text;
                 _sendWarning(warningSender, comment);
@@ -47,7 +47,7 @@ class WarningDialog {
               },
             ),
             TextButton(
-              child: Text(AppStrings.strCancel, style: settings.textStyler.textStyleSmall),
+              child: Text(AppStrings.strCancel, style: settings.textStyler.textStyleSmallBlack),
               onPressed: () {
                 Navigator.of(context).pop();
               },

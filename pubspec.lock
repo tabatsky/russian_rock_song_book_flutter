@@ -386,6 +386,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.4"
+  indent:
+    dependency: "direct main"
+    description:
+      name: indent
+      sha256: "819319a5c185f7fe412750c798953378b37a0d0d32564ce33e7c5acfd1372d2a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   integration_test:
     dependency: "direct dev"
     description: flutter

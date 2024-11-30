@@ -13,14 +13,15 @@ class AssetManager {
   AssetManager._privateConstructor();
 
   Future<List<Song>> loadAsset(String artistId, String artistName) async {
-    final jsonString = await rootBundle.loadString('assets/json/$artistId.json');
+    final jsonString =
+        await rootBundle.loadString('assets/json/$artistId.json');
     final jsonSongbook = jsonDecode(jsonString) as Map<String, dynamic>;
     final songbook = jsonSongbook['songbook'] as List<dynamic>;
     final songList = songbook.map((jsonSong) {
       final title = jsonSong['title'];
       final text = jsonSong['text'];
-      final song = Song(artistName, title, text)
-                      ..origTextMD5 = Song.songTextHash(text);
+      final song = Song(artist: artistName, title: title, text: text)
+        ..origTextMD5 = Song.songTextHash(text);
       return song;
     }).toList();
     return songList;

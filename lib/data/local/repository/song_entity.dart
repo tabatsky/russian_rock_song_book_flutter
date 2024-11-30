@@ -12,16 +12,8 @@ class SongEntity {
 
   SongEntity.withId(this.id, this.artist, this.title, this.text);
 
-  SongEntity.fromAll(
-      this.id,
-      this.artist,
-      this.title,
-      this.text,
-      this.favorite,
-      this.deleted,
-      this.outOfTheBox,
-      this.origTextMD5
-      );
+  SongEntity.fromAll(this.id, this.artist, this.title, this.text, this.favorite,
+      this.deleted, this.outOfTheBox, this.origTextMD5);
 
   factory SongEntity.fromSong(Song song) => SongEntity.fromAll(
       song.id,
@@ -30,17 +22,16 @@ class SongEntity {
       song.text,
       song.favorite ? 1 : 0,
       song.deleted ? 1 : 0,
-      song.outOfTheBox ? 1: 0,
-      song.origTextMD5
-  );
+      song.outOfTheBox ? 1 : 0,
+      song.origTextMD5);
 
   Song toSong() => Song.fromAll(
-      id,
-      artist,
-      title,
-      text,
-      favorite > 0,
-      deleted > 0,
-      outOfTheBox > 0,
-      origTextMD5);
+      id: id,
+      artist: artist,
+      title: title,
+      text: text,
+      favorite: favorite > 0,
+      deleted: deleted > 0,
+      outOfTheBox: outOfTheBox > 0,
+      origTextMD5: origTextMD5);
 }

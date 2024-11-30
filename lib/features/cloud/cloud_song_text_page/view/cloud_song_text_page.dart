@@ -18,23 +18,22 @@ import 'package:russian_rock_song_book/features/warning_dialog/view/warning_dial
 import 'package:russian_rock_song_book/ui/widgets/clickable_word_text/clickable_word_text.dart';
 
 class CloudSongTextPage extends StatelessWidget {
-
   final AppBloc appBloc;
   final void Function(AppUIEvent action) onPerformAction;
 
   const CloudSongTextPage(
-      this.appBloc,
-      this.onPerformAction,
-      {super.key});
+      {super.key, required this.appBloc, required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
         bloc: appBloc, // provide the local bloc instance
         builder: (context, state) {
-          return _CloudSongTextPageContent(state.settings, state.cloudState, onPerformAction);
-        }
-    );
+          return _CloudSongTextPageContent(
+              settings: state.settings,
+              cloudState: state.cloudState,
+              onPerformAction: onPerformAction);
+        });
   }
 }
 
@@ -43,7 +42,11 @@ class _CloudSongTextPageContent extends StatelessWidget {
   final CloudState cloudState;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _CloudSongTextPageContent(this.settings, this.cloudState, this.onPerformAction);
+  const _CloudSongTextPageContent(
+      {super.key,
+      required this.settings,
+      required this.cloudState,
+      required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +85,10 @@ class _CloudSongTextPageContent extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _CloudSongTextBody(settings, cloudState, onPerformAction),
+          _CloudSongTextBody(
+              settings: settings,
+              cloudState: cloudState,
+              onPerformAction: onPerformAction),
         ],
       ),
     );
@@ -94,21 +100,24 @@ class _CloudSongTextBody extends StatefulWidget {
   final CloudState cloudState;
   final void Function(AppUIEvent action) onPerformAction;
 
-  const _CloudSongTextBody(this.settings, this.cloudState, this.onPerformAction);
+  const _CloudSongTextBody(
+      {super.key,
+      required this.settings,
+      required this.cloudState,
+      required this.onPerformAction});
 
   @override
   State<StatefulWidget> createState() => _CloudSongTextBodyState();
 }
 
 class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
-
   final ScrollController _scrollController = ScrollController(
     initialScrollOffset: 0.0,
     keepScrollOffset: true,
   );
 
   CloudSong? _currentCloudSong;
-  
+
   @override
   Widget build(BuildContext context) {
     _updateCloudSong(widget.cloudState.currentCloudSong);
@@ -118,12 +127,13 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
           double width = constraints.maxWidth;
           double height = constraints.maxHeight;
 
-          final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+          final isPortrait =
+              MediaQuery.of(context).orientation == Orientation.portrait;
 
           double buttonSize = isPortrait ? width / 7.0 : height / 7.0;
 
           final extraLikes = widget.cloudState.extraLikesForCurrent;
-          final extraDislikes =widget.cloudState.extraDislikesForCurrent;
+          final extraDislikes = widget.cloudState.extraDislikesForCurrent;
 
           final bodyContent = [
             Expanded(
@@ -131,13 +141,17 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
                 controller: _scrollController,
                 padding: EdgeInsets.zero,
                 child: Container(
-                  constraints: BoxConstraints(minHeight: height, minWidth: width),
+                  constraints:
+                      BoxConstraints(minHeight: height, minWidth: width),
                   color: widget.settings.theme.colorBg,
                   padding: const EdgeInsets.all(8),
                   child: Wrap(
                     children: [
-                      Text(widget.cloudState.currentCloudSong
-                          ?.visibleTitleWithArtistAndRating(extraLikes, extraDislikes) ?? '',
+                      Text(
+                        widget.cloudState.currentCloudSong
+                                ?.visibleTitleWithArtistAndRating(
+                                    extraLikes, extraDislikes) ??
+                            '',
                         style: widget.settings.textStyler.textStyleTitle,
                       ),
                       Container(
@@ -148,7 +162,8 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
                         actualWords: AllChords.chordsNames,
                         actualMappings: AllChords.chordMappings,
                         onWordTap: (word) {
-                          ChordDialog.showChordDialog(context, widget.settings, word);
+                          ChordDialog.showChordDialog(
+                              context, widget.settings, word);
                         },
                         style1: widget.settings.textStyler.textStyleSongText,
                         style2: widget.settings.textStyler.textStyleChord,
@@ -167,20 +182,18 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
               height: isPortrait ? buttonSize : height,
               color: widget.settings.theme.colorBg,
               child: _ButtonPanel(
-                  widget.settings,
-                  isPortrait,
-                  widget.settings.listenToMusicPreference,
-                  widget.cloudState.currentCloudSong,
-                  buttonSize,
-                  widget.onPerformAction),
+                  settings: widget.settings,
+                  isPortrait: isPortrait,
+                  listenToMusicVariant: widget.settings.listenToMusicPreference,
+                  currentCloudSong: widget.cloudState.currentCloudSong,
+                  buttonSize: buttonSize,
+                  onPerformAction: widget.onPerformAction),
             ),
           ];
 
-          return isPortrait ? Column(
-              children: bodyContent
-          ) : Row(
-              children: bodyContent
-          );
+          return isPortrait
+              ? Column(children: bodyContent)
+              : Row(children: bodyContent);
         },
       ),
     );
@@ -208,41 +221,65 @@ class _ButtonPanel extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _ButtonPanel(
-      this.settings,
-      this.isPortrait,
-      this.listenToMusicVariant,
-      this.currentCloudSong,
-      this.buttonSize,
-      this.onPerformAction);
+      {super.key,
+      required this.settings,
+      required this.isPortrait,
+      required this.listenToMusicVariant,
+      required this.currentCloudSong,
+      required this.buttonSize,
+      required this.onPerformAction});
 
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      MusicButton(listenToMusicVariant.supportedVariants[0], currentCloudSong?.searchFor ?? 'null', buttonSize, onPerformAction),
-      MusicButton(listenToMusicVariant.supportedVariants[1], currentCloudSong?.searchFor ?? 'null', buttonSize, onPerformAction),
-      BottomButton(AppIcons.icDownload, buttonSize, () {
-        onPerformAction(DownloadCurrent());
-      }),
-      BottomButton(AppIcons.icWarning, buttonSize, () {
-        WarningDialog.showWarningDialog(context, settings, (comment) {
-          final warning = Warning.fromCloudSongWithComment(currentCloudSong!, comment);
-          onPerformAction(SendWarning(warning));
-        });
-      }),
-      BottomButton(AppIcons.icLike, buttonSize, () {
-        onPerformAction(LikeCurrent());
-      }),
-      BottomButton(AppIcons.icDislike, buttonSize, () {
-        onPerformAction(DislikeCurrent());
-      }),
+      MusicButton(
+          option: listenToMusicVariant.supportedVariants[0],
+          searchFor: currentCloudSong?.searchFor ?? 'null',
+          buttonSize: buttonSize,
+          onPerformAction: onPerformAction),
+      MusicButton(
+          option: listenToMusicVariant.supportedVariants[1],
+          searchFor: currentCloudSong?.searchFor ?? 'null',
+          buttonSize: buttonSize,
+          onPerformAction: onPerformAction),
+      BottomButton(
+          icon: AppIcons.icDownload,
+          buttonSize: buttonSize,
+          onPressed: () {
+            onPerformAction(DownloadCurrent());
+          }),
+      BottomButton(
+          icon: AppIcons.icWarning,
+          buttonSize: buttonSize,
+          onPressed: () {
+            WarningDialog.showWarningDialog(context, settings, (comment) {
+              final warning =
+                  Warning.fromCloudSongWithComment(currentCloudSong!, comment);
+              onPerformAction(SendWarning(warning));
+            });
+          }),
+      BottomButton(
+          icon: AppIcons.icLike,
+          buttonSize: buttonSize,
+          onPressed: () {
+            onPerformAction(LikeCurrent());
+          }),
+      BottomButton(
+          icon: AppIcons.icDislike,
+          buttonSize: buttonSize,
+          onPressed: () {
+            onPerformAction(DislikeCurrent());
+          }),
     ];
 
-    return isPortrait ? Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: buttons,
-    ) : Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: buttons,
-    );
+    return isPortrait
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: buttons,
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: buttons,
+          );
   }
 }

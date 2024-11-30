@@ -42,7 +42,7 @@ class ChordDialog {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(AppStrings.strClose, style: settings.textStyler.textStyleSmall),
+              child: Text(AppStrings.strClose, style: settings.textStyler.textStyleSmallBlack),
               onPressed: () {
                 Navigator.of(context).pop();
               },

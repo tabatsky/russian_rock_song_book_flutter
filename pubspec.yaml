@@ -50,6 +50,7 @@ dependencies:
   equatable: ^2.0.5
   flutter_guitar_chord: ^0.0.2
   guitar_chord_library: ^0.0.4
+  indent: ^2.0.0
 
 dev_dependencies:
   flutter_test:

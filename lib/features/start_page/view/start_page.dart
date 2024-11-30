@@ -10,19 +10,17 @@ import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
 import 'package:russian_rock_song_book/data/settings/version.dart';
 
 class StartPage extends StatefulWidget {
-
   final AppBloc appBloc;
   final void Function() onInitSuccess;
 
-  const StartPage(this.appBloc, this.onInitSuccess, {super.key});
+  const StartPage(
+      {super.key, required this.appBloc, required this.onInitSuccess});
 
   @override
   State<StatefulWidget> createState() => StartPageState();
-
 }
 
 class StartPageState extends State<StartPage> {
-
   double indicatorValue = 0.0;
   String indicatorText = AppStrings.strFrom(0, SongRepository.artistMap.length);
   bool wasUpdated = false;
@@ -39,8 +37,7 @@ class StartPageState extends State<StartPage> {
         bloc: widget.appBloc, // provide the local bloc instance
         builder: (context, state) {
           return _makePage(context, state.settings);
-        }
-    );
+        });
   }
 
   Widget _makePage(BuildContext context, AppSettings settings) {
@@ -49,31 +46,34 @@ class StartPageState extends State<StartPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: wasUpdated ? [
-          Text(AppStrings.strStartPleaseWait,
-              style: settings.textStyler.textStyleSmallTitle),
-          const SizedBox(
-            height: 30,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50),
-            child: LinearProgressIndicator(
-              value: indicatorValue,
-              minHeight: 30,
-              backgroundColor: AppTheme.colorDarkYellow,
-              color: settings.theme.colorMain,
-            ),
-          ),
-          Text(indicatorText, style: settings.textStyler.textStyleSmallTitle),
-          const SizedBox(
-            height: 30,
-          ),
-          Text(AppStrings.strStartDbBuilding,
-              style: settings.textStyler.textStyleSmall),
-        ] : [
-          Text(AppStrings.strStartPleaseWait,
-              style: settings.textStyler.textStyleSmallTitle),
-        ],
+        children: wasUpdated
+            ? [
+                Text(AppStrings.strStartPleaseWait,
+                    style: settings.textStyler.textStyleSmallTitle),
+                const SizedBox(
+                  height: 30,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  child: LinearProgressIndicator(
+                    value: indicatorValue,
+                    minHeight: 30,
+                    backgroundColor: AppTheme.colorDarkYellow,
+                    color: settings.theme.colorMain,
+                  ),
+                ),
+                Text(indicatorText,
+                    style: settings.textStyler.textStyleSmallTitle),
+                const SizedBox(
+                  height: 30,
+                ),
+                Text(AppStrings.strStartDbBuilding,
+                    style: settings.textStyler.textStyleSmall),
+              ]
+            : [
+                Text(AppStrings.strStartPleaseWait,
+                    style: settings.textStyler.textStyleSmallTitle),
+              ],
       ),
     );
   }
