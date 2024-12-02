@@ -704,7 +704,7 @@ class AppStateMachine {
         MethodChannel('jatx.flutter.russian_rock_song_book/channel');
     try {
       final result =
-          await platform.invokeMethod<List<Object?>>('getDeviceModel') ?? [];
+          await platform.invokeMethod<List<Object?>>('getFolderContents') ?? [];
       final strings = result.map((e) => e as String).toList();
       if (strings.length < 3) {
         _showToast(appState, AppStrings.strToastSongsNotFound);

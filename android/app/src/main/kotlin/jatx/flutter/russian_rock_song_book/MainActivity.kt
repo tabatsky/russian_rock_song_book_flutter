@@ -60,7 +60,7 @@ class MainActivity: FlutterFragmentActivity() {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
             .setMethodCallHandler { call: MethodCall, result: MethodChannel.Result ->
-                if (call.method == "getDeviceModel") {
+                if (call.method == "getFolderContents") {
                     theResult = result
                     openDirResultLauncher.launch(
                         Uri.fromFile(
