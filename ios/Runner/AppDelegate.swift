@@ -13,7 +13,11 @@ import Flutter
                                                     binaryMessenger: controller.binaryMessenger)
     channel.setMethodCallHandler({
         [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
-        result(["artist", "title1", "text1", "title2", "text2"])
+        if call.method == "getFolderContents" {
+            result(["artist", "title1", "text1", "title2", "text2"])
+        } else {
+            result(FlutterMethodNotImplemented)
+        }
     })
       
     GeneratedPluginRegistrant.register(with: self)
