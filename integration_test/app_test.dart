@@ -23,7 +23,7 @@ const TITLE_3_1 = "Белая ночь";
 void main() {
   Future<void> launchApp(WidgetTester tester) async {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-    app.main();
+    app.testMain();
 
     await tester.pumpAndSettle();
 

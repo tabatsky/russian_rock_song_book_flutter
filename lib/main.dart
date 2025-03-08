@@ -17,3 +17,13 @@ void main() {
   runApp(RussianRockSongBookApp());
 }
 
+void testMain() {
+  try {
+    GetIt.I.registerLazySingleton<SongRepository>(() => SongRepositoryImpl());
+    GetIt.I.registerLazySingleton<CloudRepository>(() => CloudRepositoryImpl());
+  } catch (e) {
+    print('failed to init dependencies');
+  }
+
+  runApp(RussianRockSongBookApp());
+}
