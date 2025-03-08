@@ -6,6 +6,7 @@ import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
 import 'package:russian_rock_song_book/mvi/state/local_state.dart';
+import 'package:russian_rock_song_book/test/test_keys.dart';
 import 'package:russian_rock_song_book/ui/font/app_font.dart';
 import 'package:russian_rock_song_book/ui/widgets/app_divider.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
@@ -69,7 +70,7 @@ class _SongListPageContentState extends State<_SongListPageContent> {
         title: Text(
           widget.localState.currentArtist,
           style: widget.settings.textStyler.textStyleFixedBlackBold,
-          key: const Key('song_list_title'),
+          key: const Key(TestKeys.songListTitle),
         ),
         actions: [
           IconButton(
@@ -140,7 +141,7 @@ class _MenuListView extends StatelessWidget {
     final predefinedWithGroups =
         localState.allArtists.predefinedArtistsWithGroups();
     return ListView.builder(
-        key: const Key('menu_list_view'),
+        key: const Key(TestKeys.menuListView),
         controller: menuScrollController,
         padding: EdgeInsets.zero,
         itemCount: predefinedWithGroups.length + 1,
@@ -413,7 +414,7 @@ class _TitleListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListView.builder(
-      key: const Key('title_list_view'),
+      key: const Key(TestKeys.titleListView),
       controller: titleScrollController,
       padding: EdgeInsets.zero,
       itemCount: localState.currentSongs.length,

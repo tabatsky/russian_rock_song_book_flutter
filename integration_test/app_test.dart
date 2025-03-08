@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
+import 'package:russian_rock_song_book/test/test_keys.dart';
 import 'package:russian_rock_song_book/main.dart' as app;
 
 const ARTIST_1 = "Немного Нервно";
@@ -27,7 +28,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.waitFor((tester) {
-      final songListTitle = find.byKey(const Key('song_list_title'));
+      final songListTitle = find.byKey(const Key(TestKeys.songListTitle));
       expect(songListTitle, findsOneWidget);
       expect(tester.widget<Text>(songListTitle).data, 'Кино');
     });
@@ -51,7 +52,7 @@ void main() {
       await tester.drag(locateDrawer, const Offset(-300, 0));
       await tester.pumpAndSettle();
       await tester.waitFor((tester) {
-        final songListTitle = find.byKey(const Key('song_list_title'));
+        final songListTitle = find.byKey(const Key(TestKeys.songListTitle));
         expect(songListTitle, findsOneWidget);
         expect(tester.widget<Text>(songListTitle).data, 'Кино');
       });
@@ -78,7 +79,7 @@ void main() {
       await tester.tap(locateDrawer);
       await tester.pumpAndSettle();
 
-      final menuListView = find.byKey(const Key('menu_list_view'));
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
       await tester.waitFor((tester) {
         expect(menuListView, findsOneWidget);
       });
@@ -106,7 +107,7 @@ void main() {
       await tester.tap(locateDrawer);
       await tester.pumpAndSettle();
 
-      final menuListView = find.byKey(const Key('menu_list_view'));
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
       await tester.waitFor((tester) {
         expect(menuListView, findsOneWidget);
       });
@@ -141,7 +142,7 @@ void main() {
       await tester.tap(locateDrawer);
       await tester.pumpAndSettle();
 
-      final menuListView = find.byKey(const Key('menu_list_view'));
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
       await tester.waitFor((tester) {
         expect(menuListView, findsOneWidget);
       });
@@ -162,7 +163,7 @@ void main() {
       await tester.tap(artist1Text);
       await tester.pumpAndSettle();
 
-      final titleListView = find.byKey(const Key('title_list_view'));
+      final titleListView = find.byKey(const Key(TestKeys.titleListView));
       await tester.waitFor((tester) {
         expect(titleListView, findsOneWidget);
       });
@@ -211,7 +212,7 @@ void main() {
       await tester.tap(locateDrawer);
       await tester.pumpAndSettle();
 
-      final menuListView = find.byKey(const Key('menu_list_view'));
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
       await tester.waitFor((tester) {
         expect(menuListView, findsOneWidget);
       });
@@ -232,7 +233,7 @@ void main() {
       await tester.tap(artist1Text);
       await tester.pumpAndSettle();
 
-      final titleListView = find.byKey(const Key('title_list_view'));
+      final titleListView = find.byKey(const Key(TestKeys.titleListView));
       await tester.waitFor((tester) {
         expect(titleListView, findsOneWidget);
       });
@@ -249,10 +250,10 @@ void main() {
       final songs = await GetIt.I<SongRepository>().getSongsByArtist(ARTIST_1);
       final song = songs.where((element) => element.title == TITLE_1_3).first;
       await tester.waitFor((tester) {
-        final songTextTitle = find.byKey(const Key('song_text_title'));
+        final songTextTitle = find.byKey(const Key(TestKeys.songTextTitle));
         expect(songTextTitle, findsOneWidget);
         expect(tester.widget<Text>(songTextTitle).data, song.title);
-        final songTextText = find.byKey(const Key('song_text_text'));
+        final songTextText = find.byKey(const Key(TestKeys.songTextText));
         expect(songTextText, findsOneWidget);
         expect(tester.widget<RichText>(songTextText).text.toPlainText(),
             song.text);
@@ -267,7 +268,7 @@ void main() {
       await tester.tap(locateDrawer);
       await tester.pumpAndSettle();
 
-      final menuListView = find.byKey(const Key('menu_list_view'));
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
       await tester.waitFor((tester) {
         expect(menuListView, findsOneWidget);
       });
@@ -288,7 +289,7 @@ void main() {
       await tester.tap(artist1Text);
       await tester.pumpAndSettle();
 
-      final titleListView = find.byKey(const Key('title_list_view'));
+      final titleListView = find.byKey(const Key(TestKeys.titleListView));
       await tester.waitFor((tester) {
         expect(titleListView, findsOneWidget);
       });
@@ -305,27 +306,27 @@ void main() {
       final songs = await GetIt.I<SongRepository>().getSongsByArtist(ARTIST_1);
       final song = songs.where((element) => element.title == TITLE_1_3).first;
       await tester.waitFor((tester) {
-        final songTextTitle = find.byKey(const Key('song_text_title'));
+        final songTextTitle = find.byKey(const Key(TestKeys.songTextTitle));
         expect(songTextTitle, findsOneWidget);
         expect(tester.widget<Text>(songTextTitle).data, song.title);
-        final songTextText = find.byKey(const Key('song_text_text'));
+        final songTextText = find.byKey(const Key(TestKeys.songTextText));
         expect(songTextText, findsOneWidget);
         expect(tester.widget<RichText>(songTextText).text.toPlainText(),
             song.text);
       });
-      final editButton = find.byKey(const Key('edit_button'));
+      final editButton = find.byKey(const Key(TestKeys.editButton));
       expect(editButton, findsOneWidget);
       await tester.tap(editButton);
       await tester.waitFor((tester) {
-        final songTextEditor = find.byKey(const Key('song_text_editor'));
+        final songTextEditor = find.byKey(const Key(TestKeys.songTextEditor));
         expect(songTextEditor, findsOneWidget);
         expect(find.text(song.text), findsOneWidget);
       });
-      final saveButton = find.byKey(const Key('save_button'));
+      final saveButton = find.byKey(const Key(TestKeys.saveButton));
       expect(saveButton, findsOneWidget);
       await tester.tap(saveButton);
       await tester.waitFor((tester) {
-        final songTextText = find.byKey(const Key('song_text_text'));
+        final songTextText = find.byKey(const Key(TestKeys.songTextText));
         expect(songTextText, findsOneWidget);
         expect(tester.widget<RichText>(songTextText).text.toPlainText(),
             song.text);
@@ -340,7 +341,7 @@ void main() {
       await tester.tap(locateDrawer);
       await tester.pumpAndSettle();
 
-      final menuListView = find.byKey(const Key('menu_list_view'));
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
       await tester.waitFor((tester) {
         expect(menuListView, findsOneWidget);
       });
@@ -361,7 +362,7 @@ void main() {
       await tester.tap(artist1Text);
       await tester.pumpAndSettle();
 
-      final titleListView = find.byKey(const Key('title_list_view'));
+      final titleListView = find.byKey(const Key(TestKeys.titleListView));
       await tester.waitFor((tester) {
         expect(titleListView, findsOneWidget);
       });
@@ -381,14 +382,14 @@ void main() {
       final songIndex1 = songs.indexOf(song1);
       final song2 = songs[songIndex1 + 1];
 
-      final leftButton = find.byKey(const Key('left_button'));
-      final rightButton = find.byKey(const Key('right_button'));
+      final leftButton = find.byKey(const Key(TestKeys.leftButton));
+      final rightButton = find.byKey(const Key(TestKeys.rightButton));
 
       await tester.waitFor((tester) {
-        final songTextTitle = find.byKey(const Key('song_text_title'));
+        final songTextTitle = find.byKey(const Key(TestKeys.songTextTitle));
         expect(songTextTitle, findsOneWidget);
         expect(tester.widget<Text>(songTextTitle).data, song1.title);
-        final songTextText = find.byKey(const Key('song_text_text'));
+        final songTextText = find.byKey(const Key(TestKeys.songTextText));
         expect(songTextText, findsOneWidget);
         expect(tester.widget<RichText>(songTextText).text.toPlainText(),
             song1.text);
@@ -396,10 +397,10 @@ void main() {
 
       await tester.tap(rightButton);
       await tester.waitFor((tester) {
-        final songTextTitle = find.byKey(const Key('song_text_title'));
+        final songTextTitle = find.byKey(const Key(TestKeys.songTextTitle));
         expect(songTextTitle, findsOneWidget);
         expect(tester.widget<Text>(songTextTitle).data, song2.title);
-        final songTextText = find.byKey(const Key('song_text_text'));
+        final songTextText = find.byKey(const Key(TestKeys.songTextText));
         expect(songTextText, findsOneWidget);
         expect(tester.widget<RichText>(songTextText).text.toPlainText(),
             song2.text);
@@ -407,10 +408,10 @@ void main() {
 
       await tester.tap(leftButton);
       await tester.waitFor((tester) {
-        final songTextTitle = find.byKey(const Key('song_text_title'));
+        final songTextTitle = find.byKey(const Key(TestKeys.songTextTitle));
         expect(songTextTitle, findsOneWidget);
         expect(tester.widget<Text>(songTextTitle).data, song1.title);
-        final songTextText = find.byKey(const Key('song_text_text'));
+        final songTextText = find.byKey(const Key(TestKeys.songTextText));
         expect(songTextText, findsOneWidget);
         expect(tester.widget<RichText>(songTextText).text.toPlainText(),
             song1.text);
@@ -425,7 +426,7 @@ void main() {
       await tester.tap(locateDrawer);
       await tester.pumpAndSettle();
 
-      final menuListView = find.byKey(const Key('menu_list_view'));
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
       await tester.waitFor((tester) {
         expect(menuListView, findsOneWidget);
       });
@@ -446,7 +447,7 @@ void main() {
       await tester.tap(artist1Text);
       await tester.pumpAndSettle();
 
-      final titleListView = find.byKey(const Key('title_list_view'));
+      final titleListView = find.byKey(const Key(TestKeys.titleListView));
       await tester.waitFor((tester) {
         expect(titleListView, findsOneWidget);
       });
@@ -462,15 +463,15 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.waitFor((tester) {
-        final songTextTitle = find.byKey(const Key('song_text_title'));
+        final songTextTitle = find.byKey(const Key(TestKeys.songTextTitle));
         expect(songTextTitle, findsOneWidget);
         expect(tester.widget<Text>(songTextTitle).data, TITLE_1_3);
       });
 
       final addToFavoriteButton =
-          find.byKey(const Key('add_to_favorite_button'));
+          find.byKey(const Key(TestKeys.addToFavoriteButton));
       final deleteFromFavoriteButton =
-          find.byKey(const Key('delete_from_favorite_button'));
+          find.byKey(const Key(TestKeys.deleteFromFavoriteButton));
 
       expect(addToFavoriteButton, findsOneWidget);
       await tester.tap(addToFavoriteButton);

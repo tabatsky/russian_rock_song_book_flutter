@@ -6,6 +6,7 @@ import 'package:russian_rock_song_book/features/common/widgets/music_button.dart
 import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
+import 'package:russian_rock_song_book/test/test_keys.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
@@ -76,7 +77,7 @@ class _SongTextPageContent extends StatelessWidget {
               },
             ),
             IconButton(
-              key: const Key('left_button'),
+              key: const Key(TestKeys.leftButton),
               icon: Image.asset(AppIcons.icLeft),
               iconSize: 50,
               onPressed: () {
@@ -85,7 +86,7 @@ class _SongTextPageContent extends StatelessWidget {
             ),
             currentSong?.favorite == true
                 ? IconButton(
-                    key: const Key('delete_from_favorite_button'),
+                    key: const Key(TestKeys.deleteFromFavoriteButton),
                     icon: Image.asset(AppIcons.icDelete),
                     iconSize: 50,
                     onPressed: () {
@@ -93,7 +94,7 @@ class _SongTextPageContent extends StatelessWidget {
                     },
                   )
                 : IconButton(
-                    key: const Key('add_to_favorite_button'),
+                    key: const Key(TestKeys.addToFavoriteButton),
                     icon: Image.asset(AppIcons.icStar),
                     iconSize: 50,
                     onPressed: () {
@@ -101,7 +102,7 @@ class _SongTextPageContent extends StatelessWidget {
                     },
                   ),
             IconButton(
-              key: const Key('right_button'),
+              key: const Key(TestKeys.rightButton),
               icon: Image.asset(AppIcons.icRight),
               iconSize: 50,
               onPressed: () {
@@ -201,14 +202,14 @@ class _SongTextBodyState extends State<_SongTextBody> {
                           Text(
                             widget.currentSong?.title ?? '',
                             style: widget.settings.textStyler.textStyleTitle,
-                            key: const Key('song_text_title'),
+                            key: const Key(TestKeys.songTextTitle),
                           ),
                           Container(
                             height: 20,
                           ),
                           widget.isEditorMode
                               ? TextField(
-                                  key: const Key('song_text_editor'),
+                                  key: const Key(TestKeys.songTextEditor),
                                   controller: _textEditorController,
                                   keyboardType: TextInputType.multiline,
                                   maxLines: null,
@@ -231,7 +232,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
                                       .settings.textStyler.textStyleSongText,
                                   style2:
                                       widget.settings.textStyler.textStyleChord,
-                                  textKey: const Key('song_text_text'),
+                                  textKey: const Key(TestKeys.songTextText),
                                 ),
                           Container(
                             height: 80,
@@ -396,14 +397,14 @@ class _ButtonPanel extends StatelessWidget {
               onPressed: () {
                 onSaveText();
               },
-              buttonKey: const Key('save_button'))
+              buttonKey: const Key(TestKeys.saveButton))
           : BottomButton(
               icon: AppIcons.icEdit,
               buttonSize: buttonSize,
               onPressed: () {
                 onEditText(currentSong);
               },
-              buttonKey: const Key('edit_button')),
+              buttonKey: const Key(TestKeys.editButton)),
     ];
 
     return isPortrait
