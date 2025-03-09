@@ -9,6 +9,8 @@ const PAGE_SIZE = 15;
 
 class CloudRepositoryTestImpl implements CloudRepository {
 
+  bool isOnline = true;
+
   List<CloudSong> list = [];
 
   Future<void> _init() async {
@@ -66,8 +68,13 @@ class CloudRepositoryTestImpl implements CloudRepository {
 
   @override
   Future<List<CloudSong>> pagedSearch(String searchFor, String orderBy, int page) async {
-    final searchResult = await search(searchFor, orderBy);
-    return safeSublist(searchResult, (page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    if (isOnline) {
+      final searchResult = await search(searchFor, orderBy);
+      return safeSublist(
+          searchResult, (page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    } else {
+      throw 'offline';
+    }
   }
 
   @override
