@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:russian_rock_song_book/data/cloud/repository/cloud_repository_test_impl.dart';
+import 'package:russian_rock_song_book/domain/models/cloud/order_by.dart';
+import 'package:russian_rock_song_book/domain/repository/cloud/cloud_repository.dart';
 import 'package:russian_rock_song_book/domain/repository/local/song_repository.dart';
 import 'package:russian_rock_song_book/test/test_keys.dart';
 import 'package:russian_rock_song_book/main.dart' as app;
@@ -486,6 +489,37 @@ void main() {
       await tester.waitFor((tester) {
         expect(deleteFromFavoriteButton, findsNothing);
         expect(addToFavoriteButton, findsOneWidget);
+      });
+    });
+  });
+
+  group('cloud song list', () {
+    testWidgets('song list for artist is opening from menu correctly', (tester) async {
+      await launchApp(tester);
+
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await tester.tap(locateDrawer);
+      await tester.pumpAndSettle();
+
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
+      await tester.waitFor((tester) {
+        expect(menuListView, findsOneWidget);
+      });
+      final artistCloudSearchText = find.text(SongRepository.artistCloudSearch);
+      await tester.waitFor((tester) {
+        expect(artistCloudSearchText, findsOneWidget);
+      });
+      await tester.tap(artistCloudSearchText);
+      await tester.pumpAndSettle();
+
+      final cloudRepo = GetIt.I<CloudRepository>() as CloudRepositoryTestImpl;
+
+      final songs = await cloudRepo.search('', OrderBy.byIdDesc.orderByStr);
+
+      await tester.waitFor((tester) {
+        expect(find.text(songs[0].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[1].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[2].visibleTitleWithRating(0, 0)), findsOneWidget);
       });
     });
   });
