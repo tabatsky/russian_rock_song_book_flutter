@@ -494,7 +494,7 @@ void main() {
   });
 
   group('cloud song list', () {
-    testWidgets('song list for artist is opening from menu correctly', (tester) async {
+    testWidgets('cloud song list is opening from menu correctly', (tester) async {
       await launchApp(tester);
 
       final locateDrawer = find.byTooltip('Open navigation menu');
@@ -520,6 +520,100 @@ void main() {
         expect(find.text(songs[0].visibleTitleWithRating(0, 0)), findsOneWidget);
         expect(find.text(songs[1].visibleTitleWithRating(0, 0)), findsOneWidget);
         expect(find.text(songs[2].visibleTitleWithRating(0, 0)), findsOneWidget);
+      });
+    });
+
+    testWidgets('cloud song list ordering by title is working correctly', (tester) async {
+      await launchApp(tester);
+
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await tester.tap(locateDrawer);
+      await tester.pumpAndSettle();
+
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
+      await tester.waitFor((tester) {
+        expect(menuListView, findsOneWidget);
+      });
+      final artistCloudSearchText = find.text(SongRepository.artistCloudSearch);
+      await tester.waitFor((tester) {
+        expect(artistCloudSearchText, findsOneWidget);
+      });
+      await tester.tap(artistCloudSearchText);
+      await tester.pumpAndSettle();
+
+      final cloudRepo = GetIt.I<CloudRepository>() as CloudRepositoryTestImpl;
+
+      final songs = await cloudRepo.search('', OrderBy.byIdDesc.orderByStr);
+
+      await tester.waitFor((tester) {
+        expect(find.text(songs[0].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[1].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[2].visibleTitleWithRating(0, 0)), findsOneWidget);
+      });
+
+      final orderByIdDesc = find.text(OrderBy.byIdDesc.orderByRus);
+      await tester.tap(orderByIdDesc);
+      await tester.pumpAndSettle();
+      final orderByTitle = find.text(OrderBy.byTitle.orderByRus);
+      await tester.waitFor((tester) {
+        expect(orderByTitle, findsOneWidget);
+      });
+      await tester.tap(orderByTitle);
+      await tester.pumpAndSettle();
+
+      final songs2 = await cloudRepo.search('', OrderBy.byTitle.orderByStr);
+
+      await tester.waitFor((tester) {
+        expect(find.text(songs2[0].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs2[1].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs2[2].visibleTitleWithRating(0, 0)), findsOneWidget);
+      });
+    });
+
+    testWidgets('cloud song list ordering by artist is working correctly', (tester) async {
+      await launchApp(tester);
+
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await tester.tap(locateDrawer);
+      await tester.pumpAndSettle();
+
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
+      await tester.waitFor((tester) {
+        expect(menuListView, findsOneWidget);
+      });
+      final artistCloudSearchText = find.text(SongRepository.artistCloudSearch);
+      await tester.waitFor((tester) {
+        expect(artistCloudSearchText, findsOneWidget);
+      });
+      await tester.tap(artistCloudSearchText);
+      await tester.pumpAndSettle();
+
+      final cloudRepo = GetIt.I<CloudRepository>() as CloudRepositoryTestImpl;
+
+      final songs = await cloudRepo.search('', OrderBy.byIdDesc.orderByStr);
+
+      await tester.waitFor((tester) {
+        expect(find.text(songs[0].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[1].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[2].visibleTitleWithRating(0, 0)), findsOneWidget);
+      });
+
+      final orderByIdDesc = find.text(OrderBy.byIdDesc.orderByRus);
+      await tester.tap(orderByIdDesc);
+      await tester.pumpAndSettle();
+      final orderByArtist = find.text(OrderBy.byArtist.orderByRus);
+      await tester.waitFor((tester) {
+        expect(orderByArtist, findsOneWidget);
+      });
+      await tester.tap(orderByArtist);
+      await tester.pumpAndSettle();
+
+      final songs2 = await cloudRepo.search('', OrderBy.byArtist.orderByStr);
+
+      await tester.waitFor((tester) {
+        expect(find.text(songs2[0].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs2[1].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs2[2].visibleTitleWithRating(0, 0)), findsOneWidget);
       });
     });
   });
