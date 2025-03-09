@@ -6,6 +6,7 @@ import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
 import 'package:russian_rock_song_book/mvi/state/cloud_state.dart';
+import 'package:russian_rock_song_book/test/test_keys.dart';
 import 'package:russian_rock_song_book/ui/widgets/app_divider.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
@@ -223,6 +224,7 @@ class _CloudSearchPanel extends StatelessWidget {
                 width: maxWidth - 100,
                 height: 48,
                 child: TextField(
+                  key: const Key(TestKeys.cloudSearchTextField),
                   controller: cloudSearchTextFieldController,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
@@ -264,6 +266,7 @@ class _CloudSearchPanel extends StatelessWidget {
             height: 88,
             color: AppTheme.colorDarkYellow,
             child: IconButton(
+              key: const Key(TestKeys.cloudSearchButton),
               icon: Image.asset(AppIcons.icCloudSearch),
               padding: const EdgeInsets.all(8),
               onPressed: () {

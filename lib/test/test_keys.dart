@@ -11,4 +11,6 @@ class TestKeys {
   static const rightButton = 'right_button';
   static const addToFavoriteButton = 'add_to_favorite_button';
   static const deleteFromFavoriteButton = 'delete_from_favorite_button';
+  static const cloudSearchTextField = 'cloud_search_text_field';
+  static const cloudSearchButton = 'cloud_search_button';
 }
