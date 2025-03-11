@@ -785,6 +785,203 @@ void main() {
             songs[2].text);
       });
     });
+
+    testWidgets('cloud song text left and right buttons are working correctly', (tester) async {
+      await launchApp(tester);
+
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await tester.tap(locateDrawer);
+      await tester.pumpAndSettle();
+
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
+      await tester.waitFor((tester) {
+        expect(menuListView, findsOneWidget);
+      });
+      final artistCloudSearchText = find.text(SongRepository.artistCloudSearch);
+      await tester.waitFor((tester) {
+        expect(artistCloudSearchText, findsOneWidget);
+      });
+      await tester.tap(artistCloudSearchText);
+      await tester.pumpAndSettle();
+
+      final cloudRepo = GetIt.I<CloudRepository>() as CloudRepositoryTestImpl;
+
+      final songs = await cloudRepo.search('', OrderBy.byIdDesc.orderByStr);
+
+      await tester.waitFor((tester) {
+        expect(find.text(songs[0].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[1].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[2].visibleTitleWithRating(0, 0)), findsOneWidget);
+      });
+
+      await tester.tap(find.text(songs[2].visibleTitleWithRating(0, 0)));
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        final songTextTitle = find.byKey(const Key(TestKeys.cloudSongTextTitle));
+        expect(songTextTitle, findsOneWidget);
+        expect(tester.widget<Text>(songTextTitle).data,
+            songs[2].visibleTitleWithArtistAndRating(0, 0));
+        final songTextText = find.byKey(const Key(TestKeys.cloudSongTextText));
+        expect(songTextText, findsOneWidget);
+        expect(tester.widget<RichText>(songTextText).text.toPlainText(),
+            songs[2].text);
+      });
+
+      final rightButton = find.byKey(const Key(TestKeys.rightButton));
+      await tester.tap(rightButton);
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        final songTextTitle = find.byKey(const Key(TestKeys.cloudSongTextTitle));
+        expect(songTextTitle, findsOneWidget);
+        expect(tester.widget<Text>(songTextTitle).data,
+            songs[3].visibleTitleWithArtistAndRating(0, 0));
+        final songTextText = find.byKey(const Key(TestKeys.cloudSongTextText));
+        expect(songTextText, findsOneWidget);
+        expect(tester.widget<RichText>(songTextText).text.toPlainText(),
+            songs[3].text);
+      });
+
+      final leftButton = find.byKey(const Key(TestKeys.leftButton));
+      await tester.tap(leftButton);
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        final songTextTitle = find.byKey(const Key(TestKeys.cloudSongTextTitle));
+        expect(songTextTitle, findsOneWidget);
+        expect(tester.widget<Text>(songTextTitle).data,
+            songs[2].visibleTitleWithArtistAndRating(0, 0));
+        final songTextText = find.byKey(const Key(TestKeys.cloudSongTextText));
+        expect(songTextText, findsOneWidget);
+        expect(tester.widget<RichText>(songTextText).text.toPlainText(),
+            songs[2].text);
+      });
+    });
+
+    testWidgets('cloud song text and cloud search like is working correctly', (tester) async {
+      await launchApp(tester);
+
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await tester.tap(locateDrawer);
+      await tester.pumpAndSettle();
+
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
+      await tester.waitFor((tester) {
+        expect(menuListView, findsOneWidget);
+      });
+      final artistCloudSearchText = find.text(SongRepository.artistCloudSearch);
+      await tester.waitFor((tester) {
+        expect(artistCloudSearchText, findsOneWidget);
+      });
+      await tester.tap(artistCloudSearchText);
+      await tester.pumpAndSettle();
+
+      final cloudRepo = GetIt.I<CloudRepository>() as CloudRepositoryTestImpl;
+
+      final songs = await cloudRepo.search('', OrderBy.byIdDesc.orderByStr);
+
+      await tester.waitFor((tester) {
+        expect(find.text(songs[0].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[1].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[2].visibleTitleWithRating(0, 0)), findsOneWidget);
+      });
+
+      await tester.tap(find.text(songs[2].visibleTitleWithRating(0, 0)));
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        final songTextTitle = find.byKey(const Key(TestKeys.cloudSongTextTitle));
+        expect(songTextTitle, findsOneWidget);
+        expect(tester.widget<Text>(songTextTitle).data,
+            songs[2].visibleTitleWithArtistAndRating(0, 0));
+        final songTextText = find.byKey(const Key(TestKeys.cloudSongTextText));
+        expect(songTextText, findsOneWidget);
+        expect(tester.widget<RichText>(songTextText).text.toPlainText(),
+            songs[2].text);
+      });
+
+      final likeButton = find.byKey(const Key(TestKeys.likeButton));
+      await tester.tap(likeButton);
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        final songTextTitle = find.byKey(const Key(TestKeys.cloudSongTextTitle));
+        expect(songTextTitle, findsOneWidget);
+        expect(tester.widget<Text>(songTextTitle).data,
+            songs[2].visibleTitleWithArtistAndRating(1, 0));
+      });
+
+      final backButton = find.byKey(const Key(TestKeys.backButton));
+      await tester.tap(backButton);
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        expect(find.text(songs[2].visibleTitleWithRating(1, 0)), findsOneWidget);
+      });
+    });
+
+    testWidgets('cloud song text and cloud search dislike is working correctly', (tester) async {
+      await launchApp(tester);
+
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await tester.tap(locateDrawer);
+      await tester.pumpAndSettle();
+
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
+      await tester.waitFor((tester) {
+        expect(menuListView, findsOneWidget);
+      });
+      final artistCloudSearchText = find.text(SongRepository.artistCloudSearch);
+      await tester.waitFor((tester) {
+        expect(artistCloudSearchText, findsOneWidget);
+      });
+      await tester.tap(artistCloudSearchText);
+      await tester.pumpAndSettle();
+
+      final cloudRepo = GetIt.I<CloudRepository>() as CloudRepositoryTestImpl;
+
+      final songs = await cloudRepo.search('', OrderBy.byIdDesc.orderByStr);
+
+      await tester.waitFor((tester) {
+        expect(find.text(songs[0].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[1].visibleTitleWithRating(0, 0)), findsOneWidget);
+        expect(find.text(songs[2].visibleTitleWithRating(0, 0)), findsOneWidget);
+      });
+
+      await tester.tap(find.text(songs[2].visibleTitleWithRating(0, 0)));
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        final songTextTitle = find.byKey(const Key(TestKeys.cloudSongTextTitle));
+        expect(songTextTitle, findsOneWidget);
+        expect(tester.widget<Text>(songTextTitle).data,
+            songs[2].visibleTitleWithArtistAndRating(0, 0));
+        final songTextText = find.byKey(const Key(TestKeys.cloudSongTextText));
+        expect(songTextText, findsOneWidget);
+        expect(tester.widget<RichText>(songTextText).text.toPlainText(),
+            songs[2].text);
+      });
+
+      final dislikeButton = find.byKey(const Key(TestKeys.dislikeButton));
+      await tester.tap(dislikeButton);
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        final songTextTitle = find.byKey(const Key(TestKeys.cloudSongTextTitle));
+        expect(songTextTitle, findsOneWidget);
+        expect(tester.widget<Text>(songTextTitle).data,
+            songs[2].visibleTitleWithArtistAndRating(0, 1));
+      });
+
+      final backButton = find.byKey(const Key(TestKeys.backButton));
+      await tester.tap(backButton);
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        expect(find.text(songs[2].visibleTitleWithRating(0, 1)), findsOneWidget);
+      });
+    });
   });
 }
 

@@ -15,4 +15,7 @@ class TestKeys {
   static const cloudSearchButton = 'cloud_search_button';
   static const cloudSongTextTitle = 'cloud_song_text_title';
   static const cloudSongTextText = 'cloud_song_text_text';
+  static const likeButton = 'like_button';
+  static const dislikeButton = 'dislike_button';
+  static const backButton = 'back_button';
 }

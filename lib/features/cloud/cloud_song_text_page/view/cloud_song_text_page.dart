@@ -56,6 +56,7 @@ class _CloudSongTextPageContent extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppTheme.colorDarkYellow,
         leading: IconButton(
+          key: const Key(TestKeys.backButton),
           icon: Image.asset(AppIcons.icBack),
           iconSize: 50,
           onPressed: () {
@@ -64,6 +65,7 @@ class _CloudSongTextPageContent extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            key: const Key(TestKeys.leftButton),
             icon: Image.asset(AppIcons.icLeft),
             iconSize: 50,
             onPressed: () {
@@ -75,6 +77,7 @@ class _CloudSongTextPageContent extends StatelessWidget {
             style: settings.textStyler.textStyleFixedBlackBold,
           ),
           IconButton(
+            key: const Key(TestKeys.rightButton),
             icon: Image.asset(AppIcons.icRight),
             iconSize: 50,
             onPressed: () {
@@ -261,12 +264,14 @@ class _ButtonPanel extends StatelessWidget {
             });
           }),
       BottomButton(
+          buttonKey: const Key(TestKeys.likeButton),
           icon: AppIcons.icLike,
           buttonSize: buttonSize,
           onPressed: () {
             onPerformAction(LikeCurrent());
           }),
       BottomButton(
+          buttonKey: const Key(TestKeys.dislikeButton),
           icon: AppIcons.icDislike,
           buttonSize: buttonSize,
           onPressed: () {

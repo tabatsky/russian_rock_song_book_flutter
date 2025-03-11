@@ -78,9 +78,8 @@ class CloudRepositoryTestImpl implements CloudRepository {
   }
 
   @override
-  Future<void> vote(CloudSong cloudSong, int voteValue, VoteSuccess voteSuccess, ServerError serverError, InAppError inAppError) {
-    // TODO: implement vote
-    throw UnimplementedError();
+  Future<void> vote(CloudSong cloudSong, int voteValue, VoteSuccess voteSuccess, ServerError serverError, InAppError inAppError) async {
+    voteSuccess(voteValue);
   }
 
 }
