@@ -13,4 +13,6 @@ class TestKeys {
   static const deleteFromFavoriteButton = 'delete_from_favorite_button';
   static const cloudSearchTextField = 'cloud_search_text_field';
   static const cloudSearchButton = 'cloud_search_button';
+  static const cloudSongTextTitle = 'cloud_song_text_title';
+  static const cloudSongTextText = 'cloud_song_text_text';
 }

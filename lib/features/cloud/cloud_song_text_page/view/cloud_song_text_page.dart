@@ -10,6 +10,7 @@ import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
 import 'package:russian_rock_song_book/mvi/state/cloud_state.dart';
+import 'package:russian_rock_song_book/test/test_keys.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
@@ -153,6 +154,7 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
                                     extraLikes, extraDislikes) ??
                             '',
                         style: widget.settings.textStyler.textStyleTitle,
+                        key: const Key(TestKeys.cloudSongTextTitle),
                       ),
                       Container(
                         height: 20,
@@ -167,7 +169,7 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
                         },
                         style1: widget.settings.textStyler.textStyleSongText,
                         style2: widget.settings.textStyler.textStyleChord,
-                        textKey: const Key('song_text_text'),
+                        textKey: const Key(TestKeys.cloudSongTextText),
                       ),
                       Container(
                         height: 80,
