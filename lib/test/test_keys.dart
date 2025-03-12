@@ -18,4 +18,5 @@ class TestKeys {
   static const likeButton = 'like_button';
   static const dislikeButton = 'dislike_button';
   static const backButton = 'back_button';
+  static const warningButton = 'warning_button';
 }

@@ -375,6 +375,7 @@ class _ButtonPanel extends StatelessWidget {
             onPerformAction(UploadCurrentToCloud());
           }),
       BottomButton(
+          buttonKey: const Key(TestKeys.warningButton),
           icon: AppIcons.icWarning,
           buttonSize: buttonSize,
           onPressed: () {
