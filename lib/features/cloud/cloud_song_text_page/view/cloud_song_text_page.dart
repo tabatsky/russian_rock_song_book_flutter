@@ -254,6 +254,7 @@ class _ButtonPanel extends StatelessWidget {
             onPerformAction(DownloadCurrent());
           }),
       BottomButton(
+          buttonKey: const Key(TestKeys.warningButton),
           icon: AppIcons.icWarning,
           buttonSize: buttonSize,
           onPressed: () {
