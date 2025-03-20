@@ -1,5 +1,5 @@
 enum PageVariant {
-  start, songList, songText, cloudSearch, cloudSongText, settings, addArtist;
+  start, songList, songText, cloudSearch, cloudSongText, settings, addArtist, addSong;
 
   String get route {
     switch (this) {
@@ -17,6 +17,8 @@ enum PageVariant {
         return '/settings';
       case addArtist:
         return '/addArtist';
+      case addSong:
+        return '/addSong';
     }
   }
 }

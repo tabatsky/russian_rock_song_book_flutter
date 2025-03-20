@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:russian_rock_song_book/features/add_artist/add_artist_page.dart';
+import 'package:russian_rock_song_book/features/add_song/add_song_page.dart';
 import 'package:russian_rock_song_book/features/start_page/view/start_page.dart';
 import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
@@ -40,45 +41,53 @@ class RussianRockSongBookApp extends StatelessWidget {
           PageVariant.songList.route: (context) =>
               SongListPage(appBloc: _appBloc, onPerformAction: _performAction),
           PageVariant.songText.route: (context) => PopScope(
-                canPop: true,
-                onPopInvoked: (didPop) {
-                  _performAction(Back(systemBack: true));
-                },
-                child: SongTextPage(
-                    appBloc: _appBloc, onPerformAction: _performAction),
-              ),
+            canPop: true,
+            onPopInvoked: (didPop) {
+              _performAction(Back(systemBack: true));
+            },
+            child: SongTextPage(
+                appBloc: _appBloc, onPerformAction: _performAction),
+          ),
           PageVariant.cloudSearch.route: (context) => PopScope(
-                canPop: true,
-                onPopInvoked: (didPop) {
-                  _performAction(Back(systemBack: true));
-                },
-                child: CloudSearchPage(
-                    appBloc: _appBloc, onPerformAction: _performAction),
-              ),
+            canPop: true,
+            onPopInvoked: (didPop) {
+              _performAction(Back(systemBack: true));
+            },
+            child: CloudSearchPage(
+                appBloc: _appBloc, onPerformAction: _performAction),
+          ),
           PageVariant.cloudSongText.route: (context) => PopScope(
-                canPop: true,
-                onPopInvoked: (didPop) {
-                  _performAction(Back(systemBack: true));
-                },
-                child: CloudSongTextPage(
-                    appBloc: _appBloc, onPerformAction: _performAction),
-              ),
+            canPop: true,
+            onPopInvoked: (didPop) {
+              _performAction(Back(systemBack: true));
+            },
+            child: CloudSongTextPage(
+                appBloc: _appBloc, onPerformAction: _performAction),
+          ),
           PageVariant.settings.route: (context) => PopScope(
-                canPop: true,
-                onPopInvoked: (didPop) {
-                  _performAction(Back(systemBack: true));
-                },
-                child: SettingsPage(
-                    appBloc: _appBloc, onPerformAction: _performAction),
-              ),
+            canPop: true,
+            onPopInvoked: (didPop) {
+              _performAction(Back(systemBack: true));
+            },
+            child: SettingsPage(
+                appBloc: _appBloc, onPerformAction: _performAction),
+          ),
           PageVariant.addArtist.route: (context) => PopScope(
-                canPop: true,
-                onPopInvoked: (didPop) {
-                  _performAction(Back(systemBack: true));
-                },
-                child: AddArtistPage(
-                    appBloc: _appBloc, onPerformAction: _performAction),
-              ),
+            canPop: true,
+            onPopInvoked: (didPop) {
+              _performAction(Back(systemBack: true));
+            },
+            child: AddArtistPage(
+                appBloc: _appBloc, onPerformAction: _performAction),
+          ),
+          PageVariant.addSong.route: (context) => PopScope(
+            canPop: true,
+            onPopInvoked: (didPop) {
+              _performAction(Back(systemBack: true));
+            },
+            child: AddSongPage(
+                appBloc: _appBloc, onPerformAction: _performAction),
+          ),
         });
   }
 

@@ -182,6 +182,17 @@ class AppStateMachine {
       } else {
         appState.currentPageVariant = newPageVariant;
       }
+    } else if (oldPageVariant == PageVariant.songList &&
+        newPageVariant == PageVariant.addSong) {
+      getNavigatorState()?.pushNamed(PageVariant.addSong.route);
+      appState.currentPageVariant = newPageVariant;
+     } else if (oldPageVariant == PageVariant.addSong &&
+        newPageVariant == PageVariant.songList) {
+      if (!systemBack) {
+        getNavigatorState()?.pop();
+      } else {
+        appState.currentPageVariant = newPageVariant;
+      }
     }
   }
 
@@ -222,6 +233,10 @@ class AppStateMachine {
     } else if (artist == SongRepository.artistAddArtist) {
       final newAppState = appState;
       _selectPageVariant(newAppState, PageVariant.addArtist);
+      await changeState(newAppState);
+    } else if (artist == SongRepository.artistAddSong) {
+      final newAppState = appState;
+      _selectPageVariant(newAppState, PageVariant.addSong);
       await changeState(newAppState);
     } else {
       final songs = await GetIt.I<SongRepository>().getSongsByArtist(artist);
@@ -308,6 +323,11 @@ class AppStateMachine {
           systemBack: systemBack);
       await changeState(newAppState);
     } else if (appState.currentPageVariant == PageVariant.addArtist) {
+      final newAppState = appState;
+      _selectPageVariant(newAppState, PageVariant.songList,
+          systemBack: systemBack);
+      await changeState(newAppState);
+    } else if (appState.currentPageVariant == PageVariant.addSong) {
       final newAppState = appState;
       _selectPageVariant(newAppState, PageVariant.songList,
           systemBack: systemBack);

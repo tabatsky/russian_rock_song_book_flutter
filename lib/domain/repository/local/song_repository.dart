@@ -20,10 +20,12 @@ abstract class SongRepository {
   static const artistFavorite = 'Избранное';
   static const artistCloudSearch = 'Аккорды онлайн';
   static const artistAddArtist = 'Добавить исполнителя';
+  static const artistAddSong = 'Добавить песню';
   static const predefinedArtists = [
     artistFavorite,
     artistCloudSearch,
-    artistAddArtist
+    artistAddArtist,
+    artistAddSong
   ];
 
   static final artistMap = {
