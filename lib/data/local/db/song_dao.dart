@@ -44,14 +44,21 @@ class SongDao {
     (?, ?, ?, ?, ?, ?, ?);
     """;
     await _db?.transaction((txn) async {
+      final batch = txn.batch();
       for (final songEntity in songEntities) {
-        await txn.rawInsert(
+        batch.rawInsert(
             query,
             [
               songEntity.artist, songEntity.title, songEntity.text,
               songEntity.favorite, songEntity.deleted, songEntity.outOfTheBox,
               songEntity.origTextMD5
             ]);
+      }
+      try {
+        await batch.commit(continueOnError: false);
+        log('commit success');
+      } catch(e) {
+        log("commit failed: ${e.toString()}");
       }
     });
   }
