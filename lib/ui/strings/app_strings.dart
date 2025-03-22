@@ -46,6 +46,7 @@ class AppStrings {
   static const strSongArtist = 'Исполнитель';
   static const strSongTitle = 'Название';
   static const strSongText = 'Текст песни';
+  static const strToastFillAllFields = 'Заполните все поля';
 
   static String strFrom(int done, int total) => "$done из $total";
 }

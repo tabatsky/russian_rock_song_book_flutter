@@ -767,12 +767,9 @@ class AppStateMachine {
       await _back((newState) async {
         await changeState(newState);
         await _selectArtist((newState2) async {
-          final newAppState2 = newState2;
-          _selectPageVariant(newAppState2, PageVariant.songList);
-          await changeState(newAppState2);
           final songsByArtist = await GetIt.I<SongRepository>().getSongsByArtist(song.artist);
           final position = songsByArtist.indexWhere((test) => test.title == song.title);
-          await _selectSong(changeState, newAppState2, position);
+          await _selectSong(changeState, newState2, position);
         }, newState, song.artist);
       }, newAppState, systemBack: true);
     } catch (e) {

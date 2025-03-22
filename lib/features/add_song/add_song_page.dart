@@ -91,6 +91,7 @@ class _AddSongPageContent extends StatelessWidget {
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 expands: true,
+                textAlignVertical: TextAlignVertical.top,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.zero,
@@ -121,10 +122,14 @@ class _AddSongPageContent extends StatelessWidget {
   }
 
   void _saveSong() {
-    final artist = _artistEditingController.text;
-    final title = _titleEditingController.text;
+    final artist = _artistEditingController.text.trim();
+    final title = _titleEditingController.text.trim();
     final text = _textEditingController.text;
-    final song = Song(artist: artist, title: title, text: text);
-    onPerformAction(AddNewSong(song));
+    if (artist.isEmpty || title.isEmpty || text.trim().isEmpty) {
+      onPerformAction(ShowToast(AppStrings.strToastFillAllFields));
+    } else {
+      final song = Song(artist: artist, title: title, text: text);
+      onPerformAction(AddNewSong(song));
+    }
   }
 }
