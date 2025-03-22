@@ -63,7 +63,7 @@ class _AddArtistPageContent extends StatelessWidget {
           const Spacer(),
           TextButton(
             onPressed: () {
-              onPerformAction(AddArtistList());
+              onPerformAction(AddArtistFromFolder());
             },
             child: Container(
               color: settings.theme.colorCommon,

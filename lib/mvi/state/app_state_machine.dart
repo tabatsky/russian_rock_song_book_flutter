@@ -106,8 +106,8 @@ class AppStateMachine {
       await _saveSettings(changeState, newState, event.settings);
     } else if (event is ReloadSettings) {
       await _reloadSettings(changeState, newState);
-    } else if (event is AddArtistList) {
-      await _addArtistList(changeState, appState);
+    } else if (event is AddArtistFromFolder) {
+      await _addArtistFromFolder(changeState, appState);
     } else if (event is AddNewSong) {
       await _addNewSong(changeState, appState, event.song);
     } else if (event is ShowToast) {
@@ -720,7 +720,7 @@ class AppStateMachine {
     await changeState(newAppState);
   }
 
-  Future<void> _addArtistList(
+  Future<void> _addArtistFromFolder(
       AppStateChanger changeState, AppState appState) async {
     const platform =
         MethodChannel('jatx.flutter.russian_rock_song_book/channel');
