@@ -108,6 +108,8 @@ class AppStateMachine {
       await _reloadSettings(changeState, newState);
     } else if (event is AddArtistList) {
       await _addArtistList(changeState, appState);
+    } else if (event is AddNewSong) {
+      await _addNewSong(changeState, appState, event.song);
     } else if (event is ShowToast) {
       _showToast(newState, event.text);
     } else {
@@ -749,6 +751,32 @@ class AppStateMachine {
       }, newAppState, artist);
     } catch (e) {
       log('add artist error: $e');
+      _showToast(appState, AppStrings.strToastError);
+    }
+  }
+
+  Future<void> _addNewSong(
+      AppStateChanger changeState, AppState appState, Song song) async {
+    try {
+      final songList = [song];
+      await GetIt.I<SongRepository>().insertReplaceSongs(songList);
+      final newAppState = appState;
+      newAppState.localState.allArtists =
+      await GetIt.I<SongRepository>().getArtists();
+      getNavigatorState()?.pop();
+      await _back((newState) async {
+        await changeState(newState);
+        await _selectArtist((newState2) async {
+          final newAppState2 = newState2;
+          _selectPageVariant(newAppState2, PageVariant.songList);
+          await changeState(newAppState2);
+          final songsByArtist = await GetIt.I<SongRepository>().getSongsByArtist(song.artist);
+          final position = songsByArtist.indexWhere((test) => test.title == song.title);
+          await _selectSong(changeState, newAppState2, position);
+        }, newState, song.artist);
+      }, newAppState, systemBack: true);
+    } catch (e) {
+      log('add new song error: $e');
       _showToast(appState, AppStrings.strToastError);
     }
   }

@@ -43,6 +43,9 @@ class AppStrings {
         В случае, если песня с некоторым названием и исполнителем уже существует в базе приложения, она будет перезаписана.
   """.indent(4);
   static const strChoose = 'Выбрать';
+  static const strSongArtist = 'Исполнитель';
+  static const strSongTitle = 'Название';
+  static const strSongText = 'Текст песни';
 
   static String strFrom(int done, int total) => "$done из $total";
 }
