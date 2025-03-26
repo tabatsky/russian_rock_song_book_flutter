@@ -291,9 +291,14 @@ class _ArtistGroupItem extends StatelessWidget {
             onTap: () => onArtistTap(artist)))
         .toList();
     final children = children1 + children2;
-    return AnimatedSize(
-      duration: const Duration(milliseconds: 300),
-      child: Column(children: children),
+    return Container(
+        color: theme.colorMain,
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 300),
+          child: Column(
+            children: children,
+          ),
+        ),
     );
   }
 }
