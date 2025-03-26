@@ -114,15 +114,6 @@ class _SettingsBodyState extends State<_SettingsBody> {
                 _theTheme = newVariant;
               });
             }),
-        _ListenToMusicRow(
-            settings: widget.settings,
-            width: widget.width,
-            theListenToMusicVariant: _theListenToMusicVariant,
-            setNewVariant: (newVariant) {
-              setState(() {
-                _theListenToMusicVariant = newVariant;
-              });
-            }),
         _FontScaleRow(
             settings: widget.settings,
             width: widget.width,
@@ -130,6 +121,15 @@ class _SettingsBodyState extends State<_SettingsBody> {
             setNewVariant: (newVariant) {
               setState(() {
                 _theFontScaleVariant = newVariant;
+              });
+            }),
+        _ListenToMusicRow(
+            settings: widget.settings,
+            width: widget.width,
+            theListenToMusicVariant: _theListenToMusicVariant,
+            setNewVariant: (newVariant) {
+              setState(() {
+                _theListenToMusicVariant = newVariant;
               });
             }),
         const Spacer(),
