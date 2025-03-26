@@ -48,8 +48,7 @@ class _SongTextPageContent extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _SongTextPageContent(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.isEditorMode,
       required this.isAutoPlayMode,
       required this.currentSong,
@@ -133,8 +132,7 @@ class _SongTextBody extends StatefulWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _SongTextBody(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.isEditorMode,
       required this.isAutoPlayMode,
       required this.currentSong,
@@ -344,8 +342,7 @@ class _ButtonPanel extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _ButtonPanel(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.isPortrait,
       required this.listenToMusicVariant,
       required this.currentSong,

@@ -40,8 +40,7 @@ class _SongListPageContent extends StatefulWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _SongListPageContent(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.localState,
       required this.onPerformAction});
 
@@ -128,8 +127,7 @@ class _MenuListView extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _MenuListView(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.localState,
       required this.menuScrollController,
       required this.titleHeight,
@@ -363,8 +361,7 @@ class _SongListBody extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   _SongListBody(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.localState,
       required this.titleHeight,
       required this.dividerHeight,
@@ -409,8 +406,7 @@ class _TitleListView extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _TitleListView(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.localState,
       required this.titleScrollController,
       required this.titleHeight,
@@ -459,7 +455,7 @@ class _TitleListView extends StatelessWidget {
 class _EmptyListIndicator extends StatelessWidget {
   final AppSettings settings;
 
-  const _EmptyListIndicator({super.key, required this.settings});
+  const _EmptyListIndicator({required this.settings});
 
   @override
   Widget build(BuildContext context) => Expanded(

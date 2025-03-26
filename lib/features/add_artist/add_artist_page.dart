@@ -35,8 +35,7 @@ class _AddArtistPageContent extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _AddArtistPageContent(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.appState,
       required this.onPerformAction});
 

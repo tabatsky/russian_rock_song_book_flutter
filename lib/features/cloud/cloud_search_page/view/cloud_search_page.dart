@@ -41,8 +41,7 @@ class _CloudSearchPageContent extends StatefulWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _CloudSearchPageContent(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.cloudState,
       required this.onPerformAction});
 
@@ -151,7 +150,7 @@ class _CloudSearchPageContentState extends State<_CloudSearchPageContent> {
 class _ProgressIndicator extends StatelessWidget {
   final AppTheme theme;
 
-  const _ProgressIndicator({super.key, required this.theme});
+  const _ProgressIndicator({required this.theme});
 
   @override
   Widget build(BuildContext context) => Expanded(
@@ -169,7 +168,7 @@ class _ProgressIndicator extends StatelessWidget {
 class _EmptyListIndicator extends StatelessWidget {
   final AppSettings settings;
 
-  const _EmptyListIndicator({super.key, required this.settings});
+  const _EmptyListIndicator({required this.settings});
 
   @override
   Widget build(BuildContext context) => Expanded(
@@ -183,7 +182,7 @@ class _EmptyListIndicator extends StatelessWidget {
 class _ErrorIndicator extends StatelessWidget {
   final AppSettings settings;
 
-  const _ErrorIndicator({super.key, required this.settings});
+  const _ErrorIndicator({required this.settings});
 
   @override
   Widget build(BuildContext context) => Expanded(
@@ -203,8 +202,7 @@ class _CloudSearchPanel extends StatelessWidget {
   final void Function() onPerformCloudSearch;
 
   const _CloudSearchPanel(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.maxWidth,
       required this.orderBy,
       required this.cloudSearchTextFieldController,
@@ -304,8 +302,7 @@ class _CloudTitleListView extends StatelessWidget {
   final void Function() onBackupSearchState;
 
   _CloudTitleListView(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.cloudState,
       required this.itemHeight,
       required this.dividerHeight,
@@ -408,8 +405,7 @@ class _TitleItem extends StatelessWidget {
   final void Function(int cloudSongIndex) onItemTap;
 
   const _TitleItem(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.cloudState,
       required this.cloudSong,
       required this.cloudSongIndex,

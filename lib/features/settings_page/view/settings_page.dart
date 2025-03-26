@@ -36,8 +36,7 @@ class _SettingsPageContent extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _SettingsPageContent(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.appState,
       required this.onPerformAction});
 
@@ -77,8 +76,7 @@ class _SettingsBody extends StatefulWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _SettingsBody(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.appState,
       required this.width,
       required this.onPerformAction});
@@ -178,8 +176,7 @@ class _ThemeRow extends StatelessWidget {
   final void Function(AppTheme newVariant) setNewVariant;
 
   const _ThemeRow(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.width,
       required this.theTheme,
       required this.setNewVariant});
@@ -248,8 +245,7 @@ class _ListenToMusicRow extends StatelessWidget {
   final void Function(ListenToMusicVariant newVariant) setNewVariant;
 
   const _ListenToMusicRow(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.width,
       required this.theListenToMusicVariant,
       required this.setNewVariant});
@@ -321,8 +317,7 @@ class _FontScaleRow extends StatelessWidget {
   final void Function(FontScaleVariant newVariant) setNewVariant;
 
   const _FontScaleRow(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.width,
       required this.theFontScaleVariant,
       required this.setNewVariant});

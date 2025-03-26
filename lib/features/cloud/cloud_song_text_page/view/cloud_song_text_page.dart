@@ -44,8 +44,7 @@ class _CloudSongTextPageContent extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _CloudSongTextPageContent(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.cloudState,
       required this.onPerformAction});
 
@@ -105,8 +104,7 @@ class _CloudSongTextBody extends StatefulWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _CloudSongTextBody(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.cloudState,
       required this.onPerformAction});
 
@@ -226,8 +224,7 @@ class _ButtonPanel extends StatelessWidget {
   final void Function(AppUIEvent action) onPerformAction;
 
   const _ButtonPanel(
-      {super.key,
-      required this.settings,
+      {required this.settings,
       required this.isPortrait,
       required this.listenToMusicVariant,
       required this.currentCloudSong,

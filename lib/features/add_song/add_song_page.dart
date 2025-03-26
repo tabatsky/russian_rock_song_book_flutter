@@ -40,8 +40,7 @@ class _AddSongPageContent extends StatelessWidget {
   final _textEditingController = TextEditingController();
 
   _AddSongPageContent(
-      {super.key,
-        required this.settings,
+      {  required this.settings,
         required this.appState,
         required this.onPerformAction});
 
