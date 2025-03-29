@@ -19,4 +19,8 @@ class TestKeys {
   static const dislikeButton = 'dislike_button';
   static const backButton = 'back_button';
   static const warningButton = 'warning_button';
+  static const addSongArtist = 'add_song_artist';
+  static const addSongTitle = 'add_song_title';
+  static const addSongText = 'add_song_text';
+  static const addSongSave = 'add_song_save';
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:indent/indent.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:russian_rock_song_book/data/cloud/repository/cloud_repository_test_impl.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/order_by.dart';
@@ -23,6 +24,15 @@ const TITLE_1_4 = "Atlantica";
 const TITLE_2_1 = "17 лет";
 const TITLE_2_2 = "Поплачь о нем";
 const TITLE_3_1 = "Белая ночь";
+
+const ARTIST_NEW = "Новый исполнитель";
+const TITLE_NEW = "Новая песня";
+final TEXT_NEW = """
+    Какой-то
+    Текст песни
+    С какими-то
+    Аккордами
+""".indent(0);
 
 void main() {
   Future<void> launchApp(WidgetTester tester) async {
@@ -1095,6 +1105,47 @@ void main() {
 
       await tester.waitFor((tester) {
         expect(find.text(songs[2].visibleTitleWithRating(0, 1)), findsOneWidget);
+      });
+    });
+  });
+
+  group('add new song', () {
+    testWidgets('adding new song is working correctly', (tester) async {
+      await launchApp(tester);
+
+      final locateDrawer = find.byTooltip('Open navigation menu');
+      await tester.tap(locateDrawer);
+      await tester.pumpAndSettle();
+
+      final menuListView = find.byKey(const Key(TestKeys.menuListView));
+      await tester.waitFor((tester) {
+        expect(menuListView, findsOneWidget);
+      });
+      final artistAddSong = find.text(SongRepository.artistAddSong);
+      await tester.waitFor((tester) {
+        expect(artistAddSong, findsOneWidget);
+      });
+      await tester.tap(artistAddSong);
+      await tester.pumpAndSettle();
+
+      final artistTextField = find.byKey(const Key(TestKeys.addSongArtist));
+      await tester.enterText(artistTextField, ARTIST_NEW);
+      final titleTextField = find.byKey(const Key(TestKeys.addSongTitle));
+      await tester.enterText(titleTextField, TITLE_NEW);
+      final textTextField = find.byKey(const Key(TestKeys.addSongText));
+      await tester.enterText(textTextField, TEXT_NEW);
+      final saveButton = find.byKey(const Key(TestKeys.addSongSave));
+      await tester.tap(saveButton);
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        final songTextTitle = find.byKey(const Key(TestKeys.songTextTitle));
+        expect(songTextTitle, findsOneWidget);
+        expect(tester.widget<Text>(songTextTitle).data, TITLE_NEW);
+        final songTextText = find.byKey(const Key(TestKeys.songTextText));
+        expect(songTextText, findsOneWidget);
+        expect(tester.widget<RichText>(songTextText).text.toPlainText(),
+            TEXT_NEW);
       });
     });
   });

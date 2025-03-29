@@ -6,6 +6,7 @@ import 'package:russian_rock_song_book/mvi/bloc/app_bloc.dart';
 import 'package:russian_rock_song_book/mvi/events/app_events.dart';
 import 'package:russian_rock_song_book/mvi/state/app_settings.dart';
 import 'package:russian_rock_song_book/mvi/state/app_state.dart';
+import 'package:russian_rock_song_book/test/test_keys.dart';
 import 'package:russian_rock_song_book/ui/icons/app_icons.dart';
 import 'package:russian_rock_song_book/ui/strings/app_strings.dart';
 import 'package:russian_rock_song_book/ui/theme/app_theme.dart';
@@ -63,6 +64,7 @@ class _AddSongPageContent extends StatelessWidget {
       body: Column(
         children: [
           TextField(
+            key: const Key(TestKeys.addSongArtist),
             controller: _artistEditingController,
             keyboardType: TextInputType.text,
             maxLines: 1,
@@ -74,6 +76,7 @@ class _AddSongPageContent extends StatelessWidget {
             style: settings.textStyler.textStyleSongText,
           ),
           TextField(
+            key: const Key(TestKeys.addSongTitle),
             controller: _titleEditingController,
             keyboardType: TextInputType.text,
             maxLines: 1,
@@ -86,6 +89,7 @@ class _AddSongPageContent extends StatelessWidget {
           ),
           Expanded(
               child: TextField(
+                key: const Key(TestKeys.addSongText),
                 controller: _textEditingController,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
@@ -100,6 +104,7 @@ class _AddSongPageContent extends StatelessWidget {
               ),
           ),
           TextButton(
+            key: const Key(TestKeys.addSongSave),
             onPressed: () {
               _saveSong();
             },
