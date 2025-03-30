@@ -383,6 +383,7 @@ class _ButtonPanel extends StatelessWidget {
             });
           }),
       BottomButton(
+          buttonKey: const Key(TestKeys.trashButton),
           icon: AppIcons.icTrash,
           buttonSize: buttonSize,
           onPressed: () {

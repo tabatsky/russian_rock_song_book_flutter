@@ -1110,7 +1110,7 @@ void main() {
   });
 
   group('add new song', () {
-    testWidgets('adding new song is working correctly', (tester) async {
+    testWidgets('adding new song and deleting to trash is working correctly', (tester) async {
       await launchApp(tester);
 
       final locateDrawer = find.byTooltip('Open navigation menu');
@@ -1128,13 +1128,13 @@ void main() {
       await tester.tap(artistAddSong);
       await tester.pumpAndSettle();
 
-      final artistTextField = find.byKey(const Key(TestKeys.addSongArtist));
+      final artistTextField = find.byKey(const Key(TestKeys.addSongArtistTextField));
       await tester.enterText(artistTextField, ARTIST_NEW);
-      final titleTextField = find.byKey(const Key(TestKeys.addSongTitle));
+      final titleTextField = find.byKey(const Key(TestKeys.addSongTitleTextField));
       await tester.enterText(titleTextField, TITLE_NEW);
-      final textTextField = find.byKey(const Key(TestKeys.addSongText));
+      final textTextField = find.byKey(const Key(TestKeys.addSongTextTextField));
       await tester.enterText(textTextField, TEXT_NEW);
-      final saveButton = find.byKey(const Key(TestKeys.addSongSave));
+      final saveButton = find.byKey(const Key(TestKeys.addSongSaveButton));
       await tester.tap(saveButton);
       await tester.pumpAndSettle();
 
@@ -1146,6 +1146,18 @@ void main() {
         expect(songTextText, findsOneWidget);
         expect(tester.widget<RichText>(songTextText).text.toPlainText(),
             TEXT_NEW);
+      });
+
+      final trashButton = find.byKey(const Key(TestKeys.trashButton));
+      await tester.tap(trashButton);
+      await tester.pumpAndSettle();
+      final yesButton = find.text(AppStrings.strYes);
+      await tester.tap(yesButton);
+      await tester.pumpAndSettle();
+
+      await tester.waitFor((tester) {
+        final listIsEmptyLabel = find.text(AppStrings.strListIsEmpty);
+        expect(listIsEmptyLabel, findsOneWidget);
       });
     });
   });

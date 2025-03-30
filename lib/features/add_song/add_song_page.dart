@@ -64,7 +64,7 @@ class _AddSongPageContent extends StatelessWidget {
       body: Column(
         children: [
           TextField(
-            key: const Key(TestKeys.addSongArtist),
+            key: const Key(TestKeys.addSongArtistTextField),
             controller: _artistEditingController,
             keyboardType: TextInputType.text,
             maxLines: 1,
@@ -76,7 +76,7 @@ class _AddSongPageContent extends StatelessWidget {
             style: settings.textStyler.textStyleSongText,
           ),
           TextField(
-            key: const Key(TestKeys.addSongTitle),
+            key: const Key(TestKeys.addSongTitleTextField),
             controller: _titleEditingController,
             keyboardType: TextInputType.text,
             maxLines: 1,
@@ -89,7 +89,7 @@ class _AddSongPageContent extends StatelessWidget {
           ),
           Expanded(
               child: TextField(
-                key: const Key(TestKeys.addSongText),
+                key: const Key(TestKeys.addSongTextTextField),
                 controller: _textEditingController,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
@@ -104,7 +104,7 @@ class _AddSongPageContent extends StatelessWidget {
               ),
           ),
           TextButton(
-            key: const Key(TestKeys.addSongSave),
+            key: const Key(TestKeys.addSongSaveButton),
             onPressed: () {
               _saveSong();
             },
