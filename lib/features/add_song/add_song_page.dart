@@ -63,29 +63,51 @@ class _AddSongPageContent extends StatelessWidget {
       ),
       body: Column(
         children: [
+          Container(
+            color: settings.theme.colorBg,
+            height: 4,
+          ),
           TextField(
             key: const Key(TestKeys.addSongArtistTextField),
             controller: _artistEditingController,
             keyboardType: TextInputType.text,
             maxLines: 1,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(color: settings.theme.colorMain, width: 1),
+              ),
               contentPadding: EdgeInsets.zero,
-              hintText: AppStrings.strSongArtist,
+              fillColor: settings.theme.colorMain,
+              filled: true,
+              labelText: AppStrings.strSongArtist,
+              labelStyle: settings.textStyler.textStyleSmallInverted,
             ),
-            style: settings.textStyler.textStyleSongText,
+            style: settings.textStyler.textStyleSongTextInverted,
+          ),
+          Container(
+            color: settings.theme.colorBg,
+            height: 4,
           ),
           TextField(
             key: const Key(TestKeys.addSongTitleTextField),
             controller: _titleEditingController,
             keyboardType: TextInputType.text,
             maxLines: 1,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(color: settings.theme.colorMain, width: 1),
+              ),
               contentPadding: EdgeInsets.zero,
-              hintText: AppStrings.strSongTitle,
+              fillColor: settings.theme.colorMain,
+              filled: true,
+              labelText: AppStrings.strSongTitle,
+              labelStyle: settings.textStyler.textStyleSmallInverted,
             ),
-            style: settings.textStyler.textStyleSongText,
+            style: settings.textStyler.textStyleSongTextInverted,
+          ),
+          Container(
+            color: settings.theme.colorBg,
+            height: 4,
           ),
           Expanded(
               child: TextField(
@@ -95,19 +117,32 @@ class _AddSongPageContent extends StatelessWidget {
                 maxLines: null,
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide(color: settings.theme.colorMain, width: 1),
+                  ),
                   contentPadding: EdgeInsets.zero,
-                  hintText: AppStrings.strSongText,
+                  fillColor: settings.theme.colorMain,
+                  filled: true,
+                  labelText: AppStrings.strSongText,
+                  labelStyle: settings.textStyler.textStyleSmallInverted,
+                  alignLabelWithHint: true,
                 ),
-                style: settings.textStyler.textStyleSongText,
+                style: settings.textStyler.textStyleSongTextInverted,
               ),
+          ),
+          Container(
+            color: settings.theme.colorBg,
+            height: 4,
           ),
           TextButton(
             key: const Key(TestKeys.addSongSaveButton),
             onPressed: () {
               _saveSong();
             },
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+            ),
             child: Container(
               color: settings.theme.colorCommon,
               child: Align(

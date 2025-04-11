@@ -35,10 +35,22 @@ class AppTextStyler {
       color: AppTheme.materialBlack, fontSize: fontSizeSmallTitle);
   TextStyle get textStyleSmall => TextStyle(
       color: theme.colorMain, fontSize: fontSizeSmall);
+  TextStyle get textStyleSmallInverted => TextStyle(
+      color: theme.colorBg, fontSize: fontSizeSmall);
+  TextStyle get textStyleSmallCommon => TextStyle(
+      color: theme.colorCommon, fontSize: fontSizeSmall);
   TextStyle get textStyleSmallBlack => TextStyle(
       color: AppTheme.materialBlack, fontSize: fontSizeSmall);
   TextStyle get textStyleSongText => TextStyle(
     color: theme.colorMain,
+    fontFamily: 'monospace',
+    fontFamilyFallback: const <String>["Courier"],
+    fontSize: fontSizeCommon,
+    fontWeight: FontWeight.w400,
+    height: 1.5,
+  );
+  TextStyle get textStyleSongTextInverted => TextStyle(
+    color: theme.colorBg,
     fontFamily: 'monospace',
     fontFamilyFallback: const <String>["Courier"],
     fontSize: fontSizeCommon,
