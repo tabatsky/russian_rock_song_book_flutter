@@ -147,14 +147,19 @@ class _MenuListView extends StatelessWidget {
           if (index == 0) {
             return SizedBox(
               height: 120,
-              child: DrawerHeader(
-                decoration: const BoxDecoration(
-                  color: AppTheme.colorDarkYellow,
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  dividerTheme: const DividerThemeData(color: AppTheme.colorDarkYellow),
                 ),
-                margin: EdgeInsets.zero,
-                child: Text(AppStrings.strMenu,
-                    style: settings.textStyler.textStyleFixedBlackBold),
-              ),
+                child: DrawerHeader(
+                  decoration: const BoxDecoration(
+                    color: AppTheme.colorDarkYellow,
+                  ),
+                  margin: EdgeInsets.zero,
+                  child: Text(AppStrings.strMenu,
+                      style: settings.textStyler.textStyleFixedBlackBold),
+                ),
+              )
             );
           } else {
             final artistOrGroup = predefinedWithGroups[index - 1];
