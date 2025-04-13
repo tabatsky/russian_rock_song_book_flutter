@@ -138,49 +138,52 @@ class _MenuListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final predefinedWithGroups =
         localState.allArtists.predefinedArtistsWithGroups();
-    return ListView.builder(
-        key: const Key(TestKeys.menuListView),
-        controller: menuScrollController,
-        padding: EdgeInsets.zero,
-        itemCount: predefinedWithGroups.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == 0) {
-            return SizedBox(
-              height: 120,
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  dividerTheme: const DividerThemeData(color: AppTheme.colorDarkYellow),
-                ),
-                child: DrawerHeader(
-                  decoration: const BoxDecoration(
-                    color: AppTheme.colorDarkYellow,
-                  ),
-                  margin: EdgeInsets.zero,
-                  child: Text(AppStrings.strMenu,
-                      style: settings.textStyler.textStyleFixedBlackBold),
-                ),
-              )
-            );
-          } else {
-            final artistOrGroup = predefinedWithGroups[index - 1];
-            return _MenuItem(
-                artistOrGroup: artistOrGroup,
-                artistList:
-                    SongRepository.predefinedArtists + localState.allArtists,
-                menuExpandedArtistGroup: localState.menuExpandedArtistGroup,
-                theme: settings.theme,
-                textStyler: settings.textStyler,
-                titleHeight: titleHeight,
-                dividerHeight: dividerHeight,
-                onGroupTap: () {
-                  onPerformAction(UpdateMenuExpandedArtistGroup(artistOrGroup));
-                },
-                onArtistTap: (artist) {
-                  Navigator.pop(context);
-                  onPerformAction(ArtistClick(artist));
-                });
-          }
-        });
+    return Container(
+      color: AppTheme.colorDarkYellow,
+      child: ListView.builder(
+          key: const Key(TestKeys.menuListView),
+          controller: menuScrollController,
+          padding: EdgeInsets.zero,
+          itemCount: predefinedWithGroups.length + 1,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == 0) {
+              return SizedBox(
+                  height: 80,
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                      dividerTheme: const DividerThemeData(color: AppTheme.colorDarkYellow),
+                    ),
+                    child: DrawerHeader(
+                      decoration: const BoxDecoration(
+                        color: AppTheme.colorDarkYellow,
+                      ),
+                      margin: EdgeInsets.zero,
+                      child: Text(AppStrings.strMenu,
+                          style: settings.textStyler.textStyleFixedBlackBold),
+                    ),
+                  )
+              );
+            } else {
+              final artistOrGroup = predefinedWithGroups[index - 1];
+              return _MenuItem(
+                  artistOrGroup: artistOrGroup,
+                  artistList:
+                  SongRepository.predefinedArtists + localState.allArtists,
+                  menuExpandedArtistGroup: localState.menuExpandedArtistGroup,
+                  theme: settings.theme,
+                  textStyler: settings.textStyler,
+                  titleHeight: titleHeight,
+                  dividerHeight: dividerHeight,
+                  onGroupTap: () {
+                    onPerformAction(UpdateMenuExpandedArtistGroup(artistOrGroup));
+                  },
+                  onArtistTap: (artist) {
+                    Navigator.pop(context);
+                    onPerformAction(ArtistClick(artist));
+                  });
+            }
+          }),
+    );
   }
 }
 
