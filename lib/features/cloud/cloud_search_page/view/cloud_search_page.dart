@@ -235,12 +235,20 @@ class _CloudSearchPanel extends StatelessWidget {
                   style: settings.textStyler.textStyleCommonInverted,
                 ),
               ),
-              SizedBox(
+              Container(
                 width: maxWidth - 100,
                 height: 40,
+                color: settings.theme.colorCommon,
                 child: DropdownButton(
-                  value: orderBy.orderByStr,
                   items: orderByDropdownItems(settings),
+                  hint: SizedBox(
+                    width: maxWidth - 100,
+                    child: Text(
+                      orderBy.orderByRus,
+                      style: settings.textStyler.textStyleCommonBlack,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                   isExpanded: true,
                   onChanged: (String? value) {
                     final orderByStr = value ?? OrderBy.byIdDesc.orderByStr;
@@ -252,6 +260,8 @@ class _CloudSearchPanel extends StatelessWidget {
                     }
                   },
                   dropdownColor: settings.theme.colorBg,
+                  iconEnabledColor: settings.theme.colorCommon,
+                  underline: const SizedBox(),
                 ),
               ),
             ]),
