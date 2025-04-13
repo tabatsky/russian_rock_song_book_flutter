@@ -148,7 +148,7 @@ class _MenuListView extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
               return SizedBox(
-                  height: 80,
+                  height: 100,
                   child: Theme(
                     data: Theme.of(context).copyWith(
                       dividerTheme: const DividerThemeData(color: AppTheme.colorDarkYellow),
