@@ -260,7 +260,7 @@ class _CloudSearchPanel extends StatelessWidget {
                     }
                   },
                   dropdownColor: settings.theme.colorBg,
-                  iconEnabledColor: settings.theme.colorCommon,
+                  iconSize: 0,
                   underline: const SizedBox(),
                 ),
               ),

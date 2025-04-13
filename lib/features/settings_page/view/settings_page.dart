@@ -186,7 +186,7 @@ class _ThemeRow extends StatelessWidget {
         children: [
           SizedBox(
             width: width / 2,
-            height: 60,
+            height: 50,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Align(
@@ -200,22 +200,35 @@ class _ThemeRow extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            width: width / 2,
-            height: 60,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: DropdownButton(
-                value: theTheme.description,
-                items: _themeDropdownItems(settings),
-                isExpanded: true,
-                onChanged: (String? value) {
-                  final description = value ?? theTheme.description;
-                  final newIndex = AppTheme.indexFromDescription(description);
-                  final newTheme = AppTheme.allThemes[newIndex];
-                  setNewVariant(newTheme);
-                },
-                dropdownColor: settings.theme.colorBg,
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: Container(
+              width: width / 2 - 8,
+              height: 50,
+              color: settings.theme.colorCommon,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: DropdownButton(
+                  items: _themeDropdownItems(settings),
+                  hint: SizedBox(
+                    width: width / 2 - 8,
+                    child: Text(
+                      theTheme.description,
+                      style: settings.textStyler.textStyleCommonBlack,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  isExpanded: true,
+                  onChanged: (String? value) {
+                    final description = value ?? theTheme.description;
+                    final newIndex = AppTheme.indexFromDescription(description);
+                    final newTheme = AppTheme.allThemes[newIndex];
+                    setNewVariant(newTheme);
+                  },
+                  dropdownColor: settings.theme.colorBg,
+                  iconSize: 0,
+                  underline: const SizedBox(),
+                ),
               ),
             ),
           ),
@@ -255,7 +268,7 @@ class _ListenToMusicRow extends StatelessWidget {
         children: [
           SizedBox(
             width: width / 2,
-            height: 60,
+            height: 50,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Align(
@@ -269,24 +282,37 @@ class _ListenToMusicRow extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            width: width / 2,
-            height: 60,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: DropdownButton(
-                value: theListenToMusicVariant.description,
-                items: _listenToMusicDropdownItems(settings),
-                isExpanded: true,
-                onChanged: (String? value) {
-                  final description =
-                      value ?? theListenToMusicVariant.description;
-                  final newIndex =
-                      ListenToMusicVariant.indexFromDescription(description);
-                  final newVariant = ListenToMusicVariant.allVariants[newIndex];
-                  setNewVariant(newVariant);
-                },
-                dropdownColor: settings.theme.colorBg,
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: Container(
+              width: width / 2 - 8,
+              height: 50,
+              color: settings.theme.colorCommon,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: DropdownButton(
+                  items: _listenToMusicDropdownItems(settings),
+                  hint: SizedBox(
+                    width: width / 2 - 8,
+                    child: Text(
+                      theListenToMusicVariant.description,
+                      style: settings.textStyler.textStyleCommonBlack,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  isExpanded: true,
+                  onChanged: (String? value) {
+                    final description =
+                        value ?? theListenToMusicVariant.description;
+                    final newIndex =
+                    ListenToMusicVariant.indexFromDescription(description);
+                    final newVariant = ListenToMusicVariant.allVariants[newIndex];
+                    setNewVariant(newVariant);
+                  },
+                  dropdownColor: settings.theme.colorBg,
+                  iconSize: 0,
+                  underline: const SizedBox(),
+                ),
               ),
             ),
           ),
@@ -327,7 +353,7 @@ class _FontScaleRow extends StatelessWidget {
         children: [
           SizedBox(
             width: width / 2,
-            height: 60,
+            height: 50,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Align(
@@ -341,23 +367,36 @@ class _FontScaleRow extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            width: width / 2,
-            height: 60,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: DropdownButton(
-                value: theFontScaleVariant.description,
-                items: _fontScaleDropdownItems(settings),
-                isExpanded: true,
-                onChanged: (String? value) {
-                  final description = value ?? theFontScaleVariant.description;
-                  final newIndex =
-                      FontScaleVariant.indexFromDescription(description);
-                  final newVariant = FontScaleVariant.allVariants[newIndex];
-                  setNewVariant(newVariant);
-                },
-                dropdownColor: settings.theme.colorBg,
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: Container(
+              width: width / 2 - 8,
+              height: 50,
+              color: settings.theme.colorCommon,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: DropdownButton(
+                  items: _fontScaleDropdownItems(settings),
+                  hint: SizedBox(
+                    width: width / 2 - 8,
+                    child: Text(
+                      theFontScaleVariant.description,
+                      style: settings.textStyler.textStyleCommonBlack,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  isExpanded: true,
+                  onChanged: (String? value) {
+                    final description = value ?? theFontScaleVariant.description;
+                    final newIndex =
+                    FontScaleVariant.indexFromDescription(description);
+                    final newVariant = FontScaleVariant.allVariants[newIndex];
+                    setNewVariant(newVariant);
+                  },
+                  dropdownColor: settings.theme.colorBg,
+                  iconSize: 0,
+                  underline: const SizedBox(),
+                ),
               ),
             ),
           ),
