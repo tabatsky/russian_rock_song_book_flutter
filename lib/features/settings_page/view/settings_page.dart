@@ -205,7 +205,10 @@ class _ThemeRow extends StatelessWidget {
             child: Container(
               width: width / 2 - 8,
               height: 50,
-              color: settings.theme.colorCommon,
+              decoration: BoxDecoration(
+                color: settings.theme.colorCommon,
+                borderRadius: BorderRadius.circular(4),
+              ),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: DropdownButton(
@@ -287,7 +290,10 @@ class _ListenToMusicRow extends StatelessWidget {
             child: Container(
               width: width / 2 - 8,
               height: 50,
-              color: settings.theme.colorCommon,
+              decoration: BoxDecoration(
+                color: settings.theme.colorCommon,
+                borderRadius: BorderRadius.circular(4),
+              ),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: DropdownButton(
@@ -372,7 +378,10 @@ class _FontScaleRow extends StatelessWidget {
             child: Container(
               width: width / 2 - 8,
               height: 50,
-              color: settings.theme.colorCommon,
+              decoration: BoxDecoration(
+                color: settings.theme.colorCommon,
+                borderRadius: BorderRadius.circular(4),
+              ),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: DropdownButton(

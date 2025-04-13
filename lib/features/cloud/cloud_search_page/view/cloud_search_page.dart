@@ -235,10 +235,16 @@ class _CloudSearchPanel extends StatelessWidget {
                   style: settings.textStyler.textStyleCommonInverted,
                 ),
               ),
+              const SizedBox(
+                height: 4,
+              ),
               Container(
                 width: maxWidth - 100,
-                height: 40,
-                color: settings.theme.colorCommon,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: settings.theme.colorCommon,
+                  borderRadius: BorderRadius.circular(4),
+                ),
                 child: DropdownButton(
                   items: orderByDropdownItems(settings),
                   hint: SizedBox(
