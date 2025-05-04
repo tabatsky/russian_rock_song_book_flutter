@@ -278,7 +278,10 @@ class _CloudSearchPanel extends StatelessWidget {
           Container(
             width: 88,
             height: 88,
-            color: AppTheme.colorDarkYellow,
+            decoration: BoxDecoration(
+              color: settings.theme.colorCommon,
+              borderRadius: BorderRadius.circular(4),
+            ),
             child: IconButton(
               key: const Key(TestKeys.cloudSearchButton),
               icon: Image.asset(AppIcons.icCloudSearch),
