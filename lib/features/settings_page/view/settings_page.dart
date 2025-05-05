@@ -136,7 +136,10 @@ class _SettingsBodyState extends State<_SettingsBody> {
             _saveSettings(widget.settings);
           },
           child: Container(
-            color: widget.settings.theme.colorCommon,
+            decoration: BoxDecoration(
+              color: widget.settings.theme.colorCommon,
+              borderRadius: BorderRadius.circular(4),
+            ),
             child: Align(
               alignment: Alignment.center,
               child: Padding(
