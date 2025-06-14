@@ -85,15 +85,29 @@ class _CloudSearchPageContentState extends State<_CloudSearchPageContent> {
         child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
           double maxWidth = constraints.maxWidth;
+          double maxHeight = constraints.maxHeight;
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              _CloudSearchPanel(
+              maxWidth < maxHeight ?
+              _CloudSearchPanelPortrait(
                   settings: widget.settings,
                   maxWidth: maxWidth,
                   orderBy: _orderBy,
                   cloudSearchTextFieldController:
-                      _cloudSearchTextFieldController,
+                  _cloudSearchTextFieldController,
+                  onSelectOrderBy: (newOrderBy) {
+                    setState(() {
+                      _orderBy = newOrderBy;
+                    });
+                  },
+                  onPerformCloudSearch: _performCloudSearch) :
+              _CloudSearchPanelLandscape(
+                  settings: widget.settings,
+                  maxWidth: maxWidth,
+                  orderBy: _orderBy,
+                  cloudSearchTextFieldController:
+                  _cloudSearchTextFieldController,
                   onSelectOrderBy: (newOrderBy) {
                     setState(() {
                       _orderBy = newOrderBy;
@@ -193,7 +207,7 @@ class _ErrorIndicator extends StatelessWidget {
       )));
 }
 
-class _CloudSearchPanel extends StatelessWidget {
+class _CloudSearchPanelPortrait extends StatelessWidget {
   final AppSettings settings;
   final double maxWidth;
   final OrderBy orderBy;
@@ -201,7 +215,7 @@ class _CloudSearchPanel extends StatelessWidget {
   final void Function(OrderBy newOrderBy) onSelectOrderBy;
   final void Function() onPerformCloudSearch;
 
-  const _CloudSearchPanel(
+  const _CloudSearchPanelPortrait(
       {required this.settings,
       required this.maxWidth,
       required this.orderBy,
@@ -306,6 +320,121 @@ class _CloudSearchPanel extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             )))
+        .toList();
+
+    return menuItems;
+  }
+}
+
+class _CloudSearchPanelLandscape extends StatelessWidget {
+  final AppSettings settings;
+  final double maxWidth;
+  final OrderBy orderBy;
+  final TextEditingController cloudSearchTextFieldController;
+  final void Function(OrderBy newOrderBy) onSelectOrderBy;
+  final void Function() onPerformCloudSearch;
+
+  const _CloudSearchPanelLandscape(
+      {required this.settings,
+        required this.maxWidth,
+        required this.orderBy,
+        required this.cloudSearchTextFieldController,
+        required this.onSelectOrderBy,
+        required this.onPerformCloudSearch});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.all(4),
+      child: Row(
+        children: [
+          SizedBox(
+            width: (maxWidth - 64) * 0.6,
+            height: 48,
+            child: TextField(
+              key: const Key(TestKeys.cloudSearchTextField),
+              controller: cloudSearchTextFieldController,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(
+                    vertical:
+                    (32 - settings.textStyler.fontSizeCommon) / 2),
+                fillColor: settings.theme.colorMain,
+                filled: true,
+              ),
+              style: settings.textStyler.textStyleCommonInverted,
+            ),
+          ),
+          const SizedBox(
+            width: 4,
+          ),
+          Container(
+            width: (maxWidth - 64) * 0.4,
+            height: 48,
+            decoration: BoxDecoration(
+              color: settings.theme.colorCommon,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: DropdownButton(
+              items: orderByDropdownItems(settings),
+              hint: SizedBox(
+                width: maxWidth - 100,
+                child: Text(
+                  orderBy.orderByRus,
+                  style: settings.textStyler.textStyleCommonBlack,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              isExpanded: true,
+              onChanged: (String? value) {
+                final orderByStr = value ?? OrderBy.byIdDesc.orderByStr;
+                final newOrderBy =
+                OrderByStrings.parseFromString(orderByStr);
+                if (newOrderBy != orderBy) {
+                  onSelectOrderBy(newOrderBy);
+                  onPerformCloudSearch();
+                }
+              },
+              dropdownColor: settings.theme.colorBg,
+              iconSize: 0,
+              underline: const SizedBox(),
+            ),
+          ),
+          const SizedBox(
+            width: 4,
+          ),
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: settings.theme.colorCommon,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: IconButton(
+              key: const Key(TestKeys.cloudSearchButton),
+              icon: Image.asset(AppIcons.icCloudSearch),
+              padding: const EdgeInsets.all(8),
+              onPressed: () {
+                onPerformCloudSearch();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<DropdownMenuItem<String>> orderByDropdownItems(AppSettings settings) {
+    List<DropdownMenuItem<String>> menuItems = OrderBy.values
+        .map((orderBy) => DropdownMenuItem(
+        value: orderBy.orderByStr,
+        child: Text(
+          orderBy.orderByRus,
+          style: settings.textStyler.textStyleCommon,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        )))
         .toList();
 
     return menuItems;
