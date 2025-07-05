@@ -72,7 +72,9 @@ class _SongTextPageContent extends StatelessWidget {
                   isAutoPlayMode ? AppIcons.icPause : AppIcons.icPlay),
               iconSize: 50,
               onPressed: () {
-                onPerformAction(UpdateAutoPlayMode(!isAutoPlayMode));
+                if (!isEditorMode) {
+                  onPerformAction(UpdateAutoPlayMode(!isAutoPlayMode));
+                }
               },
             ),
             IconButton(
@@ -270,6 +272,7 @@ class _SongTextBodyState extends State<_SongTextBody> {
   Future<void> _editText(Song? currentSong) async {
     _textEditorController.text = currentSong?.text ?? '';
     widget.onPerformAction(UpdateEditorMode(true));
+    widget.onPerformAction(UpdateAutoPlayMode(false));
   }
 
   Future<void> _saveText() async {
