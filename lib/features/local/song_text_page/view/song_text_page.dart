@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:russian_rock_song_book/features/chord_dialog/chord_dialog.dart';
 import 'package:russian_rock_song_book/features/common/widgets/bottom_button.dart';
@@ -35,16 +36,20 @@ class SongTextPage extends StatelessWidget {
               isEditorMode: state.localState.isEditorMode,
               isAutoPlayMode: state.localState.isAutoPlayMode,
               currentSong: state.localState.currentSong,
+              position: state.localState.currentSongPosition,
+              songCount: state.localState.currentCount,
               onPerformAction: onPerformAction);
         });
   }
 }
 
-class _SongTextPageContent extends StatelessWidget {
+class _SongTextPageContent extends StatefulWidget {
   final AppSettings settings;
   final bool isEditorMode;
   final bool isAutoPlayMode;
   final Song? currentSong;
+  final int position;
+  final int songCount;
   final void Function(AppUIEvent action) onPerformAction;
 
   const _SongTextPageContent(
@@ -52,78 +57,159 @@ class _SongTextPageContent extends StatelessWidget {
       required this.isEditorMode,
       required this.isAutoPlayMode,
       required this.currentSong,
+      required this.position,
+      required this.songCount,
       required this.onPerformAction});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: settings.theme.colorBg,
-        appBar: AppBar(
-          backgroundColor: AppTheme.colorDarkYellow,
-          leading: IconButton(
-            icon: Image.asset(AppIcons.icBack),
+  State<StatefulWidget> createState() => _SongTextPageContentState();
+}
+
+class _SongTextPageContentState extends State<_SongTextPageContent>
+    with TickerProviderStateMixin{
+  static const _animationTimeMillis = 600;
+
+  int _currentPosition = -1;
+  int _positionDeltaSign = 1;
+  int _lastSongCount = 0;
+  int _animationStep = 0;
+
+  @override
+  Widget build(BuildContext context)  {
+    final positionChanged = widget.position != _currentPosition;
+    final songCountChanged = widget.songCount != _lastSongCount;
+    if (positionChanged || songCountChanged) {
+      final positionIncreased = widget.position >= _currentPosition;
+      // final positionWasJumped =
+      //     (widget.position == widget.songCount - 1) && (_currentPosition == 0)
+      //         || (_currentPosition == widget.songCount - 1) &&
+      //         (widget.position == 0);
+      _positionDeltaSign =
+          (positionIncreased ? 1 : -1); // * (positionWasJumped ? -1 : 1);
+    }
+    if (songCountChanged) {
+      _lastSongCount = widget.songCount;
+    }
+    if (positionChanged) {
+      _animationStep = 0;
+    }
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      if (positionChanged) {
+        _currentPosition = widget.position;
+        setState(() {
+          _animationStep = 1;
+        });
+      } else if (_animationStep == 1) {
+        await Future.delayed(const Duration(milliseconds: _animationTimeMillis));
+        setState(() {
+          _animationStep = 2;
+        });
+      }
+    });
+    late final AnimationController controller = AnimationController(
+      duration: const Duration(milliseconds: _animationTimeMillis),
+      vsync: this,
+    )..repeat(count: 1);
+    late final Animation<Offset> offsetAnimation = Tween<Offset>(
+      begin: Offset(_positionDeltaSign * 1.0, 0.0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.linear,
+    ));
+
+    final emptyContent = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        _SongTextBody(
+            settings: widget.settings,
+            isEditorMode: widget.isEditorMode,
+            isAutoPlayMode: widget.isAutoPlayMode,
+            currentSong: null,
+            onPerformAction: widget.onPerformAction
+        ),
+      ],
+    );
+
+    final content = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        _SongTextBody(
+            settings: widget.settings,
+            isEditorMode: widget.isEditorMode,
+            isAutoPlayMode: widget.isAutoPlayMode,
+            currentSong: widget.currentSong,
+            onPerformAction: widget.onPerformAction
+        ),
+      ],
+    );
+
+    return Scaffold(
+      backgroundColor: widget.settings.theme.colorBg,
+      appBar: AppBar(
+        backgroundColor: AppTheme.colorDarkYellow,
+        leading: IconButton(
+          icon: Image.asset(AppIcons.icBack),
+          iconSize: 50,
+          onPressed: () {
+            widget.onPerformAction(Back());
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Image.asset(
+                widget.isAutoPlayMode ? AppIcons.icPause : AppIcons.icPlay),
             iconSize: 50,
             onPressed: () {
-              onPerformAction(Back());
+              if (!widget.isEditorMode) {
+                widget.onPerformAction(
+                    UpdateAutoPlayMode(!widget.isAutoPlayMode));
+              }
             },
           ),
-          actions: [
-            IconButton(
-              icon: Image.asset(
-                  isAutoPlayMode ? AppIcons.icPause : AppIcons.icPlay),
-              iconSize: 50,
-              onPressed: () {
-                if (!isEditorMode) {
-                  onPerformAction(UpdateAutoPlayMode(!isAutoPlayMode));
-                }
-              },
-            ),
-            IconButton(
-              key: const Key(TestKeys.leftButton),
-              icon: Image.asset(AppIcons.icLeft),
-              iconSize: 50,
-              onPressed: () {
-                onPerformAction(PrevSong());
-              },
-            ),
-            currentSong?.favorite == true
-                ? IconButton(
-                    key: const Key(TestKeys.deleteFromFavoriteButton),
-                    icon: Image.asset(AppIcons.icDelete),
-                    iconSize: 50,
-                    onPressed: () {
-                      onPerformAction(ToggleFavorite());
-                    },
-                  )
-                : IconButton(
-                    key: const Key(TestKeys.addToFavoriteButton),
-                    icon: Image.asset(AppIcons.icStar),
-                    iconSize: 50,
-                    onPressed: () {
-                      onPerformAction(ToggleFavorite());
-                    },
-                  ),
-            IconButton(
-              key: const Key(TestKeys.rightButton),
-              icon: Image.asset(AppIcons.icRight),
-              iconSize: 50,
-              onPressed: () {
-                onPerformAction(NextSong());
-              },
-            ),
-          ],
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _SongTextBody(
-                settings: settings,
-                isEditorMode: isEditorMode,
-                isAutoPlayMode: isAutoPlayMode,
-                currentSong: currentSong,
-                onPerformAction: onPerformAction),
-          ],
-        ),
-      );
+          IconButton(
+            key: const Key(TestKeys.leftButton),
+            icon: Image.asset(AppIcons.icLeft),
+            iconSize: 50,
+            onPressed: () {
+              widget.onPerformAction(PrevSong());
+            },
+          ),
+          widget.currentSong?.favorite == true
+              ? IconButton(
+            key: const Key(TestKeys.deleteFromFavoriteButton),
+            icon: Image.asset(AppIcons.icDelete),
+            iconSize: 50,
+            onPressed: () {
+              widget.onPerformAction(ToggleFavorite());
+            },
+          )
+              : IconButton(
+            key: const Key(TestKeys.addToFavoriteButton),
+            icon: Image.asset(AppIcons.icStar),
+            iconSize: 50,
+            onPressed: () {
+              widget.onPerformAction(ToggleFavorite());
+            },
+          ),
+          IconButton(
+            key: const Key(TestKeys.rightButton),
+            icon: Image.asset(AppIcons.icRight),
+            iconSize: 50,
+            onPressed: () {
+              widget.onPerformAction(NextSong());
+            },
+          ),
+        ],
+      ),
+      body: _animationStep == 0 ? emptyContent :
+      (_animationStep == 1 ? SlideTransition(
+        position: offsetAnimation,
+        child: content,
+      ) : content),
+    );
+  }
+
 }
 
 class _SongTextBody extends StatefulWidget {
