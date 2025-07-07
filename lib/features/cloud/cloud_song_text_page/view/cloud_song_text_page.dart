@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:russian_rock_song_book/data/settings/listen_to_music.dart';
 import 'package:russian_rock_song_book/domain/models/cloud/cloud_song.dart';
@@ -112,17 +113,56 @@ class _CloudSongTextBody extends StatefulWidget {
   State<StatefulWidget> createState() => _CloudSongTextBodyState();
 }
 
-class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
+class _CloudSongTextBodyState extends State<_CloudSongTextBody>
+    with TickerProviderStateMixin {
+  static const _animationTimeMillis = 450;
+
   final ScrollController _scrollController = ScrollController(
     initialScrollOffset: 0.0,
     keepScrollOffset: true,
   );
 
   CloudSong? _currentCloudSong;
+  int _currentPosition = -1;
+  int _positionDeltaSign = 1;
+  int _animationStep = 0;
 
   @override
   Widget build(BuildContext context) {
     _updateCloudSong(widget.cloudState.currentCloudSong);
+    final positionChanged = widget.cloudState.currentCloudSongPosition != _currentPosition;
+    if (positionChanged) {
+      final positionIncreased = widget.cloudState.currentCloudSongPosition >= _currentPosition;
+      _positionDeltaSign =
+      (positionIncreased ? 1 : -1);
+    }
+    if (positionChanged) {
+      _animationStep = 0;
+    }
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      if (positionChanged) {
+        _currentPosition = widget.cloudState.currentCloudSongPosition;
+        setState(() {
+          _animationStep = 1;
+        });
+      } else if (_animationStep == 1) {
+        await Future.delayed(const Duration(milliseconds: _animationTimeMillis - 80));
+        setState(() {
+          _animationStep = 2;
+        });
+      }
+    });
+    late final AnimationController controller = AnimationController(
+      duration: const Duration(milliseconds: _animationTimeMillis),
+      vsync: this,
+    )..repeat(count: 1);
+    late final Animation<Offset> offsetAnimation = Tween<Offset>(
+      begin: Offset(_positionDeltaSign * 1.0, 0.0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.linear,
+    ));
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -137,6 +177,65 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
           final extraLikes = widget.cloudState.extraLikesForCurrent;
           final extraDislikes = widget.cloudState.extraDislikesForCurrent;
 
+          final content = Wrap(
+            children: [
+              Text(
+                widget.cloudState.currentCloudSong
+                    ?.visibleTitleWithArtistAndRating(
+                    extraLikes, extraDislikes) ??
+                    '',
+                style: widget.settings.textStyler.textStyleTitle,
+                key: const Key(TestKeys.cloudSongTextTitle),
+              ),
+              Container(
+                height: 20,
+              ),
+              ClickableWordText(
+                text: widget.cloudState.currentCloudSong?.text ?? '',
+                actualWords: AllChords.chordsNames,
+                actualMappings: AllChords.chordMappings,
+                onWordTap: (word) {
+                  ChordDialog.showChordDialog(
+                      context, widget.settings, word);
+                },
+                style1: widget.settings.textStyler.textStyleSongText,
+                style2: widget.settings.textStyler.textStyleChord,
+                textKey: const Key(TestKeys.cloudSongTextText),
+              ),
+              Container(
+                height: 80,
+              ),
+            ],
+          );
+
+          final emptyContent = Wrap(
+            children: [
+              Text(
+                '',
+                style: widget.settings.textStyler.textStyleTitle,
+                key: const Key(TestKeys.cloudSongTextTitle),
+              ),
+              Container(
+                height: 20,
+              ),
+              ClickableWordText(
+                text: '',
+                actualWords: AllChords.chordsNames,
+                actualMappings: AllChords.chordMappings,
+                onWordTap: (word) {
+                  ChordDialog.showChordDialog(
+                      context, widget.settings, word);
+                },
+                style1: widget.settings.textStyler.textStyleSongText,
+                style2: widget.settings.textStyler.textStyleChord,
+                textKey: const Key(TestKeys.cloudSongTextText),
+              ),
+              Container(
+                height: 80,
+              ),
+            ],
+          );
+
           final bodyContent = [
             Expanded(
               child: SingleChildScrollView(
@@ -147,36 +246,11 @@ class _CloudSongTextBodyState extends State<_CloudSongTextBody> {
                       BoxConstraints(minHeight: height, minWidth: width),
                   color: widget.settings.theme.colorBg,
                   padding: const EdgeInsets.all(8),
-                  child: Wrap(
-                    children: [
-                      Text(
-                        widget.cloudState.currentCloudSong
-                                ?.visibleTitleWithArtistAndRating(
-                                    extraLikes, extraDislikes) ??
-                            '',
-                        style: widget.settings.textStyler.textStyleTitle,
-                        key: const Key(TestKeys.cloudSongTextTitle),
-                      ),
-                      Container(
-                        height: 20,
-                      ),
-                      ClickableWordText(
-                        text: widget.cloudState.currentCloudSong?.text ?? '',
-                        actualWords: AllChords.chordsNames,
-                        actualMappings: AllChords.chordMappings,
-                        onWordTap: (word) {
-                          ChordDialog.showChordDialog(
-                              context, widget.settings, word);
-                        },
-                        style1: widget.settings.textStyler.textStyleSongText,
-                        style2: widget.settings.textStyler.textStyleChord,
-                        textKey: const Key(TestKeys.cloudSongTextText),
-                      ),
-                      Container(
-                        height: 80,
-                      ),
-                    ],
-                  ),
+                  child: _animationStep == 0 ? emptyContent :
+                  (_animationStep == 1 ? SlideTransition(
+                    position: offsetAnimation,
+                    child: content,
+                  ) : content),
                 ),
               ),
             ),
