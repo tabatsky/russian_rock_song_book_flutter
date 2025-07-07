@@ -43,7 +43,7 @@ class SongTextPage extends StatelessWidget {
   }
 }
 
-class _SongTextPageContent extends StatefulWidget {
+class _SongTextPageContent extends StatelessWidget {
   final AppSettings settings;
   final bool isEditorMode;
   final bool isAutoPlayMode;
@@ -62,12 +62,120 @@ class _SongTextPageContent extends StatefulWidget {
       required this.onPerformAction});
 
   @override
-  State<StatefulWidget> createState() => _SongTextPageContentState();
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: settings.theme.colorBg,
+    appBar: AppBar(
+      backgroundColor: AppTheme.colorDarkYellow,
+      leading: IconButton(
+        icon: Image.asset(AppIcons.icBack),
+        iconSize: 50,
+        onPressed: () {
+          onPerformAction(Back());
+        },
+      ),
+      actions: [
+        IconButton(
+          icon: Image.asset(
+              isAutoPlayMode ? AppIcons.icPause : AppIcons.icPlay),
+          iconSize: 50,
+          onPressed: () {
+            if (!isEditorMode) {
+              onPerformAction(
+                  UpdateAutoPlayMode(!isAutoPlayMode));
+            }
+          },
+        ),
+        IconButton(
+          key: const Key(TestKeys.leftButton),
+          icon: Image.asset(AppIcons.icLeft),
+          iconSize: 50,
+          onPressed: () {
+            onPerformAction(PrevSong());
+          },
+        ),
+        currentSong?.favorite == true
+            ? IconButton(
+          key: const Key(TestKeys.deleteFromFavoriteButton),
+          icon: Image.asset(AppIcons.icDelete),
+          iconSize: 50,
+          onPressed: () {
+            onPerformAction(ToggleFavorite());
+          },
+        )
+            : IconButton(
+          key: const Key(TestKeys.addToFavoriteButton),
+          icon: Image.asset(AppIcons.icStar),
+          iconSize: 50,
+          onPressed: () {
+            onPerformAction(ToggleFavorite());
+          },
+        ),
+        IconButton(
+          key: const Key(TestKeys.rightButton),
+          icon: Image.asset(AppIcons.icRight),
+          iconSize: 50,
+          onPressed: () {
+            onPerformAction(NextSong());
+          },
+        ),
+      ],
+    ),
+    body: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        _SongTextBody(
+            settings: settings,
+            isEditorMode: isEditorMode,
+            isAutoPlayMode: isAutoPlayMode,
+            currentSong: currentSong,
+            position: position,
+            songCount: songCount,
+            onPerformAction: onPerformAction
+        ),
+      ],
+    ),
+  );
 }
 
-class _SongTextPageContentState extends State<_SongTextPageContent>
-    with TickerProviderStateMixin{
-  static const _animationTimeMillis = 600;
+class _SongTextBody extends StatefulWidget {
+  final AppSettings settings;
+  final bool isEditorMode;
+  final bool isAutoPlayMode;
+  final Song? currentSong;
+  final int position;
+  final int songCount;
+  final void Function(AppUIEvent action) onPerformAction;
+
+  const _SongTextBody(
+      {required this.settings,
+      required this.isEditorMode,
+      required this.isAutoPlayMode,
+      required this.currentSong,
+      required this.position,
+      required this.songCount,
+      required this.onPerformAction});
+
+  @override
+  State<StatefulWidget> createState() => _SongTextBodyState();
+}
+
+class _SongTextBodyState extends State<_SongTextBody>
+    with TickerProviderStateMixin {
+  static const deltaY = 10.0;
+  static const _animationTimeMillis = 450;
+
+  final _textEditorController = TextEditingController();
+
+  final ScrollController _scrollController = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
+
+  Song? _lastSong;
+  bool _isAutoPlayMode = false;
+  bool _justScrolledToTop = false;
+  double _scrollY = 0.0;
+  bool _isTappedNow = false;
 
   int _currentPosition = -1;
   int _positionDeltaSign = 1;
@@ -75,7 +183,9 @@ class _SongTextPageContentState extends State<_SongTextPageContent>
   int _animationStep = 0;
 
   @override
-  Widget build(BuildContext context)  {
+  Widget build(BuildContext context) {
+    _updateSong(widget.currentSong);
+    _updateAutoPlayMode(widget.isAutoPlayMode);
     final positionChanged = widget.position != _currentPosition;
     final songCountChanged = widget.songCount != _lastSongCount;
     if (positionChanged || songCountChanged) {
@@ -85,7 +195,7 @@ class _SongTextPageContentState extends State<_SongTextPageContent>
       //         || (_currentPosition == widget.songCount - 1) &&
       //         (widget.position == 0);
       _positionDeltaSign =
-          (positionIncreased ? 1 : -1); // * (positionWasJumped ? -1 : 1);
+      (positionIncreased ? 1 : -1); // * (positionWasJumped ? -1 : 1);
     }
     if (songCountChanged) {
       _lastSongCount = widget.songCount;
@@ -100,7 +210,7 @@ class _SongTextPageContentState extends State<_SongTextPageContent>
           _animationStep = 1;
         });
       } else if (_animationStep == 1) {
-        await Future.delayed(const Duration(milliseconds: _animationTimeMillis));
+        await Future.delayed(const Duration(milliseconds: _animationTimeMillis - 80));
         setState(() {
           _animationStep = 2;
         });
@@ -117,139 +227,6 @@ class _SongTextPageContentState extends State<_SongTextPageContent>
       parent: controller,
       curve: Curves.linear,
     ));
-
-    final emptyContent = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        _SongTextBody(
-            settings: widget.settings,
-            isEditorMode: widget.isEditorMode,
-            isAutoPlayMode: widget.isAutoPlayMode,
-            currentSong: null,
-            onPerformAction: widget.onPerformAction
-        ),
-      ],
-    );
-
-    final content = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        _SongTextBody(
-            settings: widget.settings,
-            isEditorMode: widget.isEditorMode,
-            isAutoPlayMode: widget.isAutoPlayMode,
-            currentSong: widget.currentSong,
-            onPerformAction: widget.onPerformAction
-        ),
-      ],
-    );
-
-    return Scaffold(
-      backgroundColor: widget.settings.theme.colorBg,
-      appBar: AppBar(
-        backgroundColor: AppTheme.colorDarkYellow,
-        leading: IconButton(
-          icon: Image.asset(AppIcons.icBack),
-          iconSize: 50,
-          onPressed: () {
-            widget.onPerformAction(Back());
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: Image.asset(
-                widget.isAutoPlayMode ? AppIcons.icPause : AppIcons.icPlay),
-            iconSize: 50,
-            onPressed: () {
-              if (!widget.isEditorMode) {
-                widget.onPerformAction(
-                    UpdateAutoPlayMode(!widget.isAutoPlayMode));
-              }
-            },
-          ),
-          IconButton(
-            key: const Key(TestKeys.leftButton),
-            icon: Image.asset(AppIcons.icLeft),
-            iconSize: 50,
-            onPressed: () {
-              widget.onPerformAction(PrevSong());
-            },
-          ),
-          widget.currentSong?.favorite == true
-              ? IconButton(
-            key: const Key(TestKeys.deleteFromFavoriteButton),
-            icon: Image.asset(AppIcons.icDelete),
-            iconSize: 50,
-            onPressed: () {
-              widget.onPerformAction(ToggleFavorite());
-            },
-          )
-              : IconButton(
-            key: const Key(TestKeys.addToFavoriteButton),
-            icon: Image.asset(AppIcons.icStar),
-            iconSize: 50,
-            onPressed: () {
-              widget.onPerformAction(ToggleFavorite());
-            },
-          ),
-          IconButton(
-            key: const Key(TestKeys.rightButton),
-            icon: Image.asset(AppIcons.icRight),
-            iconSize: 50,
-            onPressed: () {
-              widget.onPerformAction(NextSong());
-            },
-          ),
-        ],
-      ),
-      body: _animationStep == 0 ? emptyContent :
-      (_animationStep == 1 ? SlideTransition(
-        position: offsetAnimation,
-        child: content,
-      ) : content),
-    );
-  }
-
-}
-
-class _SongTextBody extends StatefulWidget {
-  final AppSettings settings;
-  final bool isEditorMode;
-  final bool isAutoPlayMode;
-  final Song? currentSong;
-  final void Function(AppUIEvent action) onPerformAction;
-
-  const _SongTextBody(
-      {required this.settings,
-      required this.isEditorMode,
-      required this.isAutoPlayMode,
-      required this.currentSong,
-      required this.onPerformAction});
-
-  @override
-  State<StatefulWidget> createState() => _SongTextBodyState();
-}
-
-class _SongTextBodyState extends State<_SongTextBody> {
-  static const deltaY = 10.0;
-
-  final _textEditorController = TextEditingController();
-
-  final ScrollController _scrollController = ScrollController(
-    initialScrollOffset: 0.0,
-    keepScrollOffset: true,
-  );
-
-  Song? _lastSong;
-  bool _isAutoPlayMode = false;
-  bool _justScrolledToTop = false;
-  double _scrollY = 0.0;
-  bool _isTappedNow = false;
-
-  @override
-  Widget build(BuildContext context) {
-    _updateSong(widget.currentSong);
-    _updateAutoPlayMode(widget.isAutoPlayMode);
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -260,6 +237,79 @@ class _SongTextBodyState extends State<_SongTextBody> {
               MediaQuery.of(context).orientation == Orientation.portrait;
 
           double buttonSize = isPortrait ? width / 7.0 : height / 7.0;
+
+          final content = Wrap(
+            children: [
+              Text(
+                widget.currentSong?.title ?? '',
+                style: widget.settings.textStyler.textStyleTitle,
+                key: const Key(TestKeys.songTextTitle),
+              ),
+              Container(
+                height: 20,
+              ),
+              widget.isEditorMode
+                  ? TextField(
+                key: const Key(TestKeys.songTextEditor),
+                controller: _textEditorController,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.zero,
+                ),
+                style: widget
+                    .settings.textStyler.textStyleSongText,
+              )
+                  : ClickableWordText(
+                text: widget.currentSong?.text ?? '',
+                actualWords: AllChords.chordsNames,
+                actualMappings: AllChords.chordMappings,
+                onWordTap: (word) {
+                  ChordDialog.showChordDialog(
+                      context, widget.settings, word);
+                },
+                style1: widget
+                    .settings.textStyler.textStyleSongText,
+                style2:
+                widget.settings.textStyler.textStyleChord,
+                textKey: const Key(TestKeys.songTextText),
+              ),
+              Container(
+                height: 80,
+              ),
+            ],
+          );
+
+          final emptyContent = Wrap(
+            children: [
+              Text(
+                '',
+                style: widget.settings.textStyler.textStyleTitle,
+                key: const Key(TestKeys.songTextTitle),
+              ),
+              Container(
+                height: 20,
+              ),
+              ClickableWordText(
+                text: '',
+                actualWords: AllChords.chordsNames,
+                actualMappings: AllChords.chordMappings,
+                onWordTap: (word) {
+                  ChordDialog.showChordDialog(
+                      context, widget.settings, word);
+                },
+                style1: widget
+                    .settings.textStyler.textStyleSongText,
+                style2:
+                widget.settings.textStyler.textStyleChord,
+                textKey: const Key(TestKeys.songTextText),
+              ),
+              Container(
+                height: 80,
+              ),
+            ],
+          );
 
           final bodyContent = [
             Expanded(
@@ -283,48 +333,11 @@ class _SongTextBodyState extends State<_SongTextBody> {
                           BoxConstraints(minHeight: height, minWidth: width),
                       color: widget.settings.theme.colorBg,
                       padding: const EdgeInsets.all(8),
-                      child: Wrap(
-                        children: [
-                          Text(
-                            widget.currentSong?.title ?? '',
-                            style: widget.settings.textStyler.textStyleTitle,
-                            key: const Key(TestKeys.songTextTitle),
-                          ),
-                          Container(
-                            height: 20,
-                          ),
-                          widget.isEditorMode
-                              ? TextField(
-                                  key: const Key(TestKeys.songTextEditor),
-                                  controller: _textEditorController,
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    contentPadding: EdgeInsets.zero,
-                                  ),
-                                  style: widget
-                                      .settings.textStyler.textStyleSongText,
-                                )
-                              : ClickableWordText(
-                                  text: widget.currentSong?.text ?? '',
-                                  actualWords: AllChords.chordsNames,
-                                  actualMappings: AllChords.chordMappings,
-                                  onWordTap: (word) {
-                                    ChordDialog.showChordDialog(
-                                        context, widget.settings, word);
-                                  },
-                                  style1: widget
-                                      .settings.textStyler.textStyleSongText,
-                                  style2:
-                                      widget.settings.textStyler.textStyleChord,
-                                  textKey: const Key(TestKeys.songTextText),
-                                ),
-                          Container(
-                            height: 80,
-                          ),
-                        ],
-                      ),
+                      child: _animationStep == 0 ? emptyContent :
+                      (_animationStep == 1 ? SlideTransition(
+                        position: offsetAnimation,
+                        child: content,
+                      ) : content),
                     ),
                   ),
                 ),
