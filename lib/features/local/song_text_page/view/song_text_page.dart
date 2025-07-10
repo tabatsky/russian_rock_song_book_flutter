@@ -171,24 +171,26 @@ class _SongTextBodyState extends State<_SongTextBody>
     keepScrollOffset: true,
   );
 
-  Song? _lastSong;
+  Song? _currentSong;
   bool _isAutoPlayMode = false;
   bool _justScrolledToTop = false;
   double _scrollY = 0.0;
   bool _isTappedNow = false;
 
+  String _currentSongKey = '';
   int _currentPosition = -1;
   int _positionDeltaSign = 1;
-  int _lastSongCount = 0;
   int _animationStep = 0;
 
   @override
   Widget build(BuildContext context) {
     _updateSong(widget.currentSong);
     _updateAutoPlayMode(widget.isAutoPlayMode);
+    final songKey = (_currentSong?.artist ?? '') +
+        (_currentSong?.title ?? '');
+    final songKeyChanged = songKey != _currentSongKey;
     final positionChanged = widget.position != _currentPosition;
-    final songCountChanged = widget.songCount != _lastSongCount;
-    if (positionChanged || songCountChanged) {
+    if (positionChanged) {
       final positionIncreased = widget.position >= _currentPosition;
       // final positionWasJumped =
       //     (widget.position == widget.songCount - 1) && (_currentPosition == 0)
@@ -197,15 +199,13 @@ class _SongTextBodyState extends State<_SongTextBody>
       _positionDeltaSign =
       (positionIncreased ? 1 : -1); // * (positionWasJumped ? -1 : 1);
     }
-    if (songCountChanged) {
-      _lastSongCount = widget.songCount;
-    }
-    if (positionChanged) {
+    if (positionChanged || songKeyChanged) {
       _animationStep = 0;
     }
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      if (positionChanged) {
+      if (positionChanged || songKeyChanged) {
         _currentPosition = widget.position;
+        _currentSongKey = songKey;
         setState(() {
           _animationStep = 1;
         });
@@ -397,9 +397,10 @@ class _SongTextBodyState extends State<_SongTextBody>
   }
 
   void _updateSong(Song? newSong) {
-    if (_lastSong?.title != newSong?.title ||
-        _lastSong?.artist != newSong?.artist) {
-      _lastSong = newSong;
+    if (_currentSong?.title != newSong?.title ||
+        _currentSong?.artist != newSong?.artist) {
+      _currentSong = newSong;
+      _positionDeltaSign = 1;
       widget.onPerformAction(UpdateEditorMode(false));
       widget.onPerformAction(UpdateAutoPlayMode(false));
       _textEditorController.text = newSong?.text ?? '';

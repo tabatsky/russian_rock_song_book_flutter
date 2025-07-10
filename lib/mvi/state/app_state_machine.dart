@@ -363,6 +363,8 @@ class AppStateMachine {
           }
           newLocalState.currentCount = count;
           newLocalState.currentSongPosition = newSongPosition;
+          final songs = await GetIt.I<SongRepository>().getSongsByArtist(SongRepository.artistFavorite);
+          newLocalState.currentSong = songs[newSongPosition];
           newAppState.localState = newLocalState;
           await changeState(newAppState);
         } else {
