@@ -192,12 +192,12 @@ class _SongTextBodyState extends State<_SongTextBody>
     final positionChanged = widget.position != _currentPosition;
     if (positionChanged) {
       final positionIncreased = widget.position >= _currentPosition;
-      // final positionWasJumped =
-      //     (widget.position == widget.songCount - 1) && (_currentPosition == 0)
-      //         || (_currentPosition == widget.songCount - 1) &&
-      //         (widget.position == 0);
+      final positionWasJumped = (widget.songCount > 2) &&
+              ((widget.position == widget.songCount - 1) && (_currentPosition == 0)
+              || (_currentPosition == widget.songCount - 1) &&
+              (widget.position == 0));
       _positionDeltaSign =
-      (positionIncreased ? 1 : -1); // * (positionWasJumped ? -1 : 1);
+      (positionIncreased ? 1 : -1) * (positionWasJumped ? -1 : 1);
     }
     if (positionChanged || songKeyChanged) {
       _animationStep = 0;

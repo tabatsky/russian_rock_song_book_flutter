@@ -266,30 +266,29 @@ class AppStateMachine {
   }
 
   Future<void> _prevSong(AppStateChanger changeState, AppState appState) async {
-    if (appState.localState.currentSongPosition > 0) {
-      final newAppState = appState;
-      final newLocalState = appState.localState;
-      newLocalState.currentSongPosition -= 1;
-      newLocalState.scrollPosition = newLocalState.currentSongPosition;
-      newLocalState.currentSong =
-          newLocalState.currentSongs[newLocalState.currentSongPosition];
-      newAppState.localState = newLocalState;
-      await changeState(newAppState);
-    }
+    final newAppState = appState;
+    final newLocalState = appState.localState;
+    newLocalState.currentSongPosition =
+        newLocalState.currentSongPosition > 0 ?
+        newLocalState.currentSongPosition - 1:
+        newLocalState.currentCount - 1;
+    newLocalState.scrollPosition = newLocalState.currentSongPosition;
+    newLocalState.currentSong =
+    newLocalState.currentSongs[newLocalState.currentSongPosition];
+    newAppState.localState = newLocalState;
+    await changeState(newAppState);
   }
 
   Future<void> _nextSong(AppStateChanger changeState, AppState appState) async {
-    if (appState.localState.currentSongPosition <
-        appState.localState.currentSongs.length - 1) {
-      final newAppState = appState;
-      final newLocalState = appState.localState;
-      newLocalState.currentSongPosition += 1;
-      newLocalState.scrollPosition = newLocalState.currentSongPosition;
-      newLocalState.currentSong =
-          newLocalState.currentSongs[newLocalState.currentSongPosition];
-      newAppState.localState = newLocalState;
-      await changeState(newAppState);
-    }
+    final newAppState = appState;
+    final newLocalState = appState.localState;
+    newLocalState.currentSongPosition =
+        (newLocalState.currentSongPosition + 1) % newLocalState.currentCount;
+    newLocalState.scrollPosition = newLocalState.currentSongPosition;
+    newLocalState.currentSong =
+    newLocalState.currentSongs[newLocalState.currentSongPosition];
+    newAppState.localState = newLocalState;
+    await changeState(newAppState);
   }
 
   Future<void> _back(AppStateChanger changeState, AppState appState,
