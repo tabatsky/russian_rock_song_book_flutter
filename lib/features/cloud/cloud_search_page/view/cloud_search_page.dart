@@ -53,6 +53,7 @@ class _CloudSearchPageContentState extends State<_CloudSearchPageContent> {
   static double _titleHeight = 110.0;
   static const _dividerHeight = 1.0;
   static double get _itemHeight => _titleHeight + _dividerHeight;
+  static const _progressHeight = 25.0;
 
   final _cloudSearchTextFieldController = TextEditingController();
 
@@ -137,6 +138,7 @@ class _CloudSearchPageContentState extends State<_CloudSearchPageContent> {
               cloudState: cloudState,
               itemHeight: _itemHeight,
               dividerHeight: _dividerHeight,
+              progressHeight: _progressHeight,
               onPerformAction: widget.onPerformAction,
               onBackupSearchState: _backupSearchState));
     }
@@ -446,6 +448,7 @@ class _CloudTitleListView extends StatelessWidget {
   final CloudState cloudState;
   final double itemHeight;
   final double dividerHeight;
+  final double progressHeight;
   final void Function(AppUIEvent action) onPerformAction;
   final void Function() onBackupSearchState;
 
@@ -454,6 +457,7 @@ class _CloudTitleListView extends StatelessWidget {
       required this.cloudState,
       required this.itemHeight,
       required this.dividerHeight,
+      required this.progressHeight,
       required this.onPerformAction,
       required this.onBackupSearchState});
 
@@ -476,65 +480,79 @@ class _CloudTitleListView extends StatelessWidget {
       WidgetsBinding.instance
           .scheduleFrameCallback((_) => _scrollToActual(cloudState));
     }
+    final loadedPagesCount = cloudState.currentCloudSongCount ~/ pageSize;
     return CustomScrollView(
       controller: _cloudTitleScrollController,
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate(
-              childCount: cloudState.lastPage?.plus(1), (context, pageIndex) {
-            return FutureBuilder(
+              childCount: (cloudState.lastPage ?? loadedPagesCount).plus(1), (context, pageIndex) {
+            return pageIndex <= loadedPagesCount
+                ? FutureBuilder(
               future: cloudState.currentSearchPager?.getPage(pageIndex, false),
               initialData: null,
               builder: (context, snapshot) {
                 final List<Widget> titleViews;
+                final double height;
                 if (snapshot.data != null) {
                   titleViews =
                       Iterable<int>.generate(snapshot.data?.length ?? 0)
                           .map((listIndex) {
-                    final cloudSong = snapshot.data!.elementAt(listIndex);
-                    final cloudSongIndex = pageIndex * pageSize + listIndex;
-                    return _TitleItem(
-                        settings: settings,
-                        cloudState: cloudState,
-                        cloudSong: cloudSong,
-                        cloudSongIndex: cloudSongIndex,
-                        itemHeight: itemHeight,
-                        dividerHeight: dividerHeight,
-                        onItemTap: (cloudSongIndex) {
-                          onBackupSearchState();
-                          onPerformAction(CloudSongClick(cloudSongIndex));
-                        });
-                  }).toList();
-                  return SizedBox(
-                    height: itemHeight * titleViews.length,
-                    child: Column(
-                      children: titleViews,
-                    ),
-                  );
-                } else {
+                        final cloudSong = snapshot.data!.elementAt(listIndex);
+                        final cloudSongIndex = pageIndex * pageSize + listIndex;
+                        return _TitleItem(
+                            settings: settings,
+                            cloudState: cloudState,
+                            cloudSong: cloudSong,
+                            cloudSongIndex: cloudSongIndex,
+                            itemHeight: itemHeight,
+                            dividerHeight: dividerHeight,
+                            onItemTap: (cloudSongIndex) {
+                              onBackupSearchState();
+                              onPerformAction(CloudSongClick(cloudSongIndex));
+                            });
+                      }).toList();
+                  height = itemHeight * titleViews.length;
+                } else if (pageIndex <= 1){
                   titleViews =
                       Iterable<int>.generate(pageSize).map((listIndex) {
-                    final cloudSongIndex = pageIndex * pageSize + listIndex;
-                    return _TitleItem(
-                        settings: settings,
-                        cloudState: cloudState,
-                        cloudSong: null,
-                        cloudSongIndex: cloudSongIndex,
-                        itemHeight: itemHeight,
-                        dividerHeight: dividerHeight,
-                        onItemTap: (cloudSongIndex) {
-                          onBackupSearchState();
-                          onPerformAction(CloudSongClick(cloudSongIndex));
-                        });
-                  }).toList();
+                        final cloudSongIndex = pageIndex * pageSize + listIndex;
+                        return _TitleItem(
+                            settings: settings,
+                            cloudState: cloudState,
+                            cloudSong: null,
+                            cloudSongIndex: cloudSongIndex,
+                            itemHeight: itemHeight,
+                            dividerHeight: dividerHeight,
+                            onItemTap: (cloudSongIndex) {
+                              onBackupSearchState();
+                              onPerformAction(CloudSongClick(cloudSongIndex));
+                            });
+                      }).toList();
+                  height = itemHeight * titleViews.length;
+                } else {
+                  titleViews =
+                      Iterable<int>.generate(1).map((listIndex) {
+                        return SizedBox(
+                          height: progressHeight,
+                          child: LinearProgressIndicator(
+                            color: settings.theme.colorMain,
+                            backgroundColor: settings.theme.colorCommon,
+                          ),
+                        );
+                      }).toList();
+                  height = progressHeight;
                 }
                 return SizedBox(
-                  height: itemHeight * titleViews.length,
+                  height: height,
                   child: Column(
                     children: titleViews,
                   ),
                 );
               },
+            )
+                : const SizedBox(
+                height: 0
             );
           }),
         ),
