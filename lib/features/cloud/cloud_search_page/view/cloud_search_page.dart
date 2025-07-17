@@ -481,14 +481,14 @@ class _CloudTitleListView extends StatelessWidget {
           .scheduleFrameCallback((_) => _scrollToActual(cloudState));
     }
     final loadedPagesCount = cloudState.currentCloudSongCount ~/ pageSize;
+    final actualPagesCount = loadedPagesCount <= 2 ? 2: loadedPagesCount;
     return CustomScrollView(
       controller: _cloudTitleScrollController,
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate(
-              childCount: (cloudState.lastPage ?? loadedPagesCount).plus(1), (context, pageIndex) {
-            return pageIndex <= loadedPagesCount
-                ? FutureBuilder(
+              childCount: (cloudState.lastPage ?? actualPagesCount).plus(1), (context, pageIndex) {
+            return FutureBuilder(
               future: cloudState.currentSearchPager?.getPage(pageIndex, false),
               initialData: null,
               builder: (context, snapshot) {
@@ -513,7 +513,7 @@ class _CloudTitleListView extends StatelessWidget {
                             });
                       }).toList();
                   height = itemHeight * titleViews.length;
-                } else if (pageIndex <= 1){
+                } else if (pageIndex < actualPagesCount){
                   titleViews =
                       Iterable<int>.generate(pageSize).map((listIndex) {
                         final cloudSongIndex = pageIndex * pageSize + listIndex;
@@ -550,9 +550,6 @@ class _CloudTitleListView extends StatelessWidget {
                   ),
                 );
               },
-            )
-                : const SizedBox(
-                height: 0
             );
           }),
         ),
